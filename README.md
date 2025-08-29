@@ -1,4 +1,4 @@
-# 🚀 SaaS Template - Genesis Project
+# 🚀 Genesis Project
 
 > **Template moderno de aplicación SaaS construido con Next.js, TypeScript, NextAuth, Prisma y shadcn/ui**
 
@@ -93,6 +93,7 @@ npm run dev
 Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
 **¡Listo!** Ahora puedes:
+
 - **Registrarte** en `/register`
 - **Iniciar sesión** en `/login`
 - **Explorar el dashboard** en `/dashboard`
@@ -213,6 +214,7 @@ npm run db:migrate
 ## 🛠️ Tecnologías
 
 ### Frontend
+
 - **[Next.js 15](https://nextjs.org/)** - Framework React con App Router
 - **[TypeScript](https://www.typescriptlang.org/)** - Tipado estático
 - **[Tailwind CSS 4](https://tailwindcss.com/)** - Framework de CSS utilitario
@@ -220,17 +222,20 @@ npm run db:migrate
 - **[Lucide React](https://lucide.dev/)** - Íconos SVG
 
 ### Backend
+
 - **[NextAuth.js](https://next-auth.js.org/)** - Autenticación completa
 - **[Prisma](https://www.prisma.io/)** - ORM moderno para TypeScript
 - **[Zod](https://zod.dev/)** - Validación de esquemas
 - **[bcryptjs](https://github.com/dcodeIO/bcrypt.js/)** - Hash de contraseñas
 
 ### Estado y Gestión
+
 - **[Zustand](https://zustand-demo.pmnd.rs/)** - Gestión de estado ligera
 - **[React Hook Form](https://react-hook-form.com/)** - Manejo de formularios
 - **[Axios](https://axios-http.com/)** - Cliente HTTP
 
 ### Herramientas
+
 - **[ESLint](https://eslint.org/)** - Linter de JavaScript/TypeScript
 - **[Prettier](https://prettier.io/)** - Formateador de código
 - **[Turbopack](https://turbo.build/pack)** - Bundler rápido para desarrollo
@@ -273,84 +278,84 @@ El template incluye un sistema de autenticación completo construido con NextAut
 La configuración se encuentra en `src/lib/auth.ts`:
 
 ```typescript
-import { NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaAdapter } from '@auth/prisma-adapter'
-import { compare } from 'bcryptjs'
-import { prisma } from './prisma'
+import { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { compare } from "bcryptjs";
+import { prisma } from "./prisma";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
-      name: 'credentials',
+      name: "credentials",
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         // Lógica de autenticación
-      }
-    })
+      },
+    }),
   ],
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.id = user.id
-      return token
+      if (user) token.id = user.id;
+      return token;
     },
     async session({ session, token }) {
-      if (token) session.user.id = token.id as string
-      return session
-    }
-  }
-}
+      if (token) session.user.id = token.id as string;
+      return session;
+    },
+  },
+};
 ```
 
 ### Uso en Componentes
 
 ```typescript
 // Hook para obtener la sesión
-import { useSession } from 'next-auth/react'
+import { useSession } from "next-auth/react";
 
 function MiComponente() {
-  const { data: session, status } = useSession()
-  
-  if (status === 'loading') return <p>Cargando...</p>
-  if (status === 'unauthenticated') return <p>No autenticado</p>
-  
-  return <p>Hola {session.user.email}!</p>
+  const { data: session, status } = useSession();
+
+  if (status === "loading") return <p>Cargando...</p>;
+  if (status === "unauthenticated") return <p>No autenticado</p>;
+
+  return <p>Hola {session.user.email}!</p>;
 }
 ```
 
 ```typescript
 // Protección en páginas del servidor
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect } from 'next/navigation'
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function PaginaProtegida() {
-  const session = await getServerSession(authOptions)
-  
+  const session = await getServerSession(authOptions);
+
   if (!session) {
-    redirect('/login')
+    redirect("/login");
   }
-  
-  return <div>Contenido protegido para {session.user.email}</div>
+
+  return <div>Contenido protegido para {session.user.email}</div>;
 }
 ```
 
 ### API de Autenticación
 
-| Endpoint | Método | Descripción |
-|----------|--------|--------------|
-| `/api/auth/signin` | GET/POST | Página e inicio de sesión |
-| `/api/auth/signout` | GET/POST | Cerrar sesión |
-| `/api/auth/session` | GET | Obtener sesión actual |
-| `/api/auth/register` | POST | Registro de nuevos usuarios |
-| `/api/auth/providers` | GET | Proveedores disponibles |
+| Endpoint              | Método   | Descripción                 |
+| --------------------- | -------- | --------------------------- |
+| `/api/auth/signin`    | GET/POST | Página e inicio de sesión   |
+| `/api/auth/signout`   | GET/POST | Cerrar sesión               |
+| `/api/auth/session`   | GET      | Obtener sesión actual       |
+| `/api/auth/register`  | POST     | Registro de nuevos usuarios |
+| `/api/auth/providers` | GET      | Proveedores disponibles     |
 
 ### Registro de Usuarios
 
@@ -359,21 +364,21 @@ Ejemplo de registro personalizado:
 ```typescript
 // src/app/api/auth/register/route.ts
 export async function POST(request: Request) {
-  const { email, password, name } = await request.json()
-  
+  const { email, password, name } = await request.json();
+
   // Validar datos
-  const hashedPassword = await hash(password, 12)
-  
+  const hashedPassword = await hash(password, 12);
+
   // Crear usuario
   const user = await prisma.user.create({
     data: {
       email,
       password: hashedPassword,
-      name
-    }
-  })
-  
-  return Response.json({ user: { id: user.id, email: user.email } })
+      name,
+    },
+  });
+
+  return Response.json({ user: { id: user.id, email: user.email } });
 }
 ```
 
@@ -394,10 +399,10 @@ model User {
   image     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   accounts  Account[]
   sessions  Session[]
-  
+
   @@map("users")
 }
 
@@ -414,9 +419,9 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@unique([provider, providerAccountId])
   @@map("accounts")
 }
@@ -426,20 +431,20 @@ model Account {
 
 ```typescript
 // src/lib/prisma.ts - Cliente Prisma
-import { PrismaClient } from '@/generated/prisma'
+import { PrismaClient } from "@/generated/prisma";
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
+  prisma: PrismaClient | undefined;
+};
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 ```
 
 ```typescript
 // Ejemplos de uso en API Routes
-import { prisma } from '@/lib/prisma'
+import { prisma } from "@/lib/prisma";
 
 // Obtener usuarios
 const users = await prisma.user.findMany({
@@ -447,29 +452,29 @@ const users = await prisma.user.findMany({
     id: true,
     email: true,
     name: true,
-    createdAt: true
-  }
-})
+    createdAt: true,
+  },
+});
 
 // Crear usuario
 const user = await prisma.user.create({
   data: {
-    email: 'nuevo@ejemplo.com',
-    name: 'Usuario Nuevo',
-    password: hashedPassword
-  }
-})
+    email: "nuevo@ejemplo.com",
+    name: "Usuario Nuevo",
+    password: hashedPassword,
+  },
+});
 
 // Actualizar usuario
 const updatedUser = await prisma.user.update({
   where: { id: userId },
-  data: { name: 'Nuevo Nombre' }
-})
+  data: { name: "Nuevo Nombre" },
+});
 
 // Eliminar usuario
 await prisma.user.delete({
-  where: { id: userId }
-})
+  where: { id: userId },
+});
 ```
 
 ### Scripts de Base de Datos
@@ -496,31 +501,31 @@ npm run db:reset
 El archivo `prisma/seed.ts` incluye datos de prueba:
 
 ```typescript
-import { hash } from 'bcryptjs'
-import { PrismaClient } from '@/generated/prisma'
+import { hash } from "bcryptjs";
+import { PrismaClient } from "@/generated/prisma";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
   // Usuario de prueba
-  const hashedPassword = await hash('password123', 12)
-  
+  const hashedPassword = await hash("password123", 12);
+
   const testUser = await prisma.user.upsert({
-    where: { email: 'test@example.com' },
+    where: { email: "test@example.com" },
     update: {},
     create: {
-      email: 'test@example.com',
-      name: 'Usuario de Prueba',
-      password: hashedPassword
-    }
-  })
-  
-  console.log('Usuario creado:', testUser)
+      email: "test@example.com",
+      name: "Usuario de Prueba",
+      password: hashedPassword,
+    },
+  });
+
+  console.log("Usuario creado:", testUser);
 }
 
 main()
   .catch(console.error)
-  .finally(() => prisma.$disconnect())
+  .finally(() => prisma.$disconnect());
 ```
 
 ## 🎨 Componentes del Dashboard
@@ -532,8 +537,8 @@ El template incluye un sistema modular de dashboard con componentes reutilizable
 Componente principal que proporciona la estructura del dashboard:
 
 ```typescript
-import { DashboardLayout } from '@/modules/shared/components/layout/DashboardLayout'
-import { Shield, Users, Settings } from 'lucide-react'
+import { DashboardLayout } from "@/modules/shared/components/layout/DashboardLayout";
+import { Shield, Users, Settings } from "lucide-react";
 
 export default function MiPagina() {
   return (
@@ -544,27 +549,25 @@ export default function MiPagina() {
           label: "Principal",
           items: [
             { title: "Inicio", url: "/dashboard", icon: Home },
-            { title: "Usuarios", url: "/dashboard/users", icon: Users }
-          ]
-        }
+            { title: "Usuarios", url: "/dashboard/users", icon: Users },
+          ],
+        },
       ]}
-      
       // Configuración de branding
       branding={{
         name: "Mi App",
         subtitle: "Dashboard",
-        icon: Shield
+        icon: Shield,
       }}
-      
       // Acciones del header
       headerProps={{
         actions: [
           {
             label: "Nuevo Item",
             icon: Plus,
-            onClick: () => console.log('Crear nuevo')
-          }
-        ]
+            onClick: () => console.log("Crear nuevo"),
+          },
+        ],
       }}
     >
       {/* Tu contenido aquí */}
@@ -573,7 +576,7 @@ export default function MiPagina() {
         <p>Contenido de la página...</p>
       </div>
     </DashboardLayout>
-  )
+  );
 }
 ```
 
@@ -581,27 +584,25 @@ export default function MiPagina() {
 
 ```typescript
 // Layout para administración
-import { AdminDashboardLayout } from '@/modules/shared/components/layout/DashboardLayout'
+import { AdminDashboardLayout } from "@/modules/shared/components/layout/DashboardLayout";
 
 export default function AdminPage() {
   return (
     <AdminDashboardLayout>
       <h1>Panel de Administración</h1>
     </AdminDashboardLayout>
-  )
+  );
 }
 
 // Layout mínimo sin sidebar ni header
-import { MinimalDashboardLayout } from '@/modules/shared/components/layout/DashboardLayout'
+import { MinimalDashboardLayout } from "@/modules/shared/components/layout/DashboardLayout";
 
 export default function FullscreenPage() {
   return (
     <MinimalDashboardLayout>
-      <div className="h-full">
-        Contenido a pantalla completa
-      </div>
+      <div className="h-full">Contenido a pantalla completa</div>
     </MinimalDashboardLayout>
-  )
+  );
 }
 ```
 
@@ -626,9 +627,9 @@ export const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
     title: "Estadísticas",
     url: "/dashboard/stats",
     icon: BarChart3,
-    badge: "Nuevo"
-  }
-]
+    badge: "Nuevo",
+  },
+];
 
 // Crear grupos de navegación
 const navigation = createNavigationGroups({
@@ -637,12 +638,10 @@ const navigation = createNavigationGroups({
   custom: [
     {
       label: "Herramientas",
-      items: [
-        { title: "Reportes", url: "/tools/reports", icon: FileText }
-      ]
-    }
-  ]
-})
+      items: [{ title: "Reportes", url: "/tools/reports", icon: FileText }],
+    },
+  ],
+});
 ```
 
 ### AppSidebar Personalizable
@@ -670,50 +669,48 @@ import { AppSidebar } from '@/modules/shared/components/layout/AppSidebar'
 ### DashboardHeader con Acciones
 
 ```typescript
-import { DashboardHeader } from '@/modules/shared/components/layout/DashboardHeader'
+import { DashboardHeader } from "@/modules/shared/components/layout/DashboardHeader";
 
 <DashboardHeader
   title="Mi Dashboard"
   description="Gestiona tu aplicación desde aquí"
   showBreadcrumb={true}
   showUserMenu={true}
-  
   // Acciones personalizadas
   actions={[
     {
       label: "Exportar",
       icon: Download,
       onClick: () => handleExport(),
-      variant: "outline"
+      variant: "outline",
     },
     {
       label: "Crear Nuevo",
       icon: Plus,
       onClick: () => handleCreate(),
-      variant: "default"
-    }
+      variant: "default",
+    },
   ]}
-  
   // Menú de usuario personalizado
   userMenuItems={[
     {
       label: "Mi Perfil",
       icon: User,
-      href: "/profile"
+      href: "/profile",
     },
     {
       label: "Configuración",
       icon: Settings,
-      href: "/settings"
+      href: "/settings",
     },
     { type: "separator" },
     {
       label: "Cerrar Sesión",
       icon: LogOut,
-      onClick: () => signOut()
-    }
+      onClick: () => signOut(),
+    },
   ]}
-/>
+/>;
 ```
 
 ## 🌐 Rutas y Middleware
@@ -725,60 +722,51 @@ El sistema de rutas utiliza el middleware de Next.js para protección de rutas.
 En `src/middleware.ts`:
 
 ```typescript
-import { withAuth } from 'next-auth/middleware'
+import { withAuth } from "next-auth/middleware";
 
 // Rutas protegidas que requieren autenticación
 const PROTECTED_ROUTES = [
-  '/dashboard',
-  '/dashboard/:path*',
-  '/profile',
-  '/settings',
-  '/api/protected/:path*'
-]
+  "/dashboard",
+  "/dashboard/:path*",
+  "/profile",
+  "/settings",
+  "/api/protected/:path*",
+];
 
 // Rutas públicas accesibles sin autenticación
-const PUBLIC_ROUTES = [
-  '/',
-  '/login',
-  '/register',
-  '/api/auth/:path*',
-]
+const PUBLIC_ROUTES = ["/", "/login", "/register", "/api/auth/:path*"];
 
 // Rutas de administrador
-const ADMIN_ROUTES = [
-  '/admin',
-  '/admin/:path*',
-  '/api/admin/:path*'
-]
+const ADMIN_ROUTES = ["/admin", "/admin/:path*", "/api/admin/:path*"];
 
 export default withAuth(
   function middleware(request) {
-    const { pathname } = request.nextUrl
-    const token = request.nextauth.token
-    
+    const { pathname } = request.nextUrl;
+    const token = request.nextauth.token;
+
     // Lógica de autorización personalizada
     if (isAdminRoute(pathname) && !token?.isAdmin) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
-    
-    return NextResponse.next()
+
+    return NextResponse.next();
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl
-        
-        if (isPublicRoute(pathname)) return true
-        if (isProtectedRoute(pathname)) return !!token
-        
-        return true
+        const { pathname } = req.nextUrl;
+
+        if (isPublicRoute(pathname)) return true;
+        if (isProtectedRoute(pathname)) return !!token;
+
+        return true;
       },
     },
     pages: {
-      signIn: '/login',
+      signIn: "/login",
     },
   }
-)
+);
 ```
 
 ### Estructura de Rutas
@@ -817,21 +805,21 @@ src/app/
 
 ```typescript
 // src/app/mi-pagina/page.tsx
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect } from 'next/navigation'
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function MiPagina() {
   // Proteger la página (opcional)
-  const session = await getServerSession(authOptions)
-  if (!session) redirect('/login')
-  
+  const session = await getServerSession(authOptions);
+  if (!session) redirect("/login");
+
   return (
     <div>
       <h1>Mi Nueva Página</h1>
       <p>Hola {session.user.email}!</p>
     </div>
-  )
+  );
 }
 ```
 
@@ -839,8 +827,8 @@ export default async function MiPagina() {
 
 ```typescript
 // src/app/mi-dashboard/page.tsx
-import { DashboardLayout } from '@/modules/shared/components/layout/DashboardLayout'
-import { BarChart3 } from 'lucide-react'
+import { DashboardLayout } from "@/modules/shared/components/layout/DashboardLayout";
+import { BarChart3 } from "lucide-react";
 
 export default function MiDashboard() {
   return (
@@ -848,18 +836,18 @@ export default function MiDashboard() {
       branding={{
         name: "Mi Módulo",
         subtitle: "Dashboard",
-        icon: BarChart3
+        icon: BarChart3,
       }}
     >
       <div className="space-y-6">
         <h1 className="text-3xl font-bold">Mi Dashboard Personalizado</h1>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Contenido del dashboard */}
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }
 ```
 
@@ -867,61 +855,61 @@ export default function MiDashboard() {
 
 ```typescript
 // src/app/api/mi-endpoint/route.ts
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { NextResponse } from 'next/server'
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 // GET /api/mi-endpoint
 export async function GET(request: Request) {
   try {
     // Verificar autenticación
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
-    
+
     // Lógica del endpoint
-    const data = await prisma.user.findMany()
-    
-    return NextResponse.json(data)
+    const data = await prisma.user.findMany();
+
+    return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { error: "Error interno del servidor" },
       { status: 500 }
-    )
+    );
   }
 }
 
 // POST /api/mi-endpoint
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
-    
-    const body = await request.json()
-    
+
+    const body = await request.json();
+
     // Validar datos con Zod
     const validationSchema = z.object({
       name: z.string().min(1),
-      email: z.string().email()
-    })
-    
-    const validatedData = validationSchema.parse(body)
-    
+      email: z.string().email(),
+    });
+
+    const validatedData = validationSchema.parse(body);
+
     // Crear registro
     const newRecord = await prisma.user.create({
-      data: validatedData
-    })
-    
-    return NextResponse.json(newRecord, { status: 201 })
+      data: validatedData,
+    });
+
+    return NextResponse.json(newRecord, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Error al crear registro' },
+      { error: "Error al crear registro" },
       { status: 400 }
-    )
+    );
   }
 }
 ```
@@ -940,7 +928,7 @@ model User {
   name     String?
   password String
   role     UserRole @default(USER)  // Nuevo campo
-  
+
   @@map("users")
 }
 
@@ -978,8 +966,8 @@ callbacks: {
 ```typescript
 // src/middleware.ts
 if (isAdminRoute(pathname)) {
-  if (!token || token.role !== 'ADMIN') {
-    return NextResponse.redirect(new URL('/dashboard', origin))
+  if (!token || token.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/dashboard", origin));
   }
 }
 ```
@@ -992,302 +980,303 @@ El template utiliza **Zustand** para la gestión de estado global, proporcionand
 
 ```typescript
 // src/modules/shared/stores/uiStore.ts
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export interface UIState {
   // Estado del tema
-  theme: 'light' | 'dark' | 'system'
-  setTheme: (theme: 'light' | 'dark' | 'system') => void
-  
+  theme: "light" | "dark" | "system";
+  setTheme: (theme: "light" | "dark" | "system") => void;
+
   // Estado de la interfaz
-  isMobile: boolean
-  setIsMobile: (isMobile: boolean) => void
-  
+  isMobile: boolean;
+  setIsMobile: (isMobile: boolean) => void;
+
   // Estado del sidebar
-  sidebarOpen: boolean
-  setSidebarOpen: (open: boolean) => void
-  toggleSidebar: () => void
-  
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+  toggleSidebar: () => void;
+
   // Notificaciones
-  notifications: Notification[]
-  addNotification: (notification: Omit<Notification, 'id'>) => void
-  removeNotification: (id: string) => void
-  clearNotifications: () => void
+  notifications: Notification[];
+  addNotification: (notification: Omit<Notification, "id">) => void;
+  removeNotification: (id: string) => void;
+  clearNotifications: () => void;
 }
 
-export const useUIStore = create<UIState>()(persist(
-  (set, get) => ({
-    // Tema
-    theme: 'system',
-    setTheme: (theme) => set({ theme }),
-    
-    // Interfaz
-    isMobile: false,
-    setIsMobile: (isMobile) => set({ isMobile }),
-    
-    // Sidebar
-    sidebarOpen: false,
-    setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
-    toggleSidebar: () => set(state => ({ sidebarOpen: !state.sidebarOpen })),
-    
-    // Notificaciones
-    notifications: [],
-    addNotification: (notification) => {
-      const id = Math.random().toString(36).slice(2)
-      set(state => ({
-        notifications: [...state.notifications, { ...notification, id }]
-      }))
-      
-      // Auto-remove después de 5 segundos
-      if (notification.type !== 'error') {
-        setTimeout(() => {
-          get().removeNotification(id)
-        }, 5000)
-      }
-    },
-    removeNotification: (id) => set(state => ({
-      notifications: state.notifications.filter(n => n.id !== id)
-    })),
-    clearNotifications: () => set({ notifications: [] })
-  }),
-  {
-    name: 'ui-store',
-    partialize: (state) => ({ theme: state.theme })  // Solo persistir tema
-  }
-))
+export const useUIStore = create<UIState>()(
+  persist(
+    (set, get) => ({
+      // Tema
+      theme: "system",
+      setTheme: (theme) => set({ theme }),
+
+      // Interfaz
+      isMobile: false,
+      setIsMobile: (isMobile) => set({ isMobile }),
+
+      // Sidebar
+      sidebarOpen: false,
+      setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
+      toggleSidebar: () =>
+        set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+
+      // Notificaciones
+      notifications: [],
+      addNotification: (notification) => {
+        const id = Math.random().toString(36).slice(2);
+        set((state) => ({
+          notifications: [...state.notifications, { ...notification, id }],
+        }));
+
+        // Auto-remove después de 5 segundos
+        if (notification.type !== "error") {
+          setTimeout(() => {
+            get().removeNotification(id);
+          }, 5000);
+        }
+      },
+      removeNotification: (id) =>
+        set((state) => ({
+          notifications: state.notifications.filter((n) => n.id !== id),
+        })),
+      clearNotifications: () => set({ notifications: [] }),
+    }),
+    {
+      name: "ui-store",
+      partialize: (state) => ({ theme: state.theme }), // Solo persistir tema
+    }
+  )
+);
 ```
 
 ### Store de Autenticación
 
 ```typescript
 // src/modules/shared/stores/authStore.ts
-import { create } from 'zustand'
-import { getSession } from 'next-auth/react'
+import { create } from "zustand";
+import { getSession } from "next-auth/react";
 
 export interface AuthState {
-  user: User | null
-  isLoading: boolean
-  isAuthenticated: boolean
-  
+  user: User | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+
   // Acciones
-  setUser: (user: User | null) => void
-  setLoading: (loading: boolean) => void
-  checkSession: () => Promise<void>
-  logout: () => void
+  setUser: (user: User | null) => void;
+  setLoading: (loading: boolean) => void;
+  checkSession: () => Promise<void>;
+  logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  (set, get) => ({
-    user: null,
-    isLoading: true,
-    isAuthenticated: false,
-    
-    setUser: (user) => set({ 
-      user, 
+export const useAuthStore = create<AuthState>()((set, get) => ({
+  user: null,
+  isLoading: true,
+  isAuthenticated: false,
+
+  setUser: (user) =>
+    set({
+      user,
       isAuthenticated: !!user,
-      isLoading: false 
+      isLoading: false,
     }),
-    
-    setLoading: (isLoading) => set({ isLoading }),
-    
-    checkSession: async () => {
-      try {
-        set({ isLoading: true })
-        const session = await getSession()
-        
-        if (session?.user) {
-          set({
-            user: session.user as User,
-            isAuthenticated: true,
-            isLoading: false
-          })
-        } else {
-          set({
-            user: null,
-            isAuthenticated: false,
-            isLoading: false
-          })
-        }
-      } catch (error) {
-        console.error('Error checking session:', error)
+
+  setLoading: (isLoading) => set({ isLoading }),
+
+  checkSession: async () => {
+    try {
+      set({ isLoading: true });
+      const session = await getSession();
+
+      if (session?.user) {
+        set({
+          user: session.user as User,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+      } else {
         set({
           user: null,
           isAuthenticated: false,
-          isLoading: false
-        })
+          isLoading: false,
+        });
       }
-    },
-    
-    logout: () => {
+    } catch (error) {
+      console.error("Error checking session:", error);
       set({
         user: null,
         isAuthenticated: false,
-        isLoading: false
-      })
+        isLoading: false,
+      });
     }
-  })
-)
+  },
+
+  logout: () => {
+    set({
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+    });
+  },
+}));
 ```
 
 ### Store de Datos
 
 ```typescript
 // src/modules/shared/stores/dataStore.ts
-import { create } from 'zustand'
-import { immer } from 'zustand/middleware/immer'
-import axios from 'axios'
+import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
+import axios from "axios";
 
 export interface DataState {
   // Usuarios
-  users: User[]
-  usersLoading: boolean
-  usersError: string | null
-  
+  users: User[];
+  usersLoading: boolean;
+  usersError: string | null;
+
   // Acciones para usuarios
-  fetchUsers: () => Promise<void>
-  createUser: (userData: CreateUserData) => Promise<void>
-  updateUser: (id: string, userData: UpdateUserData) => Promise<void>
-  deleteUser: (id: string) => Promise<void>
-  
+  fetchUsers: () => Promise<void>;
+  createUser: (userData: CreateUserData) => Promise<void>;
+  updateUser: (id: string, userData: UpdateUserData) => Promise<void>;
+  deleteUser: (id: string) => Promise<void>;
+
   // Otros datos...
-  stats: DashboardStats | null
-  fetchStats: () => Promise<void>
+  stats: DashboardStats | null;
+  fetchStats: () => Promise<void>;
 }
 
-export const useDataStore = create<DataState>()(immer(
-  (set, get) => ({
+export const useDataStore = create<DataState>()(
+  immer((set, get) => ({
     // Estado inicial
     users: [],
     usersLoading: false,
     usersError: null,
     stats: null,
-    
+
     // Acciones para usuarios
     fetchUsers: async () => {
-      set(state => {
-        state.usersLoading = true
-        state.usersError = null
-      })
-      
+      set((state) => {
+        state.usersLoading = true;
+        state.usersError = null;
+      });
+
       try {
-        const response = await axios.get('/api/users')
-        set(state => {
-          state.users = response.data
-          state.usersLoading = false
-        })
+        const response = await axios.get("/api/users");
+        set((state) => {
+          state.users = response.data;
+          state.usersLoading = false;
+        });
       } catch (error) {
-        set(state => {
-          state.usersError = 'Error al cargar usuarios'
-          state.usersLoading = false
-        })
+        set((state) => {
+          state.usersError = "Error al cargar usuarios";
+          state.usersLoading = false;
+        });
       }
     },
-    
+
     createUser: async (userData) => {
       try {
-        const response = await axios.post('/api/users', userData)
-        set(state => {
-          state.users.push(response.data)
-        })
+        const response = await axios.post("/api/users", userData);
+        set((state) => {
+          state.users.push(response.data);
+        });
       } catch (error) {
-        throw new Error('Error al crear usuario')
+        throw new Error("Error al crear usuario");
       }
     },
-    
+
     updateUser: async (id, userData) => {
       try {
-        const response = await axios.put(`/api/users/${id}`, userData)
-        set(state => {
-          const index = state.users.findIndex(u => u.id === id)
+        const response = await axios.put(`/api/users/${id}`, userData);
+        set((state) => {
+          const index = state.users.findIndex((u) => u.id === id);
           if (index !== -1) {
-            state.users[index] = response.data
+            state.users[index] = response.data;
           }
-        })
+        });
       } catch (error) {
-        throw new Error('Error al actualizar usuario')
+        throw new Error("Error al actualizar usuario");
       }
     },
-    
+
     deleteUser: async (id) => {
       try {
-        await axios.delete(`/api/users/${id}`)
-        set(state => {
-          state.users = state.users.filter(u => u.id !== id)
-        })
+        await axios.delete(`/api/users/${id}`);
+        set((state) => {
+          state.users = state.users.filter((u) => u.id !== id);
+        });
       } catch (error) {
-        throw new Error('Error al eliminar usuario')
+        throw new Error("Error al eliminar usuario");
       }
     },
-    
+
     fetchStats: async () => {
       try {
-        const response = await axios.get('/api/stats')
-        set(state => {
-          state.stats = response.data
-        })
+        const response = await axios.get("/api/stats");
+        set((state) => {
+          state.stats = response.data;
+        });
       } catch (error) {
-        console.error('Error al cargar estadísticas:', error)
+        console.error("Error al cargar estadísticas:", error);
       }
-    }
-  })
-))
+    },
+  }))
+);
 ```
 
 ### Uso en Componentes
 
 ```typescript
 // Componente usando múltiples stores
-import { useUIStore } from '@/modules/shared/stores/uiStore'
-import { useAuthStore } from '@/modules/shared/stores/authStore'
-import { useDataStore } from '@/modules/shared/stores/dataStore'
+import { useUIStore } from "@/modules/shared/stores/uiStore";
+import { useAuthStore } from "@/modules/shared/stores/authStore";
+import { useDataStore } from "@/modules/shared/stores/dataStore";
 
 export default function MiComponente() {
   // Store de UI
-  const { theme, setTheme, addNotification } = useUIStore()
-  
+  const { theme, setTheme, addNotification } = useUIStore();
+
   // Store de auth
-  const { user, isAuthenticated, checkSession } = useAuthStore()
-  
+  const { user, isAuthenticated, checkSession } = useAuthStore();
+
   // Store de datos (con selector para optimización)
-  const users = useDataStore(state => state.users)
-  const fetchUsers = useDataStore(state => state.fetchUsers)
-  const usersLoading = useDataStore(state => state.usersLoading)
-  
+  const users = useDataStore((state) => state.users);
+  const fetchUsers = useDataStore((state) => state.fetchUsers);
+  const usersLoading = useDataStore((state) => state.usersLoading);
+
   useEffect(() => {
     if (isAuthenticated) {
-      fetchUsers()
+      fetchUsers();
     }
-  }, [isAuthenticated, fetchUsers])
-  
+  }, [isAuthenticated, fetchUsers]);
+
   const handleThemeChange = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
     addNotification({
-      title: 'Tema cambiado',
+      title: "Tema cambiado",
       description: `Tema cambiado a ${newTheme}`,
-      type: 'success'
-    })
-  }
-  
+      type: "success",
+    });
+  };
+
   return (
     <div>
       <h1>Hola {user?.name}</h1>
-      <button onClick={handleThemeChange}>
-        Cambiar tema actual: {theme}
-      </button>
-      
+      <button onClick={handleThemeChange}>Cambiar tema actual: {theme}</button>
+
       {usersLoading ? (
         <p>Cargando usuarios...</p>
       ) : (
         <ul>
-          {users.map(user => (
+          {users.map((user) => (
             <li key={user.id}>{user.name}</li>
           ))}
         </ul>
       )}
     </div>
-  )
+  );
 }
 ```
 
@@ -1295,32 +1284,34 @@ export default function MiComponente() {
 
 ```typescript
 // Store con persistencia personalizada
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { persist, createJSONStorage } from "zustand/middleware";
 
-export const useSettingsStore = create<SettingsState>()(persist(
-  (set, get) => ({
-    // Estado...
-  }),
-  {
-    name: 'settings-store',
-    storage: createJSONStorage(() => localStorage),
-    partialize: (state) => ({
-      theme: state.theme,
-      language: state.language,
-      // No persistir datos sensibles
+export const useSettingsStore = create<SettingsState>()(
+  persist(
+    (set, get) => ({
+      // Estado...
     }),
-    onRehydrateStorage: (state) => {
-      console.log('Hidratando store de configuración', state)
-      return (state, error) => {
-        if (error) {
-          console.error('Error hidratando store:', error)
-        } else {
-          console.log('Store hidratado correctamente')
-        }
-      }
+    {
+      name: "settings-store",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        theme: state.theme,
+        language: state.language,
+        // No persistir datos sensibles
+      }),
+      onRehydrateStorage: (state) => {
+        console.log("Hidratando store de configuración", state);
+        return (state, error) => {
+          if (error) {
+            console.error("Error hidratando store:", error);
+          } else {
+            console.log("Store hidratado correctamente");
+          }
+        };
+      },
     }
-  }
-))
+  )
+);
 ```
 
 ## 🎨 Theming y UI
@@ -1333,67 +1324,65 @@ La configuración de temas se encuentra en `tailwind.config.ts`:
 
 ```typescript
 // tailwind.config.ts
-import type { Config } from 'tailwindcss'
+import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: 'class',
-  content: [
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  darkMode: "class",
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
       },
       animation: {
-        'float': 'float 6s ease-in-out infinite',
-        'fade-in': 'fadeIn 0.5s ease-in-out',
-        'slide-up': 'slideUp 0.3s ease-out',
+        float: "float 6s ease-in-out infinite",
+        "fade-in": "fadeIn 0.5s ease-in-out",
+        "slide-up": "slideUp 0.3s ease-out",
       },
       keyframes: {
         float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' },
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
         },
         fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
         },
         slideUp: {
-          '0%': { transform: 'translateY(10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
+          "0%": { transform: "translateY(10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
         },
       },
     },
   },
   plugins: [],
-}
+};
 
-export default config
+export default config;
 ```
 
 ### Variables CSS Personalizadas
@@ -1424,7 +1413,7 @@ En `src/app/globals.css`:
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
   }
-  
+
   .dark {
     /* Tema oscuro */
     --background: 222.2 84% 4.9%;
@@ -1450,11 +1439,11 @@ En `src/app/globals.css`:
   .glass-effect {
     @apply bg-white/10 backdrop-blur-md border border-white/20 dark:bg-black/10 dark:border-white/10;
   }
-  
+
   .card-gradient {
     @apply bg-gradient-to-br from-white via-white to-slate-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800;
   }
-  
+
   .text-gradient {
     @apply bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent;
   }
@@ -1465,26 +1454,26 @@ En `src/app/globals.css`:
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  
+
   /* Scrollbar personalizado */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
     @apply bg-muted;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     @apply bg-muted-foreground/30 rounded-md;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-muted-foreground/50;
   }
@@ -1497,123 +1486,143 @@ En `src/app/globals.css`:
 
 ```typescript
 // src/modules/shared/components/ui/button.tsx
-import { Slot } from '@radix-ui/react-slot'
-import { cva, type VariantProps } from 'class-variance-authority'
-import * as React from 'react'
-import { cn } from '@/lib/utils'
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
+  "inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background",
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        outline: 'border border-input hover:bg-accent hover:text-accent-foreground',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'underline-offset-4 hover:underline text-primary',
-        gradient: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-md hover:shadow-lg',
+        default:
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline:
+          "border border-input hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "underline-offset-4 hover:underline text-primary",
+        gradient:
+          "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-md hover:shadow-lg",
       },
       size: {
-        default: 'h-10 py-2 px-4',
-        sm: 'h-9 px-3 rounded-md',
-        lg: 'h-11 px-8 rounded-md',
-        icon: 'h-10 w-10',
+        default: "h-10 py-2 px-4",
+        sm: "h-9 px-3 rounded-md",
+        lg: "h-11 px-8 rounded-md",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: "default",
+      size: "default",
     },
   }
-)
+);
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-  asChild?: boolean
+  asChild?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : 'button'
+    const Comp = asChild ? Slot : "button";
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
       />
-    )
+    );
   }
-)
-Button.displayName = 'Button'
+);
+Button.displayName = "Button";
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };
 ```
 
 #### Card con Efectos
 
 ```typescript
 // src/modules/shared/components/ui/card.tsx
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'glass' | 'gradient' | 'elevated'
+  variant?: "default" | "glass" | "gradient" | "elevated";
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant = 'default', ...props }, ref) => {
+  ({ className, variant = "default", ...props }, ref) => {
     const variants = {
-      default: 'rounded-lg border bg-card text-card-foreground shadow-sm',
-      glass: 'rounded-lg glass-effect text-card-foreground shadow-xl',
-      gradient: 'rounded-lg card-gradient text-card-foreground shadow-md',
-      elevated: 'rounded-lg bg-card text-card-foreground shadow-lg hover:shadow-xl transition-shadow',
-    }
-    
+      default: "rounded-lg border bg-card text-card-foreground shadow-sm",
+      glass: "rounded-lg glass-effect text-card-foreground shadow-xl",
+      gradient: "rounded-lg card-gradient text-card-foreground shadow-md",
+      elevated:
+        "rounded-lg bg-card text-card-foreground shadow-lg hover:shadow-xl transition-shadow",
+    };
+
     return (
-      <div
-        ref={ref}
-        className={cn(variants[variant], className)}
-        {...props}
-      />
-    )
+      <div ref={ref} className={cn(variants[variant], className)} {...props} />
+    );
   }
-)
-Card.displayName = 'Card'
+);
+Card.displayName = "Card";
 
-const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn('flex flex-col space-y-1.5 p-6', className)}
-      {...props}
-    />
-  )
-)
-CardHeader.displayName = 'CardHeader'
+const CardHeader = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex flex-col space-y-1.5 p-6", className)}
+    {...props}
+  />
+));
+CardHeader.displayName = "CardHeader";
 
-const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => (
-    <h3
-      ref={ref}
-      className={cn('text-2xl font-semibold leading-none tracking-tight', className)}
-      {...props}
-    />
-  )
-)
-CardTitle.displayName = 'CardTitle'
+const CardTitle = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLHeadingElement>
+>(({ className, ...props }, ref) => (
+  <h3
+    ref={ref}
+    className={cn(
+      "text-2xl font-semibold leading-none tracking-tight",
+      className
+    )}
+    {...props}
+  />
+));
+CardTitle.displayName = "CardTitle";
 
-export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
+export {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+};
 ```
 
 ### Uso de Componentes
 
 ```typescript
 // Ejemplo de uso de componentes con temas
-import { Button } from '@/modules/shared/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
-import { Badge } from '@/modules/shared/components/ui/badge'
+import { Button } from "@/modules/shared/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/modules/shared/components/ui/card";
+import { Badge } from "@/modules/shared/components/ui/badge";
 
 export default function MiComponente() {
   return (
@@ -1621,26 +1630,18 @@ export default function MiComponente() {
       {/* Card con efecto glass */}
       <Card variant="glass" className="p-6">
         <CardHeader>
-          <CardTitle className="text-gradient">
-            Dashboard Moderno
-          </CardTitle>
-          <CardDescription>
-            Un diseño limpio y profesional
-          </CardDescription>
+          <CardTitle className="text-gradient">Dashboard Moderno</CardTitle>
+          <CardDescription>Un diseño limpio y profesional</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2">
-            <Button variant="gradient">
-              Acción Principal
-            </Button>
-            <Button variant="outline">
-              Acción Secundaria
-            </Button>
+            <Button variant="gradient">Acción Principal</Button>
+            <Button variant="outline">Acción Secundaria</Button>
             <Button variant="ghost" size="icon">
               <Settings className="h-4 w-4" />
             </Button>
           </div>
-          
+
           <div className="flex gap-2">
             <Badge variant="default">Activo</Badge>
             <Badge variant="secondary">En Progreso</Badge>
@@ -1648,11 +1649,15 @@ export default function MiComponente() {
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Grid responsivo */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3].map((i) => (
-          <Card key={i} variant="elevated" className="hover:scale-105 transition-transform">
+          <Card
+            key={i}
+            variant="elevated"
+            className="hover:scale-105 transition-transform"
+          >
             <CardHeader>
               <CardTitle>Card {i}</CardTitle>
             </CardHeader>
@@ -1663,7 +1668,7 @@ export default function MiComponente() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -1671,18 +1676,18 @@ export default function MiComponente() {
 
 ```typescript
 // Componente para cambiar tema
-import { Moon, Sun, Monitor } from 'lucide-react'
-import { useUIStore } from '@/modules/shared/stores/uiStore'
+import { Moon, Sun, Monitor } from "lucide-react";
+import { useUIStore } from "@/modules/shared/stores/uiStore";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useUIStore()
-  
+  const { theme, setTheme } = useUIStore();
+
   const themes = [
-    { value: 'light', icon: Sun, label: 'Claro' },
-    { value: 'dark', icon: Moon, label: 'Oscuro' },
-    { value: 'system', icon: Monitor, label: 'Sistema' }
-  ] as const
-  
+    { value: "light", icon: Sun, label: "Claro" },
+    { value: "dark", icon: Moon, label: "Oscuro" },
+    { value: "system", icon: Monitor, label: "Sistema" },
+  ] as const;
+
   return (
     <div className="flex rounded-lg bg-muted p-1">
       {themes.map(({ value, icon: Icon, label }) => (
@@ -1691,8 +1696,8 @@ export function ThemeToggle() {
           onClick={() => setTheme(value)}
           className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium transition-all ${
             theme === value
-              ? 'bg-background shadow-sm text-foreground'
-              : 'text-muted-foreground hover:text-foreground'
+              ? "bg-background shadow-sm text-foreground"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <Icon className="h-4 w-4" />
@@ -1700,7 +1705,7 @@ export function ThemeToggle() {
         </button>
       ))}
     </div>
-  )
+  );
 }
 ```
 
@@ -1804,7 +1809,7 @@ Puedes agregar tus propios scripts en `package.json`:
 {
   "scripts": {
     // Scripts existentes...
-    
+
     // Scripts personalizados
     "setup": "npm install && npm run db:generate && npm run db:migrate && npm run db:seed",
     "clean": "rm -rf .next node_modules package-lock.json && npm install",
@@ -1982,7 +1987,7 @@ CMD ["node", "server.js"]
 
 ```yaml
 # docker-compose.yml
-version: '3.8'
+version: "3.8"
 
 services:
   app:
@@ -1997,7 +2002,7 @@ services:
       - db
     volumes:
       - ./prisma:/app/prisma
-    
+
   db:
     image: postgres:15
     environment:
@@ -2062,23 +2067,27 @@ SENTRY_DSN=https://your-dsn@sentry.io/project-id
 ### Checklist de Despliegue
 
 - [ ] **Variables de entorno configuradas**
+
   - [ ] `NEXTAUTH_SECRET` con valor seguro (32+ caracteres)
   - [ ] `NEXTAUTH_URL` con dominio de producción
   - [ ] `DATABASE_URL` apuntando a base de datos de producción
   - [ ] Variables de servicios externos (Stripe, etc.)
 
 - [ ] **Base de datos preparada**
+
   - [ ] Base de datos de producción creada
   - [ ] Migraciones aplicadas: `npx prisma migrate deploy`
   - [ ] Datos iniciales cargados si es necesario
 
 - [ ] **Configuración de aplicación**
+
   - [ ] `next.config.ts` optimizado para producción
   - [ ] Archivos estáticos optimizados
   - [ ] Headers de seguridad configurados
   - [ ] Dominio personalizado configurado (opcional)
 
 - [ ] **Testing pre-despliegue**
+
   - [ ] Build local exitoso: `npm run build`
   - [ ] Tests pasando: `npm test`
   - [ ] Verificación de tipos: `npm run type-check`
@@ -2123,31 +2132,31 @@ src/
 // ✅ Bueno: Nombres descriptivos
 const handleUserRegistration = async (userData: CreateUserData) => {
   // lógica...
-}
+};
 
 const isUserAuthenticated = (user: User | null): user is User => {
-  return user !== null && user.id !== undefined
-}
+  return user !== null && user.id !== undefined;
+};
 
 interface DashboardLayoutProps {
-  children: React.ReactNode
-  navigation?: NavigationItem[]
-  showSidebar?: boolean
+  children: React.ReactNode;
+  navigation?: NavigationItem[];
+  showSidebar?: boolean;
 }
 
 // ❌ Evitar: Nombres genéricos
 const handleSubmit = (data: any) => {
   // lógica...
-}
+};
 
 const check = (user: any) => {
-  return user !== null
-}
+  return user !== null;
+};
 
 interface Props {
-  children: any
-  items?: any[]
-  show?: boolean
+  children: any;
+  items?: any[];
+  show?: boolean;
 }
 ```
 
@@ -2156,34 +2165,34 @@ interface Props {
 ```typescript
 // ✅ Bueno: Tipos específicos y reutilizables
 export interface User {
-  id: string
-  email: string
-  name: string | null
-  role: UserRole
-  createdAt: Date
-  updatedAt: Date
+  id: string;
+  email: string;
+  name: string | null;
+  role: UserRole;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export type CreateUserData = Pick<User, 'email' | 'name'> & {
-  password: string
-}
+export type CreateUserData = Pick<User, "email" | "name"> & {
+  password: string;
+};
 
-export type UpdateUserData = Partial<Pick<User, 'name' | 'email'>>
+export type UpdateUserData = Partial<Pick<User, "name" | "email">>;
 
 export interface ApiResponse<T> {
-  data: T
-  message: string
-  status: 'success' | 'error'
+  data: T;
+  message: string;
+  status: "success" | "error";
 }
 
 // ❌ Evitar: Uso excesivo de any
 export interface User {
-  id: any
-  email: any
-  data: any
+  id: any;
+  email: any;
+  data: any;
 }
 
-export type UserData = any
+export type UserData = any;
 ```
 
 ### 4. Gestión de Estado
@@ -2191,29 +2200,30 @@ export type UserData = any
 ```typescript
 // ✅ Bueno: Store modular con tipos
 export interface AuthState {
-  user: User | null
-  isLoading: boolean
-  error: string | null
-  
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+
   // Acciones con tipos específicos
-  login: (credentials: LoginCredentials) => Promise<void>
-  logout: () => void
-  updateProfile: (data: UpdateProfileData) => Promise<void>
+  login: (credentials: LoginCredentials) => Promise<void>;
+  logout: () => void;
+  updateProfile: (data: UpdateProfileData) => Promise<void>;
 }
 
 // ✅ Bueno: Selectores para optimización
-const useAuthUser = () => useAuthStore(state => state.user)
-const useAuthActions = () => useAuthStore(state => ({
-  login: state.login,
-  logout: state.logout
-}))
+const useAuthUser = () => useAuthStore((state) => state.user);
+const useAuthActions = () =>
+  useAuthStore((state) => ({
+    login: state.login,
+    logout: state.logout,
+  }));
 
 // ❌ Evitar: Estado global masivo
 interface AppState {
-  user: any
-  ui: any
-  data: any
-  everything: any
+  user: any;
+  ui: any;
+  data: any;
+  everything: any;
   // Demasiado en un solo store
 }
 ```
@@ -2223,23 +2233,31 @@ interface AppState {
 ```typescript
 // ✅ Bueno: Componente flexible y tipado
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'outline' | 'ghost'
-  size?: 'sm' | 'default' | 'lg'
-  loading?: boolean
-  leftIcon?: React.ReactNode
-  rightIcon?: React.ReactNode
+  variant?: "default" | "outline" | "ghost";
+  size?: "sm" | "default" | "lg";
+  loading?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'default', size = 'default', loading, leftIcon, rightIcon, children, ...props }, ref) => {
+  (
+    {
+      variant = "default",
+      size = "default",
+      loading,
+      leftIcon,
+      rightIcon,
+      children,
+      ...props
+    },
+    ref
+  ) => {
     return (
       <button
         ref={ref}
         disabled={loading || props.disabled}
-        className={cn(
-          buttonVariants({ variant, size }),
-          props.className
-        )}
+        className={cn(buttonVariants({ variant, size }), props.className)}
         {...props}
       >
         {loading && <Spinner className="w-4 h-4 mr-2" />}
@@ -2247,13 +2265,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
         {rightIcon && <span className="ml-2">{rightIcon}</span>}
       </button>
-    )
+    );
   }
-)
+);
 
 // ❌ Evitar: Componente rígido
-function Button({ text, onClick }: { text: string, onClick: () => void }) {
-  return <button onClick={onClick}>{text}</button>
+function Button({ text, onClick }: { text: string; onClick: () => void }) {
+  return <button onClick={onClick}>{text}</button>;
 }
 ```
 
@@ -2267,52 +2285,52 @@ export class AppError extends Error {
     public code: string,
     public statusCode: number = 500
   ) {
-    super(message)
-    this.name = 'AppError'
+    super(message);
+    this.name = "AppError";
   }
 }
 
 export const handleApiError = (error: unknown): AppError => {
   if (error instanceof AppError) {
-    return error
+    return error;
   }
-  
+
   if (axios.isAxiosError(error)) {
     return new AppError(
-      error.response?.data?.message || 'Error de red',
-      'NETWORK_ERROR',
+      error.response?.data?.message || "Error de red",
+      "NETWORK_ERROR",
       error.response?.status || 500
-    )
+    );
   }
-  
-  return new AppError(
-    'Error inesperado',
-    'UNKNOWN_ERROR',
-    500
-  )
-}
+
+  return new AppError("Error inesperado", "UNKNOWN_ERROR", 500);
+};
 
 // Uso en componentes
-const { mutate: createUser, isLoading, error } = useMutation({
+const {
+  mutate: createUser,
+  isLoading,
+  error,
+} = useMutation({
   mutationFn: async (userData: CreateUserData) => {
-    const response = await api.post('/users', userData)
-    return response.data
+    const response = await api.post("/users", userData);
+    return response.data;
   },
   onError: (error) => {
-    const appError = handleApiError(error)
-    toast.error(appError.message)
+    const appError = handleApiError(error);
+    toast.error(appError.message);
   },
   onSuccess: () => {
-    toast.success('Usuario creado exitosamente')
-    queryClient.invalidateQueries({ queryKey: ['users'] })
-  }
-})
+    toast.success("Usuario creado exitosamente");
+    queryClient.invalidateQueries({ queryKey: ["users"] });
+  },
+});
 
 // ❌ Evitar: Errores silenciosos
 try {
-  await api.post('/users', userData)
+  await api.post("/users", userData);
 } catch (error) {
-  console.log(error) // Error silencioso
+  console.log(error); // Error silencioso
 }
 ```
 
@@ -2325,7 +2343,7 @@ const UserList = React.memo(({ users }: { users: User[] }) => {
     () => users.filter(user => user.isActive),
     [users]
   )
-  
+
   return (
     <div>
       {memoizedUsers.map(user => (
@@ -2338,12 +2356,12 @@ const UserList = React.memo(({ users }: { users: User[] }) => {
 // Hook personalizado para debounce
 const useDebounce = <T>(value: T, delay: number): T => {
   const [debouncedValue, setDebouncedValue] = useState(value)
-  
+
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedValue(value), delay)
     return () => clearTimeout(timer)
   }, [value, delay])
-  
+
   return debouncedValue
 }
 
@@ -2360,7 +2378,7 @@ const App = () => (
 const UserList = ({ users }: { users: User[] }) => {
   // Se ejecuta en cada render
   const activeUsers = users.filter(user => user.isActive)
-  
+
   return (
     <div>
       {activeUsers.map((user, index) => (
@@ -2375,64 +2393,64 @@ const UserList = ({ users }: { users: User[] }) => {
 
 ```typescript
 // ✅ Bueno: Validación y sanitización
-import { z } from 'zod'
-import DOMPurify from 'dompurify'
+import { z } from "zod";
+import DOMPurify from "dompurify";
 
 // Esquemas de validación
 export const CreateUserSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(8, 'Mínimo 8 caracteres').regex(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-    'Debe contener mayúscula, minúscula, número y carácter especial'
-  ),
-  name: z.string().min(1, 'Nombre requerido').max(100, 'Máximo 100 caracteres')
-})
+  email: z.string().email("Email inválido"),
+  password: z
+    .string()
+    .min(8, "Mínimo 8 caracteres")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      "Debe contener mayúscula, minúscula, número y carácter especial"
+    ),
+  name: z.string().min(1, "Nombre requerido").max(100, "Máximo 100 caracteres"),
+});
 
 // Sanitización de inputs
 const sanitizeInput = (input: string): string => {
-  return DOMPurify.sanitize(input.trim())
-}
+  return DOMPurify.sanitize(input.trim());
+};
 
 // Verificación de permisos
 export const requireAuth = async (request: NextRequest) => {
-  const session = await getServerSession(authOptions)
-  
+  const session = await getServerSession(authOptions);
+
   if (!session) {
-    return NextResponse.json(
-      { error: 'No autorizado' },
-      { status: 401 }
-    )
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
-  
-  return session
-}
+
+  return session;
+};
 
 export const requireRole = (allowedRoles: UserRole[]) => {
   return async (request: NextRequest) => {
-    const session = await requireAuth(request)
-    
-    if (session instanceof NextResponse) return session
-    
+    const session = await requireAuth(request);
+
+    if (session instanceof NextResponse) return session;
+
     if (!allowedRoles.includes(session.user.role)) {
       return NextResponse.json(
-        { error: 'Permisos insuficientes' },
+        { error: "Permisos insuficientes" },
         { status: 403 }
-      )
+      );
     }
-    
-    return session
-  }
-}
+
+    return session;
+  };
+};
 
 // ❌ Evitar: Datos sin validar
 export async function POST(request: Request) {
-  const data = await request.json() // Sin validación
-  
+  const data = await request.json(); // Sin validación
+
   const user = await prisma.user.create({
-    data // Datos directos sin sanitizar
-  })
-  
-  return Response.json(user)
+    data, // Datos directos sin sanitizar
+  });
+
+  return Response.json(user);
 }
 ```
 
@@ -2440,65 +2458,61 @@ export async function POST(request: Request) {
 
 ```typescript
 // ✅ Bueno: Tests comprehensivos
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { LoginForm } from './LoginForm'
-import { AuthProvider } from '@/contexts/AuthContext'
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { LoginForm } from "./LoginForm";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const renderWithAuth = (ui: React.ReactElement) => {
-  return render(
-    <AuthProvider>
-      {ui}
-    </AuthProvider>
-  )
-}
+  return render(<AuthProvider>{ui}</AuthProvider>);
+};
 
-describe('LoginForm', () => {
-  it('should submit form with valid credentials', async () => {
-    const mockLogin = jest.fn().mockResolvedValue({ success: true })
-    
-    renderWithAuth(<LoginForm onLogin={mockLogin} />)
-    
+describe("LoginForm", () => {
+  it("should submit form with valid credentials", async () => {
+    const mockLogin = jest.fn().mockResolvedValue({ success: true });
+
+    renderWithAuth(<LoginForm onLogin={mockLogin} />);
+
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: 'test@example.com' }
-    })
-    
+      target: { value: "test@example.com" },
+    });
+
     fireEvent.change(screen.getByLabelText(/password/i), {
-      target: { value: 'password123' }
-    })
-    
-    fireEvent.click(screen.getByRole('button', { name: /iniciar sesión/i }))
-    
+      target: { value: "password123" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /iniciar sesión/i }));
+
     await waitFor(() => {
       expect(mockLogin).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password123'
-      })
-    })
-  })
-  
-  it('should display error for invalid email', async () => {
-    renderWithAuth(<LoginForm />)
-    
+        email: "test@example.com",
+        password: "password123",
+      });
+    });
+  });
+
+  it("should display error for invalid email", async () => {
+    renderWithAuth(<LoginForm />);
+
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: 'invalid-email' }
-    })
-    
-    fireEvent.blur(screen.getByLabelText(/email/i))
-    
+      target: { value: "invalid-email" },
+    });
+
+    fireEvent.blur(screen.getByLabelText(/email/i));
+
     await waitFor(() => {
-      expect(screen.getByText(/email inválido/i)).toBeInTheDocument()
-    })
-  })
-})
+      expect(screen.getByText(/email inválido/i)).toBeInTheDocument();
+    });
+  });
+});
 
 // Mock de API
-jest.mock('@/lib/api', () => ({
+jest.mock("@/lib/api", () => ({
   auth: {
     login: jest.fn(),
     logout: jest.fn(),
-    register: jest.fn()
-  }
-}))
+    register: jest.fn(),
+  },
+}));
 ```
 
 ### 10. Accesibilidad
@@ -2506,11 +2520,11 @@ jest.mock('@/lib/api', () => ({
 ```typescript
 // ✅ Bueno: Componentes accesibles
 interface ModalProps {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  children: React.ReactNode
-  size?: 'sm' | 'md' | 'lg'
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+  size?: "sm" | "md" | "lg";
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -2518,31 +2532,31 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  size = 'md'
+  size = "md",
 }) => {
-  const modalRef = useRef<HTMLDivElement>(null)
-  
+  const modalRef = useRef<HTMLDivElement>(null);
+
   // Trap focus
   useEffect(() => {
     if (isOpen) {
-      modalRef.current?.focus()
+      modalRef.current?.focus();
     }
-  }, [isOpen])
-  
+  }, [isOpen]);
+
   // Close on Escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    
+      if (e.key === "Escape") onClose();
+    };
+
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-      return () => document.removeEventListener('keydown', handleEscape)
+      document.addEventListener("keydown", handleEscape);
+      return () => document.removeEventListener("keydown", handleEscape);
     }
-  }, [isOpen, onClose])
-  
-  if (!isOpen) return null
-  
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
@@ -2556,7 +2570,7 @@ export const Modal: React.FC<ModalProps> = ({
         onClick={onClose}
         aria-hidden="true"
       />
-      
+
       {/* Modal */}
       <div
         ref={modalRef}
@@ -2575,19 +2589,17 @@ export const Modal: React.FC<ModalProps> = ({
             <X className="w-5 h-5" />
           </button>
         </header>
-        
-        <div className="p-6">
-          {children}
-        </div>
+
+        <div className="p-6">{children}</div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 // ❌ Evitar: Sin accesibilidad
 const Modal = ({ isOpen, children }: any) => {
-  if (!isOpen) return null
-  
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 bg-black/50">
       <div className="bg-white p-4">
@@ -2595,8 +2607,8 @@ const Modal = ({ isOpen, children }: any) => {
         <button onClick={() => {}}>X</button>
       </div>
     </div>
-  )
-}
+  );
+};
 ```
 
 ## 🤝 Contribución
