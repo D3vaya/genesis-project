@@ -1,12 +1,14 @@
 # 🚀 Genesis Project
 
 <div align="center">
-  <img src="image.png" alt="Genesis Project - SaaS Template" width="600" />
+  <img src="image-alt.png" alt="Genesis Project - SaaS Template" width="600" />
 </div>
 
 > **Template moderno de aplicación SaaS construido con Next.js, TypeScript, NextAuth, Prisma y shadcn/ui**
 
 Un template completo y listo para producción que incluye autenticación, gestión de usuarios, dashboard modular, y una arquitectura escalable. Perfecto para lanzar tu próximo proyecto SaaS rápidamente.
+
+> **🚧 En desarrollo activo**: Actualmente trabajando en mejoras importantes incluyendo **integración con Supabase** como base de datos y **sistema de pagos**. ¡Mantente atento a las actualizaciones!
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.5.2-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
