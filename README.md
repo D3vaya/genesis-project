@@ -1,5 +1,9 @@
 # 🚀 Genesis Project
 
+<div align="center">
+  <img src="image.png" alt="Genesis Project - SaaS Template" width="600" />
+</div>
+
 > **Template moderno de aplicación SaaS construido con Next.js, TypeScript, NextAuth, Prisma y shadcn/ui**
 
 Un template completo y listo para producción que incluye autenticación, gestión de usuarios, dashboard modular, y una arquitectura escalable. Perfecto para lanzar tu próximo proyecto SaaS rápidamente.
@@ -1319,6 +1323,8 @@ export const useSettingsStore = create<SettingsState>()(
 El template utiliza **Tailwind CSS** con **shadcn/ui** para un sistema de diseño consistente y customizable.
 
 ### Sistema de Temas
+
+> **💡 Personalización Fácil**: Puedes personalizar todos los colores del tema usando el **[Editor de Temas de TweakCN](https://tweakcn.com/editor/theme)**. Esta herramienta genera automáticamente las variables CSS que necesitas copiar en tu archivo `src/app/globals.css`.
 
 La configuración de temas se encuentra en `tailwind.config.ts`:
 
