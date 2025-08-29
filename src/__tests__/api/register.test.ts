@@ -24,9 +24,22 @@ jest.mock('../../lib/validations', () => ({
   },
 }))
 
+// Properly typed mocked functions
 const mockHash = hash as jest.MockedFunction<typeof hash>
+
+// Create typed mock for Prisma user methods
+const mockFindUnique = jest.fn() as jest.MockedFunction<any>
+const mockCreate = jest.fn() as jest.MockedFunction<any>
+
+// Mock the prisma module structure
 const mockPrisma = prisma as jest.Mocked<typeof prisma>
+mockPrisma.user.findUnique = mockFindUnique
+mockPrisma.user.create = mockCreate
+
+// Mock the registerSchema
+const mockSafeParse = jest.fn() as jest.MockedFunction<any>
 const mockRegisterSchema = registerSchema as jest.Mocked<typeof registerSchema>
+mockRegisterSchema.safeParse = mockSafeParse
 
 describe('/api/auth/register', () => {
   beforeEach(() => {
@@ -49,19 +62,19 @@ describe('/api/auth/register', () => {
     }
 
     // Mock successful validation
-    mockRegisterSchema.safeParse.mockReturnValue({
+    mockSafeParse.mockReturnValue({
       success: true,
       data: requestBody,
     } as any)
 
     // Mock user doesn't exist
-    mockPrisma.user.findUnique.mockResolvedValue(null)
+    mockFindUnique.mockResolvedValue(null)
 
     // Mock password hashing
     mockHash.mockResolvedValue('hashedPassword' as never)
 
     // Mock user creation
-    mockPrisma.user.create.mockResolvedValue(mockUser as any)
+    mockCreate.mockResolvedValue(mockUser as any)
 
     const request = new NextRequest('http://localhost:3000/api/auth/register', {
       method: 'POST',
@@ -81,7 +94,7 @@ describe('/api/auth/register', () => {
       name: mockUser.name,
       email: mockUser.email,
     })
-    expect(mockPrisma.user.create).toHaveBeenCalledWith({
+    expect(mockCreate).toHaveBeenCalledWith({
       data: {
         name: requestBody.name,
         email: requestBody.email,
@@ -103,7 +116,7 @@ describe('/api/auth/register', () => {
     }
 
     // Mock validation failure
-    mockRegisterSchema.safeParse.mockReturnValue({
+    mockSafeParse.mockReturnValue({
       success: false,
       error: {
         format: () => ({
@@ -138,13 +151,13 @@ describe('/api/auth/register', () => {
     }
 
     // Mock successful validation
-    mockRegisterSchema.safeParse.mockReturnValue({
+    mockSafeParse.mockReturnValue({
       success: true,
       data: requestBody,
     } as any)
 
     // Mock existing user
-    mockPrisma.user.findUnique.mockResolvedValue({
+    mockFindUnique.mockResolvedValue({
       id: '1',
       email: 'existing@example.com',
     } as any)
@@ -162,7 +175,7 @@ describe('/api/auth/register', () => {
 
     expect(response.status).toBe(409)
     expect(data.message).toBe('Un usuario con este email ya existe')
-    expect(mockPrisma.user.create).not.toHaveBeenCalled()
+    expect(mockCreate).not.toHaveBeenCalled()
   })
 
   it('returns 500 for server errors', async () => {
@@ -174,13 +187,13 @@ describe('/api/auth/register', () => {
     }
 
     // Mock successful validation
-    mockRegisterSchema.safeParse.mockReturnValue({
+    mockSafeParse.mockReturnValue({
       success: true,
       data: requestBody,
     } as any)
 
     // Mock database error
-    mockPrisma.user.findUnique.mockRejectedValue(new Error('Database error'))
+    mockFindUnique.mockRejectedValue(new Error('Database error'))
 
     const request = new NextRequest('http://localhost:3000/api/auth/register', {
       method: 'POST',
@@ -222,7 +235,7 @@ describe('/api/auth/register', () => {
     }
 
     // Mock validation failure for weak password
-    mockRegisterSchema.safeParse.mockReturnValue({
+    mockSafeParse.mockReturnValue({
       success: false,
       error: {
         format: () => ({
@@ -244,7 +257,7 @@ describe('/api/auth/register', () => {
 
     expect(response.status).toBe(400)
     expect(data.message).toBe('Datos de registro inválidos')
-    expect(mockPrisma.user.create).not.toHaveBeenCalled()
+    expect(mockCreate).not.toHaveBeenCalled()
   })
 
   it('validates email format', async () => {
@@ -256,7 +269,7 @@ describe('/api/auth/register', () => {
     }
 
     // Mock validation failure for invalid email
-    mockRegisterSchema.safeParse.mockReturnValue({
+    mockSafeParse.mockReturnValue({
       success: false,
       error: {
         format: () => ({
@@ -289,7 +302,7 @@ describe('/api/auth/register', () => {
     }
 
     // Mock validation failure for password mismatch
-    mockRegisterSchema.safeParse.mockReturnValue({
+    mockSafeParse.mockReturnValue({
       success: false,
       error: {
         format: () => ({

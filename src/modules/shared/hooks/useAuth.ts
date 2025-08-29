@@ -22,6 +22,10 @@ import { useAuthStore } from '@/modules/shared/stores/authStore'
  * @property {Function} updateUser - Function to update user profile information
  * @property {Function} clearError - Function to clear current error state
  * @property {Function} checkSession - Function to verify current session status
+ * @property {Function} hasPermission - Function to check if user has specific permission
+ * @property {Function} hasRole - Function to check if user has specific role
+ * @property {Function} getUserDisplayName - Function to get user's display name
+ * @property {Function} isSessionValid - Function to check if current session is valid
  */
 interface UseAuthReturn {
   user: {
@@ -38,6 +42,10 @@ interface UseAuthReturn {
   updateUser: (userData: any) => void // eslint-disable-line @typescript-eslint/no-explicit-any
   clearError: () => void
   checkSession: () => Promise<void>
+  hasPermission: (permission: string) => boolean
+  hasRole: (role: string) => boolean
+  getUserDisplayName: () => string
+  isSessionValid: () => boolean
 }
 
 /**
@@ -264,17 +272,10 @@ export const useAuth = (): UseAuthReturn => {
     updateUser,
     clearError,
     checkSession,
-
-    // Additional utility functions
     hasPermission,
     hasRole,
     getUserDisplayName,
     isSessionValid,
-  } as UseAuthReturn & {
-    hasPermission: (permission: string) => boolean
-    hasRole: (role: string) => boolean
-    getUserDisplayName: () => string
-    isSessionValid: () => boolean
   }
 }
 

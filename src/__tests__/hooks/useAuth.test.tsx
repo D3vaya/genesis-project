@@ -25,8 +25,24 @@ const mockUseAuthStore = useAuthStore as jest.MockedFunction<
   typeof useAuthStore
 >
 
+// Define the complete AuthState mock interface
+interface MockAuthState {
+  user: any
+  isAuthenticated: boolean
+  isLoading: boolean
+  error: string | null
+  login: jest.MockedFunction<any>
+  logout: jest.MockedFunction<any>
+  updateUser: jest.MockedFunction<any>
+  clearError: jest.MockedFunction<any>
+  checkSession: jest.MockedFunction<any>
+  setUser: jest.MockedFunction<any>
+  setLoading: jest.MockedFunction<any>
+  setError: jest.MockedFunction<any>
+}
+
 describe('useAuth Hook', () => {
-  const mockAuthStore = {
+  const mockAuthStore: MockAuthState = {
     user: null,
     isAuthenticated: false,
     isLoading: false,
@@ -43,6 +59,13 @@ describe('useAuth Hook', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    // Reset mock functions
+    Object.values(mockAuthStore).forEach(fn => {
+      if (jest.isMockFunction(fn)) {
+        fn.mockReset()
+      }
+    })
+
     mockUseAuthStore.mockReturnValue(mockAuthStore)
     mockUseSession.mockReturnValue({
       data: null,
@@ -86,11 +109,12 @@ describe('useAuth Hook', () => {
       update: jest.fn(),
     })
 
-    mockUseAuthStore.mockReturnValue({
+    const updatedMockStore = {
       ...mockAuthStore,
       user: mockUser,
       isAuthenticated: true,
-    })
+    }
+    mockUseAuthStore.mockReturnValue(updatedMockStore)
 
     const { result } = renderHook(() => useAuth())
 
@@ -100,10 +124,11 @@ describe('useAuth Hook', () => {
 
   it('calls login function correctly', async () => {
     const mockLogin = jest.fn().mockResolvedValue(true)
-    mockUseAuthStore.mockReturnValue({
+    const updatedMockStore = {
       ...mockAuthStore,
       login: mockLogin,
-    })
+    }
+    mockUseAuthStore.mockReturnValue(updatedMockStore)
 
     const { result } = renderHook(() => useAuth())
 
@@ -117,10 +142,11 @@ describe('useAuth Hook', () => {
 
   it('calls logout function correctly', async () => {
     const mockLogout = jest.fn().mockResolvedValue(undefined)
-    mockUseAuthStore.mockReturnValue({
+    const updatedMockStore = {
       ...mockAuthStore,
       logout: mockLogout,
-    })
+    }
+    mockUseAuthStore.mockReturnValue(updatedMockStore)
 
     const { result } = renderHook(() => useAuth())
 
@@ -148,10 +174,11 @@ describe('useAuth Hook', () => {
       image: null,
     }
 
-    mockUseAuthStore.mockReturnValue({
+    const updatedMockStore = {
       ...mockAuthStore,
       user: mockUser,
-    })
+    }
+    mockUseAuthStore.mockReturnValue(updatedMockStore)
 
     const { result } = renderHook(() => useAuth())
 
@@ -166,10 +193,11 @@ describe('useAuth Hook', () => {
       image: null,
     }
 
-    mockUseAuthStore.mockReturnValue({
+    const updatedMockStore = {
       ...mockAuthStore,
       user: mockUser,
-    })
+    }
+    mockUseAuthStore.mockReturnValue(updatedMockStore)
 
     const { result } = renderHook(() => useAuth())
 
@@ -178,11 +206,24 @@ describe('useAuth Hook', () => {
 })
 
 describe('useAuthStatus Hook', () => {
+  const mockFullAuthState = {
+    user: null,
+    isAuthenticated: false,
+    isLoading: false,
+    error: null,
+    login: jest.fn(),
+    logout: jest.fn(),
+    updateUser: jest.fn(),
+    setUser: jest.fn(),
+    setLoading: jest.fn(),
+    setError: jest.fn(),
+    clearError: jest.fn(),
+    checkSession: jest.fn(),
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
-    mockUseAuthStore.mockImplementation(selector =>
-      selector({ isAuthenticated: false })
-    )
+    mockUseAuthStore.mockImplementation(selector => selector(mockFullAuthState))
     mockUseSession.mockReturnValue({
       data: null,
       status: 'unauthenticated',
@@ -197,12 +238,20 @@ describe('useAuthStatus Hook', () => {
   })
 
   it('returns true when authenticated', () => {
+    const authenticatedState = {
+      ...mockFullAuthState,
+      isAuthenticated: true,
+    }
+
     mockUseAuthStore.mockImplementation(selector =>
-      selector({ isAuthenticated: true })
+      selector(authenticatedState)
     )
 
     mockUseSession.mockReturnValue({
-      data: { user: { id: '1' }, expires: '2024-12-31' },
+      data: {
+        user: { id: '1', email: 'test@example.com', name: 'Test User' },
+        expires: '2024-12-31',
+      },
       status: 'authenticated',
       update: jest.fn(),
     })
@@ -214,10 +263,27 @@ describe('useAuthStatus Hook', () => {
 })
 
 describe('useCurrentUser Hook', () => {
+  const mockCurrentUserAuthState = {
+    user: null,
+    isAuthenticated: false,
+    isLoading: false,
+    error: null,
+    login: jest.fn(),
+    logout: jest.fn(),
+    updateUser: jest.fn(),
+    setUser: jest.fn(),
+    setLoading: jest.fn(),
+    setError: jest.fn(),
+    clearError: jest.fn(),
+    checkSession: jest.fn(),
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
     // Mock useAuthStore as a function that takes a selector
-    mockUseAuthStore.mockImplementation(selector => selector({ user: null }))
+    mockUseAuthStore.mockImplementation(selector =>
+      selector(mockCurrentUserAuthState)
+    )
     mockUseSession.mockReturnValue({
       data: null,
       status: 'unauthenticated',
@@ -236,12 +302,15 @@ describe('useCurrentUser Hook', () => {
       id: '1',
       email: 'test@example.com',
       name: 'Test User',
+      image: null,
     }
 
     // Mock the store selector to return the user
-    mockUseAuthStore.mockImplementation(selector =>
-      selector({ user: mockUser })
-    )
+    const stateWithUser = {
+      ...mockCurrentUserAuthState,
+      user: mockUser,
+    }
+    mockUseAuthStore.mockImplementation(selector => selector(stateWithUser))
 
     const { result } = renderHook(() => useCurrentUser())
 
@@ -253,10 +322,15 @@ describe('useCurrentUser Hook', () => {
       id: '1',
       email: 'test@example.com',
       name: 'Test User',
+      image: null,
     }
 
     // Store user is null
-    mockUseAuthStore.mockImplementation(selector => selector({ user: null }))
+    const stateWithNullUser = {
+      ...mockCurrentUserAuthState,
+      user: null,
+    }
+    mockUseAuthStore.mockImplementation(selector => selector(stateWithNullUser))
 
     mockUseSession.mockReturnValue({
       data: { user: mockUser, expires: '2024-12-31' },
