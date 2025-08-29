@@ -207,7 +207,8 @@ export function setActiveNavigation(
 ): NavigationItem[] {
   return items.map((item) => ({
     ...item,
-    isActive: currentPath === item.url || currentPath.startsWith(`${item.url}/`),
+    isActive:
+      currentPath === item.url || currentPath.startsWith(`${item.url}/`),
   }));
 }
 

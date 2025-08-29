@@ -156,7 +156,7 @@ function customMiddleware(request: NextRequest): NextResponse | undefined {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:",
     "font-src 'self'",
-    "connect-src 'self' https://jsonplaceholder.typicode.com",
+    "connect-src 'self'",
     "frame-ancestors 'none'"
   ].join('; ')
   

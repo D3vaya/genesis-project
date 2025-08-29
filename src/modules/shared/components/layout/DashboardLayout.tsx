@@ -20,6 +20,7 @@ import {
   DEFAULT_APP_BRANDING,
   createNavigationGroups,
 } from "@/modules/shared/config/navigation";
+import { Settings, Shield, Users } from "lucide-react";
 
 /**
  * DashboardLayout component props
@@ -31,57 +32,57 @@ export interface DashboardLayoutProps {
    * Content to render in the main area
    */
   children: React.ReactNode;
-  
+
   /**
    * Navigation configuration for sidebar
    */
   navigation?: NavigationItem[] | NavigationGroup[];
-  
+
   /**
    * App branding configuration
    */
   branding?: AppBranding;
-  
+
   /**
    * Header configuration
    */
   headerProps?: DashboardHeaderProps;
-  
+
   /**
    * Sidebar configuration
    */
-  sidebarProps?: Omit<AppSidebarProps, 'navigation' | 'branding'>;
-  
+  sidebarProps?: Omit<AppSidebarProps, "navigation" | "branding">;
+
   /**
    * Whether to show the header
    */
   showHeader?: boolean;
-  
+
   /**
    * Whether to show the sidebar
    */
   showSidebar?: boolean;
-  
+
   /**
    * Custom header component
    */
   customHeader?: React.ReactNode;
-  
+
   /**
    * Custom sidebar component
    */
   customSidebar?: React.ReactNode;
-  
+
   /**
    * Container padding
    */
   containerPadding?: "none" | "sm" | "default" | "lg";
-  
+
   /**
    * Main content area classes
    */
   contentClassName?: string;
-  
+
   /**
    * Full height layout
    */
@@ -98,12 +99,12 @@ export interface DashboardLayoutProps {
  * ```typescript
  * import { DashboardLayout } from '@/modules/shared/components/layout/DashboardLayout'
  * import { DEFAULT_NAVIGATION_ITEMS, DEFAULT_SETTINGS_ITEMS } from '@/modules/shared/config/navigation'
- * 
+ *
  * // Simple usage
  * <DashboardLayout>
  *   <h1>Dashboard Content</h1>
  * </DashboardLayout>
- * 
+ *
  * // Custom navigation
  * <DashboardLayout
  *   navigation={[
@@ -123,7 +124,7 @@ export interface DashboardLayoutProps {
  * >
  *   <MyDashboardContent />
  * </DashboardLayout>
- * 
+ *
  * // Custom header and sidebar
  * <DashboardLayout
  *   customHeader={<MyCustomHeader />}
@@ -147,7 +148,6 @@ export function DashboardLayout({
   contentClassName = "",
   fullHeight = true,
 }: DashboardLayoutProps): React.JSX.Element {
-  
   /**
    * Get container padding classes
    * @function getPaddingClasses
@@ -163,7 +163,7 @@ export function DashboardLayout({
       case "lg":
         return "p-6 md:p-8";
       default:
-        return "p-4 md:p-6";
+        return "p-2";
     }
   };
 
@@ -190,27 +190,26 @@ export function DashboardLayout({
   return (
     <SidebarProvider>
       {/* Sidebar */}
-      {showSidebar && (
-        customSidebar || (
+      {showSidebar &&
+        (customSidebar || (
           <AppSidebar
             navigation={processedNavigation}
             branding={branding}
             {...sidebarProps}
           />
-        )
-      )}
-      
+        ))}
+
       {/* Main Content Area */}
-      <main className={`flex flex-1 flex-col gap-4 pt-0 ${fullHeight ? 'min-h-screen' : ''} ${getPaddingClasses()}`}>
+      <main
+        className={`flex flex-1 flex-col gap-4 pt-0 ${
+          fullHeight ? "min-h-screen" : ""
+        } ${getPaddingClasses()}`}
+      >
         {/* Header */}
-        {showHeader && (
-          customHeader || <DashboardHeader {...headerProps} />
-        )}
-        
+        {showHeader && (customHeader || <DashboardHeader {...headerProps} />)}
+
         {/* Content */}
-        <div className={`flex-1 ${contentClassName}`}>
-          {children}
-        </div>
+        <div className={`flex-1 ${contentClassName}`}>{children}</div>
       </main>
     </SidebarProvider>
   );
@@ -232,9 +231,7 @@ export function DashboardLayout({
 export function AdminDashboardLayout({
   children,
   ...props
-}: Omit<DashboardLayoutProps, 'navigation' | 'branding'>): React.JSX.Element {
-  const { Shield, Users, Settings } = require("lucide-react");
-  
+}: Omit<DashboardLayoutProps, "navigation" | "branding">): React.JSX.Element {
   return (
     <DashboardLayout
       navigation={createNavigationGroups({
@@ -263,7 +260,10 @@ export function AdminDashboardLayout({
 export function MinimalDashboardLayout({
   children,
   ...props
-}: Omit<DashboardLayoutProps, 'showSidebar' | 'showHeader'>): React.JSX.Element {
+}: Omit<
+  DashboardLayoutProps,
+  "showSidebar" | "showHeader"
+>): React.JSX.Element {
   return (
     <DashboardLayout
       showSidebar={false}

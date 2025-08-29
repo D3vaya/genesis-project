@@ -181,11 +181,9 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        <link rel="preconnect" href="https://jsonplaceholder.typicode.com" />
 
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://jsonplaceholder.typicode.com" />
 
         {/* Viewport meta tag for responsive design */}
         <meta

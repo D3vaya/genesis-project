@@ -30,7 +30,7 @@ import { DashboardLayout } from "@/modules/shared/components/layout";
 import { useUser } from "@/modules/shared/stores/authStore";
 import { useDataStore } from "@/modules/shared/stores/dataStore";
 import { toast } from "sonner";
-import { get } from "@/lib/axios";
+import { getMockDashboardData } from "@/data/mock/dashboardData";
 
 /**
  * Dashboard statistics interface
@@ -90,11 +90,8 @@ export default function DashboardPage(): React.JSX.Element {
     dataStore.setError("api", null);
 
     try {
-      // Fetch users from external API (JSONPlaceholder)
-      const users = await get<any[]>("/users");
-
-      // Fetch posts for engagement calculation
-      const posts = await get<any[]>("/posts");
+      // Fetch mock data from local data store
+      const { users, posts } = await getMockDashboardData();
 
       // Calculate statistics
       const totalUsers = users?.length || 0;
@@ -115,8 +112,8 @@ export default function DashboardPage(): React.JSX.Element {
       dataStore.setApiData("users", users);
       dataStore.setApiData("posts", posts);
 
-      toast.success("Datos Actualizados", {
-        description: "Los datos del dashboard se han actualizado correctamente",
+      toast.success("Datos Cargados", {
+        description: "Los datos del dashboard se han cargado correctamente",
       });
     } catch (error) {
       console.error("Error loading dashboard data:", error);
@@ -129,8 +126,8 @@ export default function DashboardPage(): React.JSX.Element {
           description: "Se muestran los datos almacenados localmente",
         });
       } else {
-        toast.error("Error de Conexión", {
-          description: "No se pudieron cargar los datos. Verifica tu conexión.",
+        toast.error("Error de Carga", {
+          description: "No se pudieron cargar los datos del dashboard.",
         });
       }
     } finally {

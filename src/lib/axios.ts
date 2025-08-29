@@ -27,7 +27,7 @@ const API_CONFIG = {
   baseURL:
     process.env.API_BASE_URL ||
     process.env.NEXT_PUBLIC_API_BASE_URL ||
-    "https://jsonplaceholder.typicode.com",
+    "/api",
   timeout: 30000, // 30 seconds
   headers: {
     "Content-Type": "application/json",
@@ -36,9 +36,9 @@ const API_CONFIG = {
 };
 
 /**
- * Main Axios instance for external API calls
+ * Main Axios instance for API calls
  * @const {import('axios').AxiosInstance} apiClient
- * @description Configured Axios instance for making API requests to external services
+ * @description Configured Axios instance for making API requests
  * @example
  * ```typescript
  * import { apiClient } from '@/lib/axios'
