@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @fileoverview Dashboard page component with data visualization
  * @description Main dashboard page showing user data and statistics using the reusable layout components
@@ -9,13 +8,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import {
-  Users,
-  BarChart3,
-  TrendingUp,
-  Activity,
-  Plus,
-} from "lucide-react";
+import { Users, BarChart3, TrendingUp, Activity, Plus } from "lucide-react";
 
 import {
   Card,
@@ -47,7 +40,6 @@ interface DashboardStats {
   totalPosts: number;
   engagement: number;
 }
-
 
 /**
  * Dashboard Page Component
@@ -85,7 +77,7 @@ export default function DashboardPage(): React.JSX.Element {
    */
   const loadDashboardData = useCallback(async (): Promise<void> => {
     const dataStore = useDataStore.getState();
-    
+
     dataStore.setLoading("api", true);
     dataStore.setError("api", null);
 
@@ -141,7 +133,7 @@ export default function DashboardPage(): React.JSX.Element {
    */
   useEffect(() => {
     loadDashboardData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -203,158 +195,144 @@ export default function DashboardPage(): React.JSX.Element {
         </h1>
       </div>
 
-          {/* Statistics Cards */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Usuarios
-                </CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {formatNumber(stats.totalUsers)}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  +2.1% desde el mes pasado
-                </p>
-              </CardContent>
-            </Card>
+      {/* Statistics Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total Usuarios
+            </CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {formatNumber(stats.totalUsers)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              +2.1% desde el mes pasado
+            </p>
+          </CardContent>
+        </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Usuarios Activos
-                </CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {formatNumber(stats.activeUsers)}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  +5.2% desde la semana pasada
-                </p>
-              </CardContent>
-            </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Usuarios Activos
+            </CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {formatNumber(stats.activeUsers)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              +5.2% desde la semana pasada
+            </p>
+          </CardContent>
+        </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Posts
-                </CardTitle>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {formatNumber(stats.totalPosts)}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  +12.5% desde el mes pasado
-                </p>
-              </CardContent>
-            </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {formatNumber(stats.totalPosts)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              +12.5% desde el mes pasado
+            </p>
+          </CardContent>
+        </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Engagement
-                </CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.engagement}%</div>
-                <p className="text-xs text-muted-foreground">
-                  +1.2% desde ayer
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Engagement</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.engagement}%</div>
+            <p className="text-xs text-muted-foreground">+1.2% desde ayer</p>
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* Recent Activity Section */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Vista General</CardTitle>
-                <CardDescription>
-                  Resumen de actividad de tu aplicación
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="h-3 w-3 bg-primary rounded-full" />
-                    <span className="text-sm font-medium">API Externa</span>
-                  </div>
-                  <Badge variant="secondary">Conectado</Badge>
-                </div>
+      {/* Recent Activity Section */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
+        <Card className="col-span-4">
+          <CardHeader>
+            <CardTitle>Vista General</CardTitle>
+            <CardDescription>
+              Resumen de actividad de tu aplicación
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="h-3 w-3 bg-primary rounded-full" />
+                <span className="text-sm font-medium">API Externa</span>
+              </div>
+              <Badge variant="secondary">Conectado</Badge>
+            </div>
 
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="h-3 w-3 bg-green-500 rounded-full" />
-                    <span className="text-sm font-medium">Base de Datos</span>
-                  </div>
-                  <Badge variant="secondary">Activa</Badge>
-                </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="h-3 w-3 bg-green-500 rounded-full" />
+                <span className="text-sm font-medium">Base de Datos</span>
+              </div>
+              <Badge variant="secondary">Activa</Badge>
+            </div>
 
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="h-3 w-3 bg-blue-500 rounded-full" />
-                    <span className="text-sm font-medium">Autenticación</span>
-                  </div>
-                  <Badge variant="secondary">Funcionando</Badge>
-                </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="h-3 w-3 bg-blue-500 rounded-full" />
+                <span className="text-sm font-medium">Autenticación</span>
+              </div>
+              <Badge variant="secondary">Funcionando</Badge>
+            </div>
 
-                <div className="pt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Tu aplicación SaaS está funcionando correctamente. Todos los
-                    servicios están operativos.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="pt-4">
+              <p className="text-sm text-muted-foreground">
+                Tu aplicación SaaS está funcionando correctamente. Todos los
+                servicios están operativos.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Actividad Reciente</CardTitle>
-                <CardDescription>Últimas acciones en tu cuenta</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">
-                      Inicio de sesión exitoso
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Hace 2 minutos
-                    </p>
-                  </div>
-                </div>
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Actividad Reciente</CardTitle>
+            <CardDescription>Últimas acciones en tu cuenta</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 bg-primary rounded-full mt-2" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Inicio de sesión exitoso</p>
+                <p className="text-xs text-muted-foreground">Hace 2 minutos</p>
+              </div>
+            </div>
 
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">Datos actualizados</p>
-                    <p className="text-xs text-muted-foreground">
-                      Hace 5 minutos
-                    </p>
-                  </div>
-                </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Datos actualizados</p>
+                <p className="text-xs text-muted-foreground">Hace 5 minutos</p>
+              </div>
+            </div>
 
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">Dashboard cargado</p>
-                    <p className="text-xs text-muted-foreground">
-                      Hace 10 minutos
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Dashboard cargado</p>
+                <p className="text-xs text-muted-foreground">Hace 10 minutos</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </DashboardLayout>
   );
 }
