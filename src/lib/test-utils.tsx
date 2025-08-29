@@ -10,6 +10,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 // Mock wrapper component for tests
 const AllTheProviders = ({
   children,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   session = null,
 }: {
   children: React.ReactNode

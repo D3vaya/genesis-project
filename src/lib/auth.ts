@@ -10,6 +10,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { compare } from 'bcryptjs'
 import { prisma } from './prisma'
+import { Adapter } from 'next-auth/adapters'
 
 /**
  * NextAuth configuration options
@@ -19,7 +20,7 @@ import { prisma } from './prisma'
  * ```typescript
  * import { authOptions } from '@/lib/auth'
  * import NextAuth from 'next-auth'
- * 
+ *
  * export default NextAuth(authOptions)
  * ```
  */
@@ -28,8 +29,8 @@ export const authOptions: NextAuthOptions = {
    * Database adapter for NextAuth
    * @description Uses Prisma adapter to store sessions and users in database
    */
-  adapter: PrismaAdapter(prisma) as any,
-  
+  adapter: PrismaAdapter(prisma) as Adapter,
+
   /**
    * Authentication providers configuration
    * @description Configures credentials provider for email/password authentication
@@ -38,16 +39,16 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: 'credentials',
       credentials: {
-        email: { 
-          label: 'Email', 
+        email: {
+          label: 'Email',
           type: 'email',
-          placeholder: 'usuario@ejemplo.com'
+          placeholder: 'usuario@ejemplo.com',
         },
-        password: { 
-          label: 'Password', 
+        password: {
+          label: 'Password',
           type: 'password',
-          placeholder: 'Tu contraseña'
-        }
+          placeholder: 'Tu contraseña',
+        },
       },
       /**
        * Authorize function for credentials provider
@@ -74,8 +75,8 @@ export const authOptions: NextAuthOptions = {
           // Find user by email
           const user = await prisma.user.findUnique({
             where: {
-              email: credentials.email
-            }
+              email: credentials.email,
+            },
           })
 
           if (!user) {
@@ -83,7 +84,10 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Verify password
-          const isPasswordValid = await compare(credentials.password, user.password)
+          const isPasswordValid = await compare(
+            credentials.password,
+            user.password
+          )
 
           if (!isPasswordValid) {
             return null
@@ -99,10 +103,10 @@ export const authOptions: NextAuthOptions = {
           console.error('Authentication error:', error)
           return null
         }
-      }
-    })
+      },
+    }),
   ],
-  
+
   /**
    * Session configuration
    * @description Configures session strategy and maximum age
@@ -111,7 +115,7 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  
+
   /**
    * JWT configuration
    * @description Configures JWT token handling
@@ -119,7 +123,7 @@ export const authOptions: NextAuthOptions = {
   jwt: {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  
+
   /**
    * Custom pages configuration
    * @description Overrides default NextAuth pages with custom ones
@@ -127,7 +131,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/login',
   },
-  
+
   /**
    * Callback functions for customizing NextAuth behavior
    * @description Customizes JWT and session handling
@@ -156,7 +160,7 @@ export const authOptions: NextAuthOptions = {
       }
       return token
     },
-    
+
     /**
      * Session callback for customizing session object
      * @description Adds user ID to session object from JWT token
@@ -181,9 +185,9 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string
       }
       return session
-    }
+    },
   },
-  
+
   /**
    * Debug mode configuration
    * @description Enables debug mode in development
@@ -204,7 +208,7 @@ declare module 'next-auth' {
   interface User {
     id: string
   }
-  
+
   interface Session {
     user: {
       id: string

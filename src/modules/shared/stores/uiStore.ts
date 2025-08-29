@@ -5,16 +5,15 @@
  * @version 1.0.0
  */
 
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 /**
  * Theme options for the application
  * @typedef {'light' | 'dark' | 'system'} Theme
  * @description Available theme modes for the application
  */
-type Theme = "light" | "dark" | "system";
-
+type Theme = 'light' | 'dark' | 'system'
 
 /**
  * UI store state interface
@@ -27,24 +26,23 @@ type Theme = "light" | "dark" | "system";
  */
 interface UIState {
   // Sidebar state
-  sidebarCollapsed: boolean;
+  sidebarCollapsed: boolean
 
   // Theme state
-  theme: Theme;
+  theme: Theme
 
   // Loading states
-  isLoading: boolean;
-
+  isLoading: boolean
 
   // Responsive state
-  isMobile: boolean;
+  isMobile: boolean
 
   // Actions
-  toggleSidebar: () => void;
-  setSidebarCollapsed: (collapsed: boolean) => void;
-  setTheme: (theme: Theme) => void;
-  setLoading: (loading: boolean) => void;
-  setIsMobile: (isMobile: boolean) => void;
+  toggleSidebar: () => void
+  setSidebarCollapsed: (collapsed: boolean) => void
+  setTheme: (theme: Theme) => void
+  setLoading: (loading: boolean) => void
+  setIsMobile: (isMobile: boolean) => void
 }
 
 /**
@@ -68,9 +66,9 @@ interface UIState {
  */
 export const useUIStore = create<UIState>()(
   persist(
-    (set, get) => ({
+    set => ({
       sidebarCollapsed: false,
-      theme: "system",
+      theme: 'system',
       isLoading: false,
       isMobile: false,
 
@@ -85,9 +83,9 @@ export const useUIStore = create<UIState>()(
        * ```
        */
       toggleSidebar: () => {
-        set((state) => ({
+        set(state => ({
           sidebarCollapsed: !state.sidebarCollapsed,
-        }));
+        }))
       },
 
       /**
@@ -103,7 +101,7 @@ export const useUIStore = create<UIState>()(
        * ```
        */
       setSidebarCollapsed: (collapsed: boolean) => {
-        set({ sidebarCollapsed: collapsed });
+        set({ sidebarCollapsed: collapsed })
       },
 
       /**
@@ -119,23 +117,23 @@ export const useUIStore = create<UIState>()(
        * ```
        */
       setTheme: (theme: Theme) => {
-        set({ theme });
+        set({ theme })
 
         // Apply theme to document
-        if (typeof window !== "undefined") {
-          if (theme === "dark") {
-            document.documentElement.classList.add("dark");
-          } else if (theme === "light") {
-            document.documentElement.classList.remove("dark");
+        if (typeof window !== 'undefined') {
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark')
+          } else if (theme === 'light') {
+            document.documentElement.classList.remove('dark')
           } else {
             // System theme
             const prefersDark = window.matchMedia(
-              "(prefers-color-scheme: dark)"
-            ).matches;
+              '(prefers-color-scheme: dark)'
+            ).matches
             if (prefersDark) {
-              document.documentElement.classList.add("dark");
+              document.documentElement.classList.add('dark')
             } else {
-              document.documentElement.classList.remove("dark");
+              document.documentElement.classList.remove('dark')
             }
           }
         }
@@ -154,9 +152,8 @@ export const useUIStore = create<UIState>()(
        * ```
        */
       setLoading: (loading: boolean) => {
-        set({ isLoading: loading });
+        set({ isLoading: loading })
       },
-
 
       /**
        * Sets mobile viewport state
@@ -170,25 +167,27 @@ export const useUIStore = create<UIState>()(
        * ```
        */
       setIsMobile: (isMobile: boolean) => {
-        set({ isMobile });
+        set({ isMobile })
       },
     }),
     {
-      name: "ui-store",
-      storage: createJSONStorage(() => 
-        typeof window !== 'undefined' ? localStorage : {
-          getItem: () => null,
-          setItem: () => {},
-          removeItem: () => {},
-        }
+      name: 'ui-store',
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined'
+          ? localStorage
+          : {
+              getItem: () => null,
+              setItem: () => {},
+              removeItem: () => {},
+            }
       ),
-      partialize: (state) => ({
+      partialize: state => ({
         sidebarCollapsed: state.sidebarCollapsed,
         theme: state.theme,
       }),
     }
   )
-);
+)
 
 /**
  * Selector hook for sidebar state
@@ -211,11 +210,11 @@ export const useUIStore = create<UIState>()(
  * ```
  */
 export const useSidebar = () =>
-  useUIStore((state) => ({
+  useUIStore(state => ({
     sidebarCollapsed: state.sidebarCollapsed,
     toggleSidebar: state.toggleSidebar,
     setSidebarCollapsed: state.setSidebarCollapsed,
-  }));
+  }))
 
 /**
  * Selector hook for theme state
@@ -240,8 +239,7 @@ export const useSidebar = () =>
  * ```
  */
 export const useTheme = () =>
-  useUIStore((state) => ({
+  useUIStore(state => ({
     theme: state.theme,
     setTheme: state.setTheme,
-  }));
-
+  }))

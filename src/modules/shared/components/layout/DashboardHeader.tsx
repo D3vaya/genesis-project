@@ -5,14 +5,14 @@
  * @version 1.0.0
  */
 
-"use client";
+'use client'
 
-import React from "react";
-import { Search, Plus } from "lucide-react";
+import React from 'react'
+import { Search, Plus } from 'lucide-react'
 
-import { Button } from "@/modules/shared/components/ui/button";
-import { Input } from "@/modules/shared/components/ui/input";
-import { SidebarTrigger } from "@/modules/shared/components/ui/sidebar";
+import { Button } from '@/modules/shared/components/ui/button'
+import { Input } from '@/modules/shared/components/ui/input'
+import { SidebarTrigger } from '@/modules/shared/components/ui/sidebar'
 
 /**
  * Header action interface
@@ -20,14 +20,21 @@ import { SidebarTrigger } from "@/modules/shared/components/ui/sidebar";
  * @description Structure for header action buttons
  */
 export interface HeaderAction {
-  label: string;
-  icon?: React.ComponentType<any>;
-  onClick: () => void;
-  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
-  size?: "default" | "sm" | "lg" | "icon";
-  disabled?: boolean;
-  loading?: boolean;
-  className?: string;
+  label: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon?: React.ComponentType<any>
+  onClick: () => void
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
+  size?: 'default' | 'sm' | 'lg' | 'icon'
+  disabled?: boolean
+  loading?: boolean
+  className?: string
 }
 
 /**
@@ -39,52 +46,52 @@ export interface DashboardHeaderProps {
   /**
    * Whether to show the sidebar trigger button
    */
-  showSidebarTrigger?: boolean;
-  
+  showSidebarTrigger?: boolean
+
   /**
    * Whether to show the search input
    */
-  showSearch?: boolean;
-  
+  showSearch?: boolean
+
   /**
    * Search input placeholder
    */
-  searchPlaceholder?: string;
-  
+  searchPlaceholder?: string
+
   /**
    * Search input value (controlled)
    */
-  searchValue?: string;
-  
+  searchValue?: string
+
   /**
    * Search change handler
    */
-  onSearchChange?: (value: string) => void;
-  
+  onSearchChange?: (value: string) => void
+
   /**
    * Search submit handler
    */
-  onSearchSubmit?: (value: string) => void;
-  
+  onSearchSubmit?: (value: string) => void
+
   /**
    * Action buttons to display on the right
    */
-  actions?: HeaderAction[];
-  
+  actions?: HeaderAction[]
+
   /**
    * Custom content to render in the header
    */
-  children?: React.ReactNode;
-  
+  children?: React.ReactNode
+
   /**
    * Additional CSS classes
    */
-  className?: string;
-  
+  className?: string
+
   /**
    * Header height variant
    */
-  height?: "default" | "compact" | "large";
+  height?: 'default' | 'compact' | 'large'
 }
 
 /**
@@ -96,10 +103,10 @@ export interface DashboardHeaderProps {
  * @example
  * ```typescript
  * import { DashboardHeader } from '@/modules/shared/components/layout/DashboardHeader'
- * 
+ *
  * // Simple usage
  * <DashboardHeader />
- * 
+ *
  * // With search and actions
  * <DashboardHeader
  *   showSearch={true}
@@ -113,7 +120,7 @@ export interface DashboardHeaderProps {
  *     }
  *   ]}
  * />
- * 
+ *
  * // Custom content
  * <DashboardHeader>
  *   <div className="flex items-center gap-4">
@@ -126,19 +133,20 @@ export interface DashboardHeaderProps {
 export function DashboardHeader({
   showSidebarTrigger = true,
   showSearch = true,
-  searchPlaceholder = "Buscar...",
+  searchPlaceholder = 'Buscar...',
   searchValue,
   onSearchChange,
   onSearchSubmit,
   actions = [],
   children,
-  className = "",
-  height = "default",
+  className = '',
+  height = 'default',
 }: DashboardHeaderProps): React.JSX.Element {
-  const [internalSearchValue, setInternalSearchValue] = React.useState("");
-  
+  const [internalSearchValue, setInternalSearchValue] = React.useState('')
+
   // Use controlled or uncontrolled search value
-  const currentSearchValue = searchValue !== undefined ? searchValue : internalSearchValue;
+  const currentSearchValue =
+    searchValue !== undefined ? searchValue : internalSearchValue
 
   /**
    * Handle search input change
@@ -146,15 +154,17 @@ export function DashboardHeader({
    * @description Handles search input changes
    * @param {React.ChangeEvent<HTMLInputElement>} event - Input change event
    */
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const value = event.target.value;
-    
+  const handleSearchChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    const value = event.target.value
+
     if (searchValue === undefined) {
-      setInternalSearchValue(value);
+      setInternalSearchValue(value)
     }
-    
-    onSearchChange?.(value);
-  };
+
+    onSearchChange?.(value)
+  }
 
   /**
    * Handle search form submission
@@ -163,9 +173,9 @@ export function DashboardHeader({
    * @param {React.FormEvent} event - Form submission event
    */
   const handleSearchSubmit = (event: React.FormEvent): void => {
-    event.preventDefault();
-    onSearchSubmit?.(currentSearchValue);
-  };
+    event.preventDefault()
+    onSearchSubmit?.(currentSearchValue)
+  }
 
   /**
    * Get header height classes
@@ -175,37 +185,41 @@ export function DashboardHeader({
    */
   const getHeightClasses = (): string => {
     switch (height) {
-      case "compact":
-        return "h-12";
-      case "large":
-        return "h-20";
+      case 'compact':
+        return 'h-12'
+      case 'large':
+        return 'h-20'
       default:
-        return "h-16";
+        return 'h-16'
     }
-  };
+  }
 
   // If children is provided, render custom header content
   if (children) {
     return (
-      <header className={`flex items-center gap-4 border-b bg-background px-4 md:px-6 ${getHeightClasses()} ${className}`}>
+      <header
+        className={`bg-background flex items-center gap-4 border-b px-4 md:px-6 ${getHeightClasses()} ${className}`}
+      >
         {showSidebarTrigger && <SidebarTrigger className="-ml-1" />}
         <div className="w-full flex-1">{children}</div>
       </header>
-    );
+    )
   }
 
   return (
-    <header className={`flex items-center gap-4 border-b bg-background px-4 md:px-6 ${getHeightClasses()} ${className}`}>
+    <header
+      className={`bg-background flex items-center gap-4 border-b px-4 md:px-6 ${getHeightClasses()} ${className}`}
+    >
       {showSidebarTrigger && <SidebarTrigger className="-ml-1" />}
-      
+
       <div className="w-full flex-1">
         {showSearch && (
-          <form 
-            className="ml-auto flex-1 sm:flex-initial" 
+          <form
+            className="ml-auto flex-1 sm:flex-initial"
             onSubmit={handleSearchSubmit}
           >
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 text-muted-foreground transform -translate-y-1/2" />
+              <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 transform" />
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
@@ -224,11 +238,11 @@ export function DashboardHeader({
           {actions.map((action, index) => (
             <Button
               key={index}
-              variant={action.variant || "default"}
-              size={action.size || "sm"}
+              variant={action.variant || 'default'}
+              size={action.size || 'sm'}
               onClick={action.onClick}
               disabled={action.disabled || action.loading}
-              className={`gap-1.5 text-sm ${action.className || ""}`}
+              className={`gap-1.5 text-sm ${action.className || ''}`}
             >
               {action.loading ? (
                 <div className="size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -241,5 +255,5 @@ export function DashboardHeader({
         </div>
       )}
     </header>
-  );
+  )
 }

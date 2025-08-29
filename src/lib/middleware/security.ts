@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server'
 import DOMPurify from 'isomorphic-dompurify'
 
@@ -130,6 +131,7 @@ export async function securityMiddleware(
           const response = await handler(newRequest)
           return addSecurityHeaders(response, customHeaders)
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         // If body parsing fails, continue with original request
       }
