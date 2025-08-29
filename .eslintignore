@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Generated files
+src/generated/
+coverage/
+
+# Configuration files
+next-env.d.ts
+*.config.js
+*.config.mjs
+jest.setup.js
+
+# Database
+*.db
+*.sqlite
+
+# OS generated files
+.DS_Store
+Thumbs.db

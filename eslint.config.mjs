@@ -17,8 +17,34 @@ const eslintConfig = [
       ".next/**",
       "out/**",
       "build/**",
+      "coverage/**",
+      "src/generated/**",
       "next-env.d.ts",
+      "*.config.js",
+      "*.config.mjs",
+      "jest.setup.js",
     ],
+  },
+  {
+    files: ["**/*.js", "**/*.mjs"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  {
+    files: ["**/__tests__/**/*", "**/*.test.*", "**/*.spec.*", "jest.setup.js", "jest.config.js"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+    },
+  },
+  {
+    files: ["src/lib/middleware/**/*"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": "warn",
+    },
   },
 ];
 
