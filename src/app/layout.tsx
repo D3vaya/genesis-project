@@ -5,11 +5,11 @@
  * @version 1.0.0
  */
 
-import React from "react";
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { Providers } from "@/modules/shared/components/providers/Providers";
+import React from 'react'
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
+import { Providers } from '@/modules/shared/components/providers/Providers'
 
 /**
  * Geist Sans font configuration
@@ -17,10 +17,10 @@ import { Providers } from "@/modules/shared/components/providers/Providers";
  * @description Modern sans-serif font for the application
  */
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 /**
  * Geist Mono font configuration
@@ -28,10 +28,10 @@ const geistSans = Geist({
  * @description Monospace font for code and technical content
  */
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 /**
  * Application metadata configuration
@@ -40,59 +40,59 @@ const geistMono = Geist_Mono({
  */
 export const metadata: Metadata = {
   title: {
-    default: "SaaS Template | Next.js + shadcn/ui",
-    template: "%s | SaaS Template",
+    default: 'SaaS Template | Next.js + shadcn/ui',
+    template: '%s | SaaS Template',
   },
   description:
-    "Modern SaaS application template built with Next.js, TypeScript, shadcn/ui, NextAuth, Prisma, and Zustand",
+    'Modern SaaS application template built with Next.js, TypeScript, shadcn/ui, NextAuth, Prisma, and Zustand',
   keywords: [
-    "SaaS",
-    "Next.js",
-    "TypeScript",
-    "shadcn/ui",
-    "NextAuth",
-    "Prisma",
-    "Zustand",
-    "Template",
-    "Starter",
+    'SaaS',
+    'Next.js',
+    'TypeScript',
+    'shadcn/ui',
+    'NextAuth',
+    'Prisma',
+    'Zustand',
+    'Template',
+    'Starter',
   ],
   authors: [
     {
-      name: "SaaS Template",
+      name: 'SaaS Template',
     },
   ],
-  creator: "SaaS Template",
-  publisher: "SaaS Template",
+  creator: 'SaaS Template',
+  publisher: 'SaaS Template',
   metadataBase: new URL(
     process.env.NEXTAUTH_URL || process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000"
+      : 'http://localhost:3000'
   ),
   openGraph: {
-    type: "website",
-    locale: "es_ES",
-    alternateLocale: ["en_US"],
-    url: "./",
-    title: "SaaS Template | Next.js + shadcn/ui",
+    type: 'website',
+    locale: 'es_ES',
+    alternateLocale: ['en_US'],
+    url: './',
+    title: 'SaaS Template | Next.js + shadcn/ui',
     description:
-      "Modern SaaS application template built with the latest web technologies",
-    siteName: "SaaS Template",
+      'Modern SaaS application template built with the latest web technologies',
+    siteName: 'SaaS Template',
     images: [
       {
-        url: "/og-image.jpg",
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: "SaaS Template - Modern SaaS Application",
+        alt: 'SaaS Template - Modern SaaS Application',
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
-    title: "SaaS Template | Next.js + shadcn/ui",
+    card: 'summary_large_image',
+    title: 'SaaS Template | Next.js + shadcn/ui',
     description:
-      "Modern SaaS application template built with the latest web technologies",
-    images: ["/og-image.jpg"],
-    creator: "@saastemplate",
+      'Modern SaaS application template built with the latest web technologies',
+    images: ['/og-image.jpg'],
+    creator: '@saastemplate',
   },
   robots: {
     index: true,
@@ -100,47 +100,47 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   },
   verification: {
-    google: "your-google-verification-code",
-    yandex: "your-yandex-verification-code",
+    google: 'your-google-verification-code',
+    yandex: 'your-yandex-verification-code',
     other: {
-      me: ["mailto:contact@example.com"],
+      me: ['mailto:contact@example.com'],
     },
   },
-  category: "technology",
-  classification: "SaaS Application Template",
-  referrer: "origin-when-cross-origin",
-  generator: "Next.js",
-  applicationName: "SaaS Template",
+  category: 'technology',
+  classification: 'SaaS Application Template',
+  referrer: 'origin-when-cross-origin',
+  generator: 'Next.js',
+  applicationName: 'SaaS Template',
   alternates: {
-    canonical: "./",
+    canonical: './',
     languages: {
-      "es-ES": "./es",
-      "en-US": "./en",
+      'es-ES': './es',
+      'en-US': './en',
     },
   },
-  manifest: "/manifest.json",
+  manifest: '/manifest.json',
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
     other: [
       {
-        rel: "apple-touch-icon-precomposed",
-        url: "/apple-touch-icon-precomposed.png",
+        rel: 'apple-touch-icon-precomposed',
+        url: '/apple-touch-icon-precomposed.png',
       },
     ],
   },
   other: {
-    "msapplication-TileColor": "#000000",
-    "theme-color": "#000000",
+    'msapplication-TileColor': '#000000',
+    'theme-color': '#000000',
   },
-};
+}
 
 /**
  * Root layout component
@@ -169,7 +169,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="es" className="h-full" suppressHydrationWarning>
@@ -214,23 +214,13 @@ export default function RootLayout({
         <meta name="csrf-token" content="" />
       </head>
       <body
-        className={`
-          ${geistSans.variable}
-          ${geistMono.variable}
-          min-h-full
-          antialiased
-          bg-background
-          font-sans
-          text-foreground
-          selection:bg-primary/20
-          selection:text-primary-foreground
-        `}
+        className={` ${geistSans.variable} ${geistMono.variable} bg-background text-foreground selection:bg-primary/20 selection:text-primary-foreground min-h-full font-sans antialiased`}
         suppressHydrationWarning
       >
         {/* Skip to main content link for accessibility */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 px-4 py-2 bg-primary text-primary-foreground rounded-md"
+          className="bg-primary text-primary-foreground sr-only z-50 rounded-md px-4 py-2 focus:not-sr-only focus:absolute focus:top-4 focus:left-4"
         >
           Saltar al contenido principal
         </a>
@@ -243,7 +233,7 @@ export default function RootLayout({
         </Providers>
 
         {/* Performance monitoring script (placeholder) */}
-        {process.env.NODE_ENV === "production" && (
+        {process.env.NODE_ENV === 'production' && (
           <script
             dangerouslySetInnerHTML={{
               __html: `
@@ -286,5 +276,5 @@ export default function RootLayout({
         )}
       </body>
     </html>
-  );
+  )
 }

@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { LucideIcon } from "lucide-react";
+import { LucideIcon } from 'lucide-react'
 import {
   Home,
   Users,
@@ -16,11 +16,10 @@ import {
   User,
   FileText,
   CreditCard,
-  Bell,
   Shield,
   Database,
   Zap,
-} from "lucide-react";
+} from 'lucide-react'
 
 /**
  * Navigation item interface
@@ -28,12 +27,12 @@ import {
  * @description Structure for navigation menu items
  */
 export interface NavigationItem {
-  title: string;
-  url: string;
-  icon: LucideIcon;
-  isActive?: boolean;
-  badge?: string;
-  disabled?: boolean;
+  title: string
+  url: string
+  icon: LucideIcon
+  isActive?: boolean
+  badge?: string
+  disabled?: boolean
 }
 
 /**
@@ -42,8 +41,8 @@ export interface NavigationItem {
  * @description Structure for grouping navigation items
  */
 export interface NavigationGroup {
-  label: string;
-  items: NavigationItem[];
+  label: string
+  items: NavigationItem[]
 }
 
 /**
@@ -53,32 +52,32 @@ export interface NavigationGroup {
  */
 export const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
   {
-    title: "Inicio",
-    url: "/dashboard",
+    title: 'Inicio',
+    url: '/dashboard',
     icon: Home,
     isActive: true,
   },
   {
-    title: "Usuarios",
-    url: "/dashboard/users",
+    title: 'Usuarios',
+    url: '/dashboard/users',
     icon: Users,
   },
   {
-    title: "Estadísticas",
-    url: "/dashboard/stats",
+    title: 'Estadísticas',
+    url: '/dashboard/stats',
     icon: BarChart3,
   },
   {
-    title: "Actividad",
-    url: "/dashboard/activity",
+    title: 'Actividad',
+    url: '/dashboard/activity',
     icon: Activity,
   },
   {
-    title: "Calendario",
-    url: "/dashboard/calendar",
+    title: 'Calendario',
+    url: '/dashboard/calendar',
     icon: Calendar,
   },
-];
+]
 
 /**
  * Default settings navigation items
@@ -87,16 +86,16 @@ export const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
  */
 export const DEFAULT_SETTINGS_ITEMS: NavigationItem[] = [
   {
-    title: "Configuración",
-    url: "/dashboard/settings",
+    title: 'Configuración',
+    url: '/dashboard/settings',
     icon: Settings,
   },
   {
-    title: "Perfil",
-    url: "/dashboard/profile",
+    title: 'Perfil',
+    url: '/dashboard/profile',
     icon: User,
   },
-];
+]
 
 /**
  * Admin navigation items
@@ -105,27 +104,27 @@ export const DEFAULT_SETTINGS_ITEMS: NavigationItem[] = [
  */
 export const ADMIN_NAVIGATION_ITEMS: NavigationItem[] = [
   {
-    title: "Panel Admin",
-    url: "/admin",
+    title: 'Panel Admin',
+    url: '/admin',
     icon: Shield,
     isActive: true,
   },
   {
-    title: "Base de Datos",
-    url: "/admin/database",
+    title: 'Base de Datos',
+    url: '/admin/database',
     icon: Database,
   },
   {
-    title: "Sistema",
-    url: "/admin/system",
+    title: 'Sistema',
+    url: '/admin/system',
     icon: Zap,
   },
   {
-    title: "Logs",
-    url: "/admin/logs",
+    title: 'Logs',
+    url: '/admin/logs',
     icon: FileText,
   },
-];
+]
 
 /**
  * Billing navigation items
@@ -134,22 +133,22 @@ export const ADMIN_NAVIGATION_ITEMS: NavigationItem[] = [
  */
 export const BILLING_NAVIGATION_ITEMS: NavigationItem[] = [
   {
-    title: "Facturación",
-    url: "/billing",
+    title: 'Facturación',
+    url: '/billing',
     icon: CreditCard,
     isActive: true,
   },
   {
-    title: "Suscripciones",
-    url: "/billing/subscriptions",
+    title: 'Suscripciones',
+    url: '/billing/subscriptions',
     icon: FileText,
   },
   {
-    title: "Historial",
-    url: "/billing/history",
+    title: 'Historial',
+    url: '/billing/history',
     icon: Activity,
   },
-];
+]
 
 /**
  * Navigation configuration presets
@@ -169,7 +168,7 @@ export const NAVIGATION_PRESETS = {
     main: BILLING_NAVIGATION_ITEMS,
     settings: DEFAULT_SETTINGS_ITEMS,
   },
-} as const;
+} as const
 
 /**
  * Application branding configuration
@@ -177,9 +176,9 @@ export const NAVIGATION_PRESETS = {
  * @description Branding configuration for the sidebar header
  */
 export interface AppBranding {
-  name: string;
-  subtitle: string;
-  icon: LucideIcon;
+  name: string
+  subtitle: string
+  icon: LucideIcon
 }
 
 /**
@@ -188,10 +187,10 @@ export interface AppBranding {
  * @description Default branding for SaaS template
  */
 export const DEFAULT_APP_BRANDING: AppBranding = {
-  name: "SaaS Template",
-  subtitle: "Dashboard",
+  name: 'SaaS Template',
+  subtitle: 'Dashboard',
   icon: BarChart3,
-};
+}
 
 /**
  * Utility function to mark active navigation item
@@ -205,11 +204,11 @@ export function setActiveNavigation(
   items: NavigationItem[],
   currentPath: string
 ): NavigationItem[] {
-  return items.map((item) => ({
+  return items.map(item => ({
     ...item,
     isActive:
       currentPath === item.url || currentPath.startsWith(`${item.url}/`),
-  }));
+  }))
 }
 
 /**
@@ -220,27 +219,27 @@ export function setActiveNavigation(
  * @returns {NavigationGroup[]} Grouped navigation structure
  */
 export function createNavigationGroups(config: {
-  main: NavigationItem[];
-  settings?: NavigationItem[];
-  custom?: { label: string; items: NavigationItem[] }[];
+  main: NavigationItem[]
+  settings?: NavigationItem[]
+  custom?: { label: string; items: NavigationItem[] }[]
 }): NavigationGroup[] {
   const groups: NavigationGroup[] = [
     {
-      label: "Navegación",
+      label: 'Navegación',
       items: config.main,
     },
-  ];
+  ]
 
   if (config.settings && config.settings.length > 0) {
     groups.push({
-      label: "Configuración",
+      label: 'Configuración',
       items: config.settings,
-    });
+    })
   }
 
   if (config.custom) {
-    groups.push(...config.custom);
+    groups.push(...config.custom)
   }
 
-  return groups;
+  return groups
 }

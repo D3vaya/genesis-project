@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @fileoverview Custom data management hook with caching and API integration
@@ -6,15 +7,11 @@
  * @version 1.0.0
  */
 
-import { useCallback, useEffect } from "react";
-import {
-  useDataStore,
-  useUsers,
-  useCache,
-} from "@/modules/shared/stores/dataStore";
-import { get, post, put, del, internalApi } from "@/lib/axios";
-import { prisma } from "@/lib/prisma";
-import type { User } from "@/lib/validations";
+import { useCallback, useEffect } from 'react'
+import { useDataStore, useCache } from '@/modules/shared/stores/dataStore'
+import { get, internalApi } from '@/lib/axios'
+import { prisma } from '@/lib/prisma'
+import type { User } from '@/lib/validations'
 
 /**
  * Data hook return type
@@ -35,27 +32,27 @@ import type { User } from "@/lib/validations";
  * @property {Function} refreshData - Function to refresh all data
  */
 interface UseDataReturn {
-  users: any[];
-  apiData: Record<string, any>;
+  users: any[]
+  apiData: Record<string, any>
   loading: {
-    users: boolean;
-    api: boolean;
-    cache: boolean;
-  };
+    users: boolean
+    api: boolean
+    cache: boolean
+  }
   errors: {
-    users: string | null;
-    api: string | null;
-    cache: string | null;
-  };
-  fetchUsers: () => Promise<any[]>;
-  fetchUsersFromDB: () => Promise<User[]>;
-  createUser: (userData: Partial<User>) => Promise<User>;
-  updateUser: (id: string, userData: Partial<User>) => Promise<User>;
-  deleteUser: (id: string) => Promise<void>;
-  fetchApiData: (endpoint: string, cacheKey?: string) => Promise<any>;
-  clearCache: () => void;
-  invalidateCache: (key: string) => void;
-  refreshData: () => Promise<void>;
+    users: string | null
+    api: string | null
+    cache: string | null
+  }
+  fetchUsers: () => Promise<any[]>
+  fetchUsersFromDB: () => Promise<User[]>
+  createUser: (userData: Partial<User>) => Promise<User>
+  updateUser: (id: string, userData: Partial<User>) => Promise<User>
+  deleteUser: (id: string) => Promise<void>
+  fetchApiData: (endpoint: string, cacheKey?: string) => Promise<any>
+  clearCache: () => void
+  invalidateCache: (key: string) => void
+  refreshData: () => Promise<void>
 }
 
 /**
@@ -131,10 +128,10 @@ export const useData = (): UseDataReturn => {
     setLoading,
     setError,
     clearErrors,
-  } = useDataStore();
+  } = useDataStore()
 
   const { getCache, setCache, removeCache, clearCache, isValidCache } =
-    useCache();
+    useCache()
 
   /**
    * Fetch users from external API with caching
@@ -148,42 +145,42 @@ export const useData = (): UseDataReturn => {
    * ```
    */
   const fetchUsers = useCallback(async (): Promise<any[]> => {
-    const cacheKey = "external-users";
+    const cacheKey = 'external-users'
 
     // Check cache first
     if (isValidCache(cacheKey)) {
-      const cachedUsers = getCache(cacheKey);
-      setUsers(cachedUsers);
-      return cachedUsers;
+      const cachedUsers = getCache(cacheKey)
+      setUsers(cachedUsers)
+      return cachedUsers
     }
 
-    setLoading("api", true);
-    setError("api", null);
+    setLoading('api', true)
+    setError('api', null)
 
     try {
-      const fetchedUsers = await get<any[]>("/users");
+      const fetchedUsers = await get<any[]>('/users')
 
       // Update store and cache
-      setUsers(fetchedUsers);
-      setCache(cacheKey, fetchedUsers, 5 * 60 * 1000); // 5 minutes cache
-      setApiData("users", fetchedUsers);
+      setUsers(fetchedUsers)
+      setCache(cacheKey, fetchedUsers, 5 * 60 * 1000) // 5 minutes cache
+      setApiData('users', fetchedUsers)
 
-      return fetchedUsers;
+      return fetchedUsers
     } catch (error: any) {
-      console.error("Error fetching users:", error);
-      const errorMessage = error?.message || "Failed to fetch users";
-      setError("api", errorMessage);
+      console.error('Error fetching users:', error)
+      const errorMessage = error?.message || 'Failed to fetch users'
+      setError('api', errorMessage)
 
       // Try to return cached data if available
-      const cachedUsers = getCache(cacheKey);
+      const cachedUsers = getCache(cacheKey)
       if (cachedUsers) {
-        setUsers(cachedUsers);
-        return cachedUsers;
+        setUsers(cachedUsers)
+        return cachedUsers
       }
 
-      throw error;
+      throw error
     } finally {
-      setLoading("api", false);
+      setLoading('api', false)
     }
   }, [
     getCache,
@@ -193,7 +190,7 @@ export const useData = (): UseDataReturn => {
     setLoading,
     setError,
     setApiData,
-  ]);
+  ])
 
   /**
    * Fetch users from database using Prisma
@@ -207,16 +204,16 @@ export const useData = (): UseDataReturn => {
    * ```
    */
   const fetchUsersFromDB = useCallback(async (): Promise<User[]> => {
-    const cacheKey = "db-users";
+    const cacheKey = 'db-users'
 
     // Check cache first
     if (isValidCache(cacheKey)) {
-      const cachedUsers = getCache(cacheKey);
-      return cachedUsers;
+      const cachedUsers = getCache(cacheKey)
+      return cachedUsers
     }
 
-    setLoading("users", true);
-    setError("users", null);
+    setLoading('users', true)
+    setError('users', null)
 
     try {
       const dbUsers = await prisma.user.findMany({
@@ -228,22 +225,22 @@ export const useData = (): UseDataReturn => {
           createdAt: true,
           updatedAt: true,
         },
-      });
+      })
 
       // Cache the results
-      setCache(cacheKey, dbUsers, 2 * 60 * 1000); // 2 minutes cache for DB data
+      setCache(cacheKey, dbUsers, 2 * 60 * 1000) // 2 minutes cache for DB data
 
-      return dbUsers;
+      return dbUsers
     } catch (error: any) {
-      console.error("Error fetching users from DB:", error);
+      console.error('Error fetching users from DB:', error)
       const errorMessage =
-        error?.message || "Failed to fetch users from database";
-      setError("users", errorMessage);
-      throw error;
+        error?.message || 'Failed to fetch users from database'
+      setError('users', errorMessage)
+      throw error
     } finally {
-      setLoading("users", false);
+      setLoading('users', false)
     }
-  }, [getCache, setCache, isValidCache, setLoading, setError]);
+  }, [getCache, setCache, isValidCache, setLoading, setError])
 
   /**
    * Create new user
@@ -262,39 +259,39 @@ export const useData = (): UseDataReturn => {
    */
   const createUser = useCallback(
     async (userData: Partial<User>): Promise<User> => {
-      setLoading("users", true);
-      setError("users", null);
+      setLoading('users', true)
+      setError('users', null)
 
       try {
         const response = await internalApi<{ user: User; message: string }>(
-          "POST",
-          "/api/auth/register",
+          'POST',
+          '/api/auth/register',
           userData
-        );
+        )
 
-        const newUser = response.user;
+        const newUser = response.user
 
         // Add to store
-        addUser(newUser);
+        addUser(newUser)
 
         // Invalidate cache
-        removeCache("db-users");
+        removeCache('db-users')
 
-        return newUser;
+        return newUser
       } catch (error: any) {
-        console.error("Error creating user:", error);
+        console.error('Error creating user:', error)
         const errorMessage =
           error?.response?.data?.message ||
           error?.message ||
-          "Failed to create user";
-        setError("users", errorMessage);
-        throw error;
+          'Failed to create user'
+        setError('users', errorMessage)
+        throw error
       } finally {
-        setLoading("users", false);
+        setLoading('users', false)
       }
     },
     [addUser, removeCache, setLoading, setError]
-  );
+  )
 
   /**
    * Update existing user
@@ -312,8 +309,8 @@ export const useData = (): UseDataReturn => {
    */
   const updateUser = useCallback(
     async (id: string, userData: Partial<User>): Promise<User> => {
-      setLoading("users", true);
-      setError("users", null);
+      setLoading('users', true)
+      setError('users', null)
 
       try {
         // This would typically call an API endpoint
@@ -329,26 +326,26 @@ export const useData = (): UseDataReturn => {
             createdAt: true,
             updatedAt: true,
           },
-        });
+        })
 
         // Update store
-        updateUserInStore(id, updatedUser);
+        updateUserInStore(id, updatedUser)
 
         // Invalidate cache
-        removeCache("db-users");
+        removeCache('db-users')
 
-        return updatedUser;
+        return updatedUser
       } catch (error: any) {
-        console.error("Error updating user:", error);
-        const errorMessage = error?.message || "Failed to update user";
-        setError("users", errorMessage);
-        throw error;
+        console.error('Error updating user:', error)
+        const errorMessage = error?.message || 'Failed to update user'
+        setError('users', errorMessage)
+        throw error
       } finally {
-        setLoading("users", false);
+        setLoading('users', false)
       }
     },
     [updateUserInStore, removeCache, setLoading, setError]
-  );
+  )
 
   /**
    * Delete user
@@ -364,31 +361,31 @@ export const useData = (): UseDataReturn => {
    */
   const deleteUser = useCallback(
     async (id: string): Promise<void> => {
-      setLoading("users", true);
-      setError("users", null);
+      setLoading('users', true)
+      setError('users', null)
 
       try {
         // Delete from database
         await prisma.user.delete({
           where: { id },
-        });
+        })
 
         // Remove from store
-        removeUser(id);
+        removeUser(id)
 
         // Invalidate cache
-        removeCache("db-users");
+        removeCache('db-users')
       } catch (error: any) {
-        console.error("Error deleting user:", error);
-        const errorMessage = error?.message || "Failed to delete user";
-        setError("users", errorMessage);
-        throw error;
+        console.error('Error deleting user:', error)
+        const errorMessage = error?.message || 'Failed to delete user'
+        setError('users', errorMessage)
+        throw error
       } finally {
-        setLoading("users", false);
+        setLoading('users', false)
       }
     },
     [removeUser, removeCache, setLoading, setError]
-  );
+  )
 
   /**
    * Fetch data from external API with caching
@@ -410,46 +407,46 @@ export const useData = (): UseDataReturn => {
       cacheKey?: string,
       cacheTTL: number = 5 * 60 * 1000
     ): Promise<any> => {
-      const key = cacheKey || endpoint.replace(/\//g, "-");
+      const key = cacheKey || endpoint.replace(/\//g, '-')
 
       // Check cache first
       if (isValidCache(key)) {
-        const cachedData = getCache(key);
-        setApiData(key, cachedData);
-        return cachedData;
+        const cachedData = getCache(key)
+        setApiData(key, cachedData)
+        return cachedData
       }
 
-      setLoading("api", true);
-      setError("api", null);
+      setLoading('api', true)
+      setError('api', null)
 
       try {
-        const data = await get(endpoint);
+        const data = await get(endpoint)
 
         // Update store and cache
-        setApiData(key, data);
-        setCache(key, data, cacheTTL);
+        setApiData(key, data)
+        setCache(key, data, cacheTTL)
 
-        return data;
+        return data
       } catch (error: any) {
-        console.error(`Error fetching data from ${endpoint}:`, error);
+        console.error(`Error fetching data from ${endpoint}:`, error)
         const errorMessage =
-          error?.message || `Failed to fetch data from ${endpoint}`;
-        setError("api", errorMessage);
+          error?.message || `Failed to fetch data from ${endpoint}`
+        setError('api', errorMessage)
 
         // Try to return cached data if available
-        const cachedData = getCache(key);
+        const cachedData = getCache(key)
         if (cachedData) {
-          setApiData(key, cachedData);
-          return cachedData;
+          setApiData(key, cachedData)
+          return cachedData
         }
 
-        throw error;
+        throw error
       } finally {
-        setLoading("api", false);
+        setLoading('api', false)
       }
     },
     [getCache, setCache, isValidCache, setApiData, setLoading, setError]
-  );
+  )
 
   /**
    * Invalidate specific cache entry
@@ -463,16 +460,17 @@ export const useData = (): UseDataReturn => {
    */
   const invalidateCache = useCallback(
     (key: string): void => {
-      removeCache(key);
+      removeCache(key)
 
       // Clear related API data
       if (apiData[key]) {
-        const { [key]: _, ...rest } = apiData;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [key]: _, ...rest } = apiData
         // This would need to be implemented in the store
       }
     },
     [removeCache, apiData]
-  );
+  )
 
   /**
    * Refresh all data
@@ -487,20 +485,20 @@ export const useData = (): UseDataReturn => {
    */
   const refreshData = useCallback(async (): Promise<void> => {
     // Clear all caches
-    clearCache();
-    clearErrors();
+    clearCache()
+    clearErrors()
 
     try {
       // Refetch key data
       await Promise.all([
         fetchUsers(),
         fetchUsersFromDB().catch(console.error), // Don't fail if DB is not accessible
-      ]);
+      ])
     } catch (error) {
-      console.error("Error refreshing data:", error);
-      throw error;
+      console.error('Error refreshing data:', error)
+      throw error
     }
-  }, [clearCache, clearErrors, fetchUsers, fetchUsersFromDB]);
+  }, [clearCache, clearErrors, fetchUsers, fetchUsersFromDB])
 
   /**
    * Auto-refresh data on mount
@@ -508,15 +506,15 @@ export const useData = (): UseDataReturn => {
    */
   useEffect(() => {
     // Check if we need to refresh data
-    const lastFetch = getApiData("last-fetch-timestamp");
-    const now = Date.now();
-    const fiveMinutesAgo = now - 5 * 60 * 1000;
+    const lastFetch = getApiData('last-fetch-timestamp')
+    const now = Date.now()
+    const fiveMinutesAgo = now - 5 * 60 * 1000
 
     if (!lastFetch || lastFetch < fiveMinutesAgo) {
-      refreshData().catch(console.error);
-      setApiData("last-fetch-timestamp", now);
+      refreshData().catch(console.error)
+      setApiData('last-fetch-timestamp', now)
     }
-  }, []); // Empty dependency array for mount-only effect
+  }, []) // Empty dependency array for mount-only effect
 
   return {
     users,
@@ -532,8 +530,8 @@ export const useData = (): UseDataReturn => {
     clearCache,
     invalidateCache,
     refreshData,
-  };
-};
+  }
+}
 
 /**
  * Hook for users data only
@@ -568,18 +566,15 @@ export const useData = (): UseDataReturn => {
  * ```
  */
 export const useUsersData = () => {
-  const { users, loading, errors, fetchUsers, fetchUsersFromDB } = useData();
+  const { users, loading, errors, fetchUsers, fetchUsersFromDB } = useData()
 
   const refreshUsers = useCallback(async () => {
     try {
-      await Promise.all([
-        fetchUsers(),
-        fetchUsersFromDB().catch(console.error),
-      ]);
+      await Promise.all([fetchUsers(), fetchUsersFromDB().catch(console.error)])
     } catch (error) {
-      console.error("Error refreshing users:", error);
+      console.error('Error refreshing users:', error)
     }
-  }, [fetchUsers, fetchUsersFromDB]);
+  }, [fetchUsers, fetchUsersFromDB])
 
   return {
     users,
@@ -588,8 +583,8 @@ export const useUsersData = () => {
     fetchUsers,
     fetchUsersFromDB,
     refreshUsers,
-  };
-};
+  }
+}
 
 /**
  * Hook for API data only
@@ -629,7 +624,7 @@ export const useApiData = () => {
     fetchApiData,
     clearCache,
     invalidateCache,
-  } = useData();
+  } = useData()
 
   return {
     apiData,
@@ -638,5 +633,5 @@ export const useApiData = () => {
     fetchApiData,
     clearCache,
     invalidateCache,
-  };
-};
+  }
+}

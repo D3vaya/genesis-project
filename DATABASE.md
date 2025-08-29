@@ -7,6 +7,7 @@ Este proyecto utiliza **Prisma ORM** con **SQLite** como base de datos local par
 ## 🚀 Scripts Disponibles
 
 ### Comandos Principales
+
 ```bash
 # Generar el cliente de Prisma después de cambios en el schema
 npm run db:generate
@@ -29,10 +30,12 @@ npm run db:reset
 El script de seed crea automáticamente un usuario de prueba con las siguientes credenciales:
 
 ### 🔑 Credenciales de Login
+
 - **Email:** `usuario@ejemplo.com`
 - **Password:** `password123`
 
 ### ⚠️ Nota Importante
+
 Estas credenciales coinciden con los placeholders mostrados en la pantalla de login para facilitar el desarrollo y testing.
 
 ## 📁 Estructura de Archivos
@@ -49,6 +52,7 @@ src/generated/prisma/ # Cliente generado de Prisma
 ## 🛠️ Workflow de Desarrollo
 
 ### 1. Después de clonar el proyecto:
+
 ```bash
 npm install
 npm run db:generate
@@ -57,6 +61,7 @@ npm run db:seed
 ```
 
 ### 2. Para cambios en el schema:
+
 ```bash
 # 1. Modifica prisma/schema.prisma
 # 2. Genera migración
@@ -66,6 +71,7 @@ npm run db:generate
 ```
 
 ### 3. Para visualizar/editar datos:
+
 ```bash
 npm run db:studio
 # Abre en http://localhost:5555
@@ -74,6 +80,7 @@ npm run db:studio
 ## 📊 Esquema Actual
 
 ### Tabla: `users`
+
 - `id` (String, cuid, PK)
 - `email` (String, unique)
 - `name` (String, optional)
@@ -83,6 +90,7 @@ npm run db:studio
 - `updatedAt` (DateTime)
 
 ### Tablas de NextAuth:
+
 - `accounts` - Cuentas de proveedores externos
 - `sessions` - Sesiones de usuario
 - `verification_tokens` - Tokens de verificación
@@ -104,16 +112,19 @@ npm run db:seed
 ## 🆘 Solución de Problemas
 
 ### Error: "Prisma Client not generated"
+
 ```bash
 npm run db:generate
 ```
 
-### Error: "Database not found"  
+### Error: "Database not found"
+
 ```bash
 npm run db:migrate
 ```
 
 ### Resetear todo desde cero
+
 ```bash
 npm run db:reset
 ```

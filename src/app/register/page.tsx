@@ -6,13 +6,13 @@
  * @version 1.0.0
  */
 
-"use client";
+'use client'
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
 import {
   Eye,
   EyeOff,
@@ -20,10 +20,10 @@ import {
   UserPlus,
   CheckCircle,
   XCircle,
-} from "lucide-react";
+} from 'lucide-react'
 
-import { Button } from "@/modules/shared/components/ui/button";
-import { Input } from "@/modules/shared/components/ui/input";
+import { Button } from '@/modules/shared/components/ui/button'
+import { Input } from '@/modules/shared/components/ui/input'
 import {
   Card,
   CardContent,
@@ -31,8 +31,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/modules/shared/components/ui/card";
-import { Alert, AlertDescription } from "@/modules/shared/components/ui/alert";
+} from '@/modules/shared/components/ui/card'
+import { Alert, AlertDescription } from '@/modules/shared/components/ui/alert'
 import {
   Form,
   FormControl,
@@ -40,12 +40,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/modules/shared/components/ui/form";
+} from '@/modules/shared/components/ui/form'
 
-import { useAuthStore } from "@/modules/shared/stores/authStore";
-import { toast } from "sonner";
-import { internalApi } from "@/lib/axios";
-import { registerSchema, type RegisterFormData } from "@/lib/validations";
+import { useAuthStore } from '@/modules/shared/stores/authStore'
+import { toast } from 'sonner'
+import { internalApi } from '@/lib/axios'
+import { registerSchema, type RegisterFormData } from '@/lib/validations'
 
 /**
  * Password strength indicator interface
@@ -57,10 +57,10 @@ import { registerSchema, type RegisterFormData } from "@/lib/validations";
  * @property {number} score - Overall password strength score (0-3)
  */
 interface PasswordStrength {
-  hasMinLength: boolean;
-  hasLetter: boolean;
-  hasNumber: boolean;
-  score: number;
+  hasMinLength: boolean
+  hasLetter: boolean
+  hasNumber: boolean
+  score: number
 }
 
 /**
@@ -76,19 +76,18 @@ interface PasswordStrength {
  * ```
  */
 export default function RegisterPage(): React.JSX.Element {
-  const router = useRouter();
-  const { isAuthenticated, login } = useAuthStore();
+  const router = useRouter()
+  const { isAuthenticated, login } = useAuthStore()
 
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState<boolean>(false);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
     hasMinLength: false,
     hasLetter: false,
     hasNumber: false,
     score: 0,
-  });
+  })
 
   /**
    * React Hook Form setup with Zod validation
@@ -97,19 +96,19 @@ export default function RegisterPage(): React.JSX.Element {
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
-    mode: "onChange", // Validate on change for better UX
-  });
+    mode: 'onChange', // Validate on change for better UX
+  })
 
   /**
    * Watch password field for strength validation
    * @description Monitors password changes to update strength indicator in real-time
    */
-  const watchedPassword = form.watch("password");
+  const watchedPassword = form.watch('password')
 
   /**
    * Redirect authenticated users
@@ -117,9 +116,9 @@ export default function RegisterPage(): React.JSX.Element {
    */
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/dashboard");
+      router.push('/dashboard')
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router])
 
   /**
    * Update password strength when password changes
@@ -127,17 +126,17 @@ export default function RegisterPage(): React.JSX.Element {
    */
   useEffect(() => {
     if (watchedPassword) {
-      const strength = calculatePasswordStrength(watchedPassword);
-      setPasswordStrength(strength);
+      const strength = calculatePasswordStrength(watchedPassword)
+      setPasswordStrength(strength)
     } else {
       setPasswordStrength({
         hasMinLength: false,
         hasLetter: false,
         hasNumber: false,
         score: 0,
-      });
+      })
     }
-  }, [watchedPassword]);
+  }, [watchedPassword])
 
   /**
    * Calculate password strength
@@ -152,22 +151,22 @@ export default function RegisterPage(): React.JSX.Element {
    * ```
    */
   const calculatePasswordStrength = (password: string): PasswordStrength => {
-    const hasMinLength = password.length >= 8;
-    const hasLetter = /[A-Za-z]/.test(password);
-    const hasNumber = /\d/.test(password);
+    const hasMinLength = password.length >= 8
+    const hasLetter = /[A-Za-z]/.test(password)
+    const hasNumber = /\d/.test(password)
 
-    let score = 0;
-    if (hasMinLength) score++;
-    if (hasLetter) score++;
-    if (hasNumber) score++;
+    let score = 0
+    if (hasMinLength) score++
+    if (hasLetter) score++
+    if (hasNumber) score++
 
     return {
       hasMinLength,
       hasLetter,
       hasNumber,
       score,
-    };
-  };
+    }
+  }
 
   /**
    * Get password strength color class
@@ -184,15 +183,15 @@ export default function RegisterPage(): React.JSX.Element {
     switch (score) {
       case 0:
       case 1:
-        return "text-red-600";
+        return 'text-red-600'
       case 2:
-        return "text-yellow-600";
+        return 'text-yellow-600'
       case 3:
-        return "text-green-600";
+        return 'text-green-600'
       default:
-        return "text-gray-400";
+        return 'text-gray-400'
     }
-  };
+  }
 
   /**
    * Get password strength label
@@ -209,15 +208,15 @@ export default function RegisterPage(): React.JSX.Element {
     switch (score) {
       case 0:
       case 1:
-        return "Débil";
+        return 'Débil'
       case 2:
-        return "Media";
+        return 'Media'
       case 3:
-        return "Fuerte";
+        return 'Fuerte'
       default:
-        return "";
+        return ''
     }
-  };
+  }
 
   /**
    * Form submission handler
@@ -239,73 +238,73 @@ export default function RegisterPage(): React.JSX.Element {
    * ```
    */
   const onSubmit = async (data: RegisterFormData): Promise<void> => {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
       // Remove confirmPassword from the data sent to API
-      const { confirmPassword, ...registrationData } = data;
+      const { ...registrationData } = data
 
       // Call registration API
       const response = await internalApi<{
-        message: string;
+        message: string
         user: {
-          id: string;
-          name: string;
-          email: string;
-        };
-      }>("POST", "/api/auth/register", registrationData);
+          id: string
+          name: string
+          email: string
+        }
+      }>('POST', '/api/auth/register', registrationData)
 
       // Show success notification
-      toast.success("¡Registro Exitoso!", {
+      toast.success('¡Registro Exitoso!', {
         description: response.message,
-      });
+      })
 
       // Automatically log in the user
-      const loginSuccess = await login(data.email, data.password);
+      const loginSuccess = await login(data.email, data.password)
 
       if (loginSuccess) {
-        toast.success("¡Bienvenido!", {
+        toast.success('¡Bienvenido!', {
           description: `¡Hola ${response.user.name}! Tu cuenta ha sido creada exitosamente.`,
-        });
+        })
 
         // Redirect to dashboard will be handled by useEffect when isAuthenticated changes
       } else {
         // Registration succeeded but login failed, redirect to login page
-        toast.info("Registro Completado", {
-          description: "Tu cuenta fue creada. Por favor, inicia sesión.",
-        });
+        toast.info('Registro Completado', {
+          description: 'Tu cuenta fue creada. Por favor, inicia sesión.',
+        })
 
-        router.push("/login");
+        router.push('/login')
       }
     } catch (error: any) {
-      console.error("Registration error:", error);
+      console.error('Registration error:', error)
 
-      let errorMessage = "Ocurrió un error inesperado durante el registro";
+      let errorMessage = 'Ocurrió un error inesperado durante el registro'
 
       if (error?.response?.data?.message) {
-        errorMessage = error.response.data.message;
+        errorMessage = error.response.data.message
       } else if (error?.message) {
-        errorMessage = error.message;
+        errorMessage = error.message
       }
 
       // Handle specific error cases
       if (error?.response?.status === 409) {
         errorMessage =
-          "Ya existe un usuario con este email. ¿Quieres iniciar sesión?";
+          'Ya existe un usuario con este email. ¿Quieres iniciar sesión?'
       }
 
-      toast.error("Error de Registro", {
+      toast.error('Error de Registro', {
         description: errorMessage,
-      });
+      })
 
       // If email already exists, focus on email field
       if (error?.response?.status === 409) {
-        form.setFocus("email");
+        form.setFocus('email')
       }
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   /**
    * Toggle password visibility
@@ -317,8 +316,8 @@ export default function RegisterPage(): React.JSX.Element {
    * ```
    */
   const togglePasswordVisibility = (): void => {
-    setShowPassword(!showPassword);
-  };
+    setShowPassword(!showPassword)
+  }
 
   /**
    * Toggle confirm password visibility
@@ -330,8 +329,8 @@ export default function RegisterPage(): React.JSX.Element {
    * ```
    */
   const toggleConfirmPasswordVisibility = (): void => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
+    setShowConfirmPassword(!showConfirmPassword)
+  }
 
   /**
    * Get form field error message
@@ -343,8 +342,8 @@ export default function RegisterPage(): React.JSX.Element {
   const getFieldError = (
     fieldName: keyof RegisterFormData
   ): string | undefined => {
-    return form.formState.errors[fieldName]?.message;
-  };
+    return form.formState.errors[fieldName]?.message
+  }
 
   /**
    * Check if form is valid and can be submitted
@@ -355,16 +354,16 @@ export default function RegisterPage(): React.JSX.Element {
   const canSubmit = (): boolean => {
     return (
       form.formState.isValid && !isSubmitting && passwordStrength.score >= 2
-    );
-  };
+    )
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4 dark:from-slate-900 dark:to-slate-800">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="p-3 rounded-full bg-primary/10">
-              <UserPlus className="h-8 w-8 text-primary" />
+          <div className="mb-4 flex justify-center">
+            <div className="bg-primary/10 rounded-full p-3">
+              <UserPlus className="text-primary h-8 w-8" />
             </div>
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">
@@ -393,7 +392,7 @@ export default function RegisterPage(): React.JSX.Element {
                         autoComplete="name"
                         disabled={isSubmitting}
                         className={
-                          getFieldError("name") ? "border-destructive" : ""
+                          getFieldError('name') ? 'border-destructive' : ''
                         }
                         {...field}
                       />
@@ -418,7 +417,7 @@ export default function RegisterPage(): React.JSX.Element {
                         autoComplete="email"
                         disabled={isSubmitting}
                         className={
-                          getFieldError("email") ? "border-destructive" : ""
+                          getFieldError('email') ? 'border-destructive' : ''
                         }
                         {...field}
                       />
@@ -439,14 +438,14 @@ export default function RegisterPage(): React.JSX.Element {
                       <div className="relative">
                         <Input
                           id="password"
-                          type={showPassword ? "text" : "password"}
+                          type={showPassword ? 'text' : 'password'}
                           placeholder="Tu contraseña"
                           autoComplete="new-password"
                           disabled={isSubmitting}
                           className={`pr-10 ${
-                            getFieldError("password")
-                              ? "border-destructive"
-                              : ""
+                            getFieldError('password')
+                              ? 'border-destructive'
+                              : ''
                           }`}
                           {...field}
                         />
@@ -454,11 +453,11 @@ export default function RegisterPage(): React.JSX.Element {
                           type="button"
                           onClick={togglePasswordVisibility}
                           disabled={isSubmitting}
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none focus:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="text-muted-foreground hover:text-foreground focus:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transform focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                           aria-label={
                             showPassword
-                              ? "Ocultar contraseña"
-                              : "Mostrar contraseña"
+                              ? 'Ocultar contraseña'
+                              : 'Mostrar contraseña'
                           }
                         >
                           {showPassword ? (
@@ -473,9 +472,9 @@ export default function RegisterPage(): React.JSX.Element {
 
                     {/* Password Strength Indicator */}
                     {watchedPassword && (
-                      <div className="space-y-2 mt-2">
+                      <div className="mt-2 space-y-2">
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-muted-foreground text-sm">
                             Fortaleza:
                           </span>
                           <span
@@ -491,8 +490,8 @@ export default function RegisterPage(): React.JSX.Element {
                           <div
                             className={`flex items-center space-x-1 ${
                               passwordStrength.hasMinLength
-                                ? "text-green-600"
-                                : "text-red-600"
+                                ? 'text-green-600'
+                                : 'text-red-600'
                             }`}
                           >
                             {passwordStrength.hasMinLength ? (
@@ -506,8 +505,8 @@ export default function RegisterPage(): React.JSX.Element {
                           <div
                             className={`flex items-center space-x-1 ${
                               passwordStrength.hasLetter
-                                ? "text-green-600"
-                                : "text-red-600"
+                                ? 'text-green-600'
+                                : 'text-red-600'
                             }`}
                           >
                             {passwordStrength.hasLetter ? (
@@ -521,8 +520,8 @@ export default function RegisterPage(): React.JSX.Element {
                           <div
                             className={`flex items-center space-x-1 ${
                               passwordStrength.hasNumber
-                                ? "text-green-600"
-                                : "text-red-600"
+                                ? 'text-green-600'
+                                : 'text-red-600'
                             }`}
                           >
                             {passwordStrength.hasNumber ? (
@@ -552,14 +551,14 @@ export default function RegisterPage(): React.JSX.Element {
                       <div className="relative">
                         <Input
                           id="confirmPassword"
-                          type={showConfirmPassword ? "text" : "password"}
+                          type={showConfirmPassword ? 'text' : 'password'}
                           placeholder="Confirma tu contraseña"
                           autoComplete="new-password"
                           disabled={isSubmitting}
                           className={`pr-10 ${
-                            getFieldError("confirmPassword")
-                              ? "border-destructive"
-                              : ""
+                            getFieldError('confirmPassword')
+                              ? 'border-destructive'
+                              : ''
                           }`}
                           {...field}
                         />
@@ -567,11 +566,11 @@ export default function RegisterPage(): React.JSX.Element {
                           type="button"
                           onClick={toggleConfirmPasswordVisibility}
                           disabled={isSubmitting}
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none focus:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="text-muted-foreground hover:text-foreground focus:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transform focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                           aria-label={
                             showConfirmPassword
-                              ? "Ocultar contraseña"
-                              : "Mostrar contraseña"
+                              ? 'Ocultar contraseña'
+                              : 'Mostrar contraseña'
                           }
                         >
                           {showConfirmPassword ? (
@@ -620,26 +619,26 @@ export default function RegisterPage(): React.JSX.Element {
 
             <CardFooter className="flex flex-col space-y-4">
               {/* Login Link */}
-              <div className="text-center text-sm text-muted-foreground">
-                ¿Ya tienes una cuenta?{" "}
+              <div className="text-muted-foreground text-center text-sm">
+                ¿Ya tienes una cuenta?{' '}
                 <Link
                   href="/login"
-                  className="font-medium text-primary hover:underline focus:outline-none focus:underline"
+                  className="text-primary font-medium hover:underline focus:underline focus:outline-none"
                 >
                   Inicia sesión aquí
                 </Link>
               </div>
 
               {/* Terms of Service (placeholder) */}
-              <div className="text-xs text-muted-foreground text-center">
-                Al crear una cuenta, aceptas nuestros{" "}
-                <Link href="/terms" className="underline hover:text-foreground">
+              <div className="text-muted-foreground text-center text-xs">
+                Al crear una cuenta, aceptas nuestros{' '}
+                <Link href="/terms" className="hover:text-foreground underline">
                   Términos de Servicio
-                </Link>{" "}
-                y{" "}
+                </Link>{' '}
+                y{' '}
                 <Link
                   href="/privacy"
-                  className="underline hover:text-foreground"
+                  className="hover:text-foreground underline"
                 >
                   Política de Privacidad
                 </Link>
@@ -649,5 +648,5 @@ export default function RegisterPage(): React.JSX.Element {
         </Form>
       </Card>
     </div>
-  );
+  )
 }

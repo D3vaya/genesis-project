@@ -75,25 +75,21 @@ import { DEFAULT_NAVIGATION_ITEMS } from '@/modules/shared/config/navigation';
 ### Navegación Agrupada
 
 ```typescript
-import { createNavigationGroups } from '@/modules/shared/config/navigation';
+import { createNavigationGroups } from '@/modules/shared/config/navigation'
 
 const customNavigation = createNavigationGroups({
   main: [
-    { title: "Inicio", url: "/dashboard", icon: Home, isActive: true },
-    { title: "Usuarios", url: "/users", icon: Users },
+    { title: 'Inicio', url: '/dashboard', icon: Home, isActive: true },
+    { title: 'Usuarios', url: '/users', icon: Users },
   ],
-  settings: [
-    { title: "Configuración", url: "/settings", icon: Settings },
-  ],
+  settings: [{ title: 'Configuración', url: '/settings', icon: Settings }],
   custom: [
     {
-      label: "Herramientas",
-      items: [
-        { title: "Logs", url: "/logs", icon: FileText },
-      ]
-    }
-  ]
-});
+      label: 'Herramientas',
+      items: [{ title: 'Logs', url: '/logs', icon: FileText }],
+    },
+  ],
+})
 ```
 
 ### Navegación Personalizada
@@ -101,14 +97,14 @@ const customNavigation = createNavigationGroups({
 ```typescript
 const myNavigation: NavigationItem[] = [
   {
-    title: "Mi Página",
-    url: "/my-page",
+    title: 'Mi Página',
+    url: '/my-page',
     icon: MyIcon,
     isActive: true,
-    badge: "New",
+    badge: 'New',
     disabled: false,
-  }
-];
+  },
+]
 ```
 
 ## Ejemplos de Uso
@@ -249,27 +245,27 @@ import { FullPageDashboardLayout } from '@/modules/shared/components/layout';
 ```typescript
 const headerActions: HeaderAction[] = [
   {
-    label: "Guardar",
+    label: 'Guardar',
     icon: Save,
     onClick: handleSave,
     disabled: !canSave,
-    variant: "default",
+    variant: 'default',
   },
   {
-    label: "Exportar",
+    label: 'Exportar',
     icon: Download,
     onClick: handleExport,
     loading: isExporting,
-    variant: "outline",
+    variant: 'outline',
   },
   {
-    label: "Eliminar",
+    label: 'Eliminar',
     icon: Trash,
     onClick: handleDelete,
-    variant: "destructive",
-    className: "ml-4",
-  }
-];
+    variant: 'destructive',
+    className: 'ml-4',
+  },
+]
 ```
 
 ### Búsqueda Controlada
@@ -341,18 +337,18 @@ const customMenuItems = [
 
 ```typescript
 interface DashboardLayoutProps {
-  children: React.ReactNode;
-  navigation?: NavigationItem[] | NavigationGroup[];
-  branding?: AppBranding;
-  headerProps?: DashboardHeaderProps;
-  sidebarProps?: Omit<AppSidebarProps, 'navigation' | 'branding'>;
-  showHeader?: boolean;
-  showSidebar?: boolean;
-  customHeader?: React.ReactNode;
-  customSidebar?: React.ReactNode;
-  containerPadding?: "none" | "sm" | "default" | "lg";
-  contentClassName?: string;
-  fullHeight?: boolean;
+  children: React.ReactNode
+  navigation?: NavigationItem[] | NavigationGroup[]
+  branding?: AppBranding
+  headerProps?: DashboardHeaderProps
+  sidebarProps?: Omit<AppSidebarProps, 'navigation' | 'branding'>
+  showHeader?: boolean
+  showSidebar?: boolean
+  customHeader?: React.ReactNode
+  customSidebar?: React.ReactNode
+  containerPadding?: 'none' | 'sm' | 'default' | 'lg'
+  contentClassName?: string
+  fullHeight?: boolean
 }
 ```
 
@@ -360,14 +356,20 @@ interface DashboardLayoutProps {
 
 ```typescript
 interface HeaderAction {
-  label: string;
-  icon?: React.ComponentType<any>;
-  onClick: () => void;
-  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
-  size?: "default" | "sm" | "lg" | "icon";
-  disabled?: boolean;
-  loading?: boolean;
-  className?: string;
+  label: string
+  icon?: React.ComponentType<any>
+  onClick: () => void
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
+  size?: 'default' | 'sm' | 'lg' | 'icon'
+  disabled?: boolean
+  loading?: boolean
+  className?: string
 }
 ```
 
@@ -375,12 +377,12 @@ interface HeaderAction {
 
 ```typescript
 interface NavigationItem {
-  title: string;
-  url: string;
-  icon: LucideIcon;
-  isActive?: boolean;
-  badge?: string;
-  disabled?: boolean;
+  title: string
+  url: string
+  icon: LucideIcon
+  isActive?: boolean
+  badge?: string
+  disabled?: boolean
 }
 ```
 

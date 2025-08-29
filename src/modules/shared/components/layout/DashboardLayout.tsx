@@ -5,12 +5,12 @@
  * @version 1.0.0
  */
 
-"use client";
+'use client'
 
-import React from "react";
-import { SidebarProvider } from "@/modules/shared/components/ui/sidebar";
-import { AppSidebar, AppSidebarProps } from "./AppSidebar";
-import { DashboardHeader, DashboardHeaderProps } from "./DashboardHeader";
+import React from 'react'
+import { SidebarProvider } from '@/modules/shared/components/ui/sidebar'
+import { AppSidebar, AppSidebarProps } from './AppSidebar'
+import { DashboardHeader, DashboardHeaderProps } from './DashboardHeader'
 import {
   NavigationItem,
   NavigationGroup,
@@ -19,8 +19,8 @@ import {
   DEFAULT_SETTINGS_ITEMS,
   DEFAULT_APP_BRANDING,
   createNavigationGroups,
-} from "@/modules/shared/config/navigation";
-import { Settings, Shield, Users } from "lucide-react";
+} from '@/modules/shared/config/navigation'
+import { Settings, Shield, Users } from 'lucide-react'
 
 /**
  * DashboardLayout component props
@@ -31,62 +31,62 @@ export interface DashboardLayoutProps {
   /**
    * Content to render in the main area
    */
-  children: React.ReactNode;
+  children: React.ReactNode
 
   /**
    * Navigation configuration for sidebar
    */
-  navigation?: NavigationItem[] | NavigationGroup[];
+  navigation?: NavigationItem[] | NavigationGroup[]
 
   /**
    * App branding configuration
    */
-  branding?: AppBranding;
+  branding?: AppBranding
 
   /**
    * Header configuration
    */
-  headerProps?: DashboardHeaderProps;
+  headerProps?: DashboardHeaderProps
 
   /**
    * Sidebar configuration
    */
-  sidebarProps?: Omit<AppSidebarProps, "navigation" | "branding">;
+  sidebarProps?: Omit<AppSidebarProps, 'navigation' | 'branding'>
 
   /**
    * Whether to show the header
    */
-  showHeader?: boolean;
+  showHeader?: boolean
 
   /**
    * Whether to show the sidebar
    */
-  showSidebar?: boolean;
+  showSidebar?: boolean
 
   /**
    * Custom header component
    */
-  customHeader?: React.ReactNode;
+  customHeader?: React.ReactNode
 
   /**
    * Custom sidebar component
    */
-  customSidebar?: React.ReactNode;
+  customSidebar?: React.ReactNode
 
   /**
    * Container padding
    */
-  containerPadding?: "none" | "sm" | "default" | "lg";
+  containerPadding?: 'none' | 'sm' | 'default' | 'lg'
 
   /**
    * Main content area classes
    */
-  contentClassName?: string;
+  contentClassName?: string
 
   /**
    * Full height layout
    */
-  fullHeight?: boolean;
+  fullHeight?: boolean
 }
 
 /**
@@ -144,8 +144,8 @@ export function DashboardLayout({
   showSidebar = true,
   customHeader,
   customSidebar,
-  containerPadding = "default",
-  contentClassName = "",
+  containerPadding = 'default',
+  contentClassName = '',
   fullHeight = true,
 }: DashboardLayoutProps): React.JSX.Element {
   /**
@@ -156,16 +156,16 @@ export function DashboardLayout({
    */
   const getPaddingClasses = (): string => {
     switch (containerPadding) {
-      case "none":
-        return "";
-      case "sm":
-        return "p-2";
-      case "lg":
-        return "p-6 md:p-8";
+      case 'none':
+        return ''
+      case 'sm':
+        return 'p-2'
+      case 'lg':
+        return 'p-6 md:p-8'
       default:
-        return "p-2";
+        return 'p-2'
     }
-  };
+  }
 
   /**
    * Process navigation configuration
@@ -175,17 +175,17 @@ export function DashboardLayout({
    */
   const processNavigation = (): NavigationItem[] | NavigationGroup[] => {
     if (navigation) {
-      return navigation;
+      return navigation
     }
 
     // Default navigation setup
     return createNavigationGroups({
       main: DEFAULT_NAVIGATION_ITEMS,
       settings: DEFAULT_SETTINGS_ITEMS,
-    });
-  };
+    })
+  }
 
-  const processedNavigation = processNavigation();
+  const processedNavigation = processNavigation()
 
   return (
     <SidebarProvider>
@@ -202,7 +202,7 @@ export function DashboardLayout({
       {/* Main Content Area */}
       <main
         className={`flex flex-1 flex-col gap-4 pt-0 ${
-          fullHeight ? "min-h-screen" : ""
+          fullHeight ? 'min-h-screen' : ''
         } ${getPaddingClasses()}`}
       >
         {/* Header */}
@@ -212,7 +212,7 @@ export function DashboardLayout({
         <div className={`flex-1 ${contentClassName}`}>{children}</div>
       </main>
     </SidebarProvider>
-  );
+  )
 }
 
 /**
@@ -231,23 +231,23 @@ export function DashboardLayout({
 export function AdminDashboardLayout({
   children,
   ...props
-}: Omit<DashboardLayoutProps, "navigation" | "branding">): React.JSX.Element {
+}: Omit<DashboardLayoutProps, 'navigation' | 'branding'>): React.JSX.Element {
   return (
     <DashboardLayout
       navigation={createNavigationGroups({
         main: [
-          { title: "Panel Admin", url: "/admin", icon: Shield, isActive: true },
-          { title: "Usuarios", url: "/admin/users", icon: Users },
-          { title: "Sistema", url: "/admin/system", icon: Settings },
+          { title: 'Panel Admin', url: '/admin', icon: Shield, isActive: true },
+          { title: 'Usuarios', url: '/admin/users', icon: Users },
+          { title: 'Sistema', url: '/admin/system', icon: Settings },
         ],
         settings: DEFAULT_SETTINGS_ITEMS,
       })}
-      branding={{ name: "Admin Panel", subtitle: "Sistema", icon: Shield }}
+      branding={{ name: 'Admin Panel', subtitle: 'Sistema', icon: Shield }}
       {...props}
     >
       {children}
     </DashboardLayout>
-  );
+  )
 }
 
 /**
@@ -262,7 +262,7 @@ export function MinimalDashboardLayout({
   ...props
 }: Omit<
   DashboardLayoutProps,
-  "showSidebar" | "showHeader"
+  'showSidebar' | 'showHeader'
 >): React.JSX.Element {
   return (
     <DashboardLayout
@@ -273,7 +273,7 @@ export function MinimalDashboardLayout({
     >
       {children}
     </DashboardLayout>
-  );
+  )
 }
 
 /**
@@ -285,7 +285,7 @@ export function MinimalDashboardLayout({
  */
 export function FullPageDashboardLayout({
   children,
-  containerPadding = "none",
+  containerPadding = 'none',
   ...props
 }: DashboardLayoutProps): React.JSX.Element {
   return (
@@ -297,5 +297,5 @@ export function FullPageDashboardLayout({
     >
       {children}
     </DashboardLayout>
-  );
+  )
 }

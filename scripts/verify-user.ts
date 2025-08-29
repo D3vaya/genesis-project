@@ -10,11 +10,11 @@ const prisma = new PrismaClient()
 
 async function verifyUser() {
   console.log('🔍 Verificando usuario de prueba...')
-  
+
   try {
     // Find the test user
     const user = await prisma.user.findUnique({
-      where: { email: 'usuario@ejemplo.com' }
+      where: { email: 'usuario@ejemplo.com' },
     })
 
     if (!user) {
@@ -27,11 +27,11 @@ async function verifyUser() {
     console.log('   Email:', user.email)
     console.log('   Name:', user.name)
     console.log('   Created:', user.createdAt.toISOString())
-    
+
     // Verify password
     const testPassword = 'password123'
     const isPasswordValid = await compare(testPassword, user.password)
-    
+
     if (isPasswordValid) {
       console.log('✅ Password verification: OK')
       console.log('\n🎉 Credenciales válidas para login!')
@@ -40,7 +40,6 @@ async function verifyUser() {
     } else {
       console.log('❌ Password verification: FAILED')
     }
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

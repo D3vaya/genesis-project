@@ -6,17 +6,17 @@
  * @version 1.0.0
  */
 
-"use client";
+'use client'
 
-import React from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { Settings, LogOut, User, Bell } from "lucide-react";
+import React from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import { Settings, LogOut, User, Bell } from 'lucide-react'
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/modules/shared/components/ui/avatar";
+} from '@/modules/shared/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +24,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/modules/shared/components/ui/dropdown-menu";
+} from '@/modules/shared/components/ui/dropdown-menu'
 import {
   Sidebar,
   SidebarContent,
@@ -37,10 +37,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/modules/shared/components/ui/sidebar";
+} from '@/modules/shared/components/ui/sidebar'
 
-import { useAuthStore, useUser } from "@/modules/shared/stores/authStore";
-import { toast } from "sonner";
+import { useAuthStore, useUser } from '@/modules/shared/stores/authStore'
+import { toast } from 'sonner'
 import {
   NavigationItem,
   NavigationGroup,
@@ -48,7 +48,7 @@ import {
   DEFAULT_APP_BRANDING,
   setActiveNavigation,
   createNavigationGroups,
-} from "@/modules/shared/config/navigation";
+} from '@/modules/shared/config/navigation'
 
 /**
  * AppSidebar component props
@@ -60,37 +60,37 @@ export interface AppSidebarProps {
    * Navigation items configuration
    * Can be a simple array or grouped navigation
    */
-  navigation?: NavigationItem[] | NavigationGroup[];
+  navigation?: NavigationItem[] | NavigationGroup[]
 
   /**
    * App branding configuration for header
    */
-  branding?: AppBranding;
+  branding?: AppBranding
 
   /**
    * Custom logout handler (optional)
    */
-  onLogout?: () => Promise<void>;
+  onLogout?: () => Promise<void>
 
   /**
    * Show/hide user dropdown menu
    */
-  showUserMenu?: boolean;
+  showUserMenu?: boolean
 
   /**
    * Additional menu items for user dropdown
    */
   customMenuItems?: Array<{
-    label: string;
-    icon: React.ComponentType<any>;
-    onClick: () => void;
-    className?: string;
-  }>;
+    label: string
+    icon: React.ComponentType<any>
+    onClick: () => void
+    className?: string
+  }>
 
   /**
    * Sidebar variant
    */
-  variant?: "default" | "inset" | "floating";
+  variant?: 'default' | 'inset' | 'floating'
 }
 
 /**
@@ -123,12 +123,12 @@ export function AppSidebar({
   onLogout,
   showUserMenu = true,
   customMenuItems = [],
-  variant = "inset",
+  variant = 'inset',
 }: AppSidebarProps): React.JSX.Element {
-  const user = useUser();
-  const { logout } = useAuthStore();
-  const router = useRouter();
-  const pathname = usePathname();
+  const user = useUser()
+  const { logout } = useAuthStore()
+  const router = useRouter()
+  const pathname = usePathname()
 
   /**
    * Handle user logout
@@ -138,21 +138,21 @@ export function AppSidebar({
   const handleLogout = async (): Promise<void> => {
     try {
       if (onLogout) {
-        await onLogout();
+        await onLogout()
       } else {
-        await logout();
+        await logout()
       }
 
-      toast.info("Sesión Cerrada", {
-        description: "Has cerrado sesión exitosamente",
-      });
+      toast.info('Sesión Cerrada', {
+        description: 'Has cerrado sesión exitosamente',
+      })
     } catch (error) {
-      console.error("Logout error:", error);
-      toast.error("Error", {
-        description: "Error al cerrar sesión",
-      });
+      console.error('Logout error:', error)
+      toast.error('Error', {
+        description: 'Error al cerrar sesión',
+      })
     }
-  };
+  }
 
   /**
    * Get user initials for avatar fallback
@@ -163,11 +163,11 @@ export function AppSidebar({
    */
   const getUserInitials = (name: string): string => {
     return name
-      .split(" ")
-      .map((part) => part.charAt(0).toUpperCase())
+      .split(' ')
+      .map(part => part.charAt(0).toUpperCase())
       .slice(0, 2)
-      .join("");
-  };
+      .join('')
+  }
 
   /**
    * Handle navigation click
@@ -176,8 +176,8 @@ export function AppSidebar({
    * @param {string} url - URL to navigate to
    */
   const handleNavigation = (url: string): void => {
-    router.push(url);
-  };
+    router.push(url)
+  }
 
   /**
    * Process navigation items to add active states
@@ -190,37 +190,37 @@ export function AppSidebar({
     if (
       Array.isArray(navigation) &&
       navigation.length > 0 &&
-      "label" in navigation[0]
+      'label' in navigation[0]
     ) {
-      return (navigation as NavigationGroup[]).map((group) => ({
+      return (navigation as NavigationGroup[]).map(group => ({
         ...group,
         items: setActiveNavigation(group.items, pathname),
-      }));
+      }))
     }
 
     // If it's simple navigation items, create default groups
-    const items = navigation as NavigationItem[];
-    if (items.length === 0) return [];
+    const items = navigation as NavigationItem[]
+    if (items.length === 0) return []
 
     return createNavigationGroups({
       main: setActiveNavigation(items, pathname),
-    });
-  };
+    })
+  }
 
-  const navigationGroups = processNavigation();
+  const navigationGroups = processNavigation()
 
   return (
-    <Sidebar variant={variant as "inset" | "floating" | "sidebar" | undefined}>
+    <Sidebar variant={variant as 'inset' | 'floating' | 'sidebar' | undefined}>
       {/* Header */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <div
-                className="flex items-center cursor-pointer"
-                onClick={() => handleNavigation("/dashboard")}
+                className="flex cursor-pointer items-center"
+                onClick={() => handleNavigation('/dashboard')}
               >
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <branding.icon className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -237,12 +237,12 @@ export function AppSidebar({
 
       {/* Content */}
       <SidebarContent>
-        {navigationGroups.map((group) => (
+        {navigationGroups.map(group => (
           <SidebarGroup key={group.label}>
             <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {group.items.map((item) => (
+                {group.items.map(item => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
@@ -251,13 +251,13 @@ export function AppSidebar({
                     >
                       <button
                         onClick={() => handleNavigation(item.url)}
-                        className="flex items-center w-full text-left"
+                        className="flex w-full items-center text-left"
                         disabled={item.disabled}
                       >
                         <item.icon className="size-4" />
                         <span>{item.title}</span>
                         {item.badge && (
-                          <span className="ml-auto text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+                          <span className="bg-primary text-primary-foreground ml-auto rounded-full px-1.5 py-0.5 text-xs">
                             {item.badge}
                           </span>
                         )}
@@ -284,16 +284,16 @@ export function AppSidebar({
                   >
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        src={user?.image || ""}
-                        alt={user?.name || ""}
+                        src={user?.image || ''}
+                        alt={user?.name || ''}
                       />
                       <AvatarFallback className="rounded-lg">
-                        {user?.name ? getUserInitials(user.name) : "U"}
+                        {user?.name ? getUserInitials(user.name) : 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
-                        {user?.name || "Usuario"}
+                        {user?.name || 'Usuario'}
                       </span>
                       <span className="truncate text-xs">{user?.email}</span>
                     </div>
@@ -309,16 +309,16 @@ export function AppSidebar({
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                       <Avatar className="h-8 w-8 rounded-lg">
                         <AvatarImage
-                          src={user?.image || ""}
-                          alt={user?.name || ""}
+                          src={user?.image || ''}
+                          alt={user?.name || ''}
                         />
                         <AvatarFallback className="rounded-lg">
-                          {user?.name ? getUserInitials(user.name) : "U"}
+                          {user?.name ? getUserInitials(user.name) : 'U'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate font-semibold">
-                          {user?.name || "Usuario"}
+                          {user?.name || 'Usuario'}
                         </span>
                         <span className="truncate text-xs">{user?.email}</span>
                       </div>
@@ -328,19 +328,19 @@ export function AppSidebar({
 
                   {/* Default menu items */}
                   <DropdownMenuItem
-                    onClick={() => handleNavigation("/dashboard/profile")}
+                    onClick={() => handleNavigation('/dashboard/profile')}
                   >
                     <User className="size-4" />
                     Perfil
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => handleNavigation("/dashboard/settings")}
+                    onClick={() => handleNavigation('/dashboard/settings')}
                   >
                     <Settings className="size-4" />
                     Configuración
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => handleNavigation("/dashboard/notifications")}
+                    onClick={() => handleNavigation('/dashboard/notifications')}
                   >
                     <Bell className="size-4" />
                     Notificaciones
@@ -380,5 +380,5 @@ export function AppSidebar({
 
       <SidebarRail />
     </Sidebar>
-  );
+  )
 }

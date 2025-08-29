@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @fileoverview Data management store with Zustand
@@ -6,7 +7,7 @@
  * @version 1.0.0
  */
 
-import { create } from "zustand";
+import { create } from 'zustand'
 
 /**
  * Generic API response interface
@@ -19,10 +20,10 @@ import { create } from "zustand";
  * @property {number} timestamp - Response timestamp
  */
 interface ApiResponse<T = any> {
-  data: T;
-  message: string;
-  success: boolean;
-  timestamp: number;
+  data: T
+  message: string
+  success: boolean
+  timestamp: number
 }
 
 /**
@@ -36,10 +37,10 @@ interface ApiResponse<T = any> {
  * @property {string} key - Cache key identifier
  */
 interface CacheEntry<T = any> {
-  data: T;
-  timestamp: number;
-  ttl: number;
-  key: string;
+  data: T
+  timestamp: number
+  ttl: number
+  key: string
 }
 
 /**
@@ -51,9 +52,9 @@ interface CacheEntry<T = any> {
  * @property {boolean} cache - Loading state for cache operations
  */
 interface LoadingState {
-  users: boolean;
-  api: boolean;
-  cache: boolean;
+  users: boolean
+  api: boolean
+  cache: boolean
 }
 
 /**
@@ -65,9 +66,9 @@ interface LoadingState {
  * @property {string | null} cache - Error message for cache operations
  */
 interface ErrorState {
-  users: string | null;
-  api: string | null;
-  cache: string | null;
+  users: string | null
+  api: string | null
+  cache: string | null
 }
 
 /**
@@ -83,32 +84,32 @@ interface ErrorState {
  */
 interface DataState {
   // Data storage
-  users: any[];
-  apiData: Record<string, any>;
-  cache: Map<string, CacheEntry>;
+  users: any[]
+  apiData: Record<string, any>
+  cache: Map<string, CacheEntry>
 
   // State management
-  loading: LoadingState;
-  errors: ErrorState;
-  lastFetch: number;
+  loading: LoadingState
+  errors: ErrorState
+  lastFetch: number
 
   // Actions
-  setUsers: (users: any[]) => void;
-  addUser: (user: any) => void;
-  updateUser: (id: string, userData: any) => void;
-  removeUser: (id: string) => void;
-  setApiData: (key: string, data: any) => void;
-  getApiData: (key: string) => any;
-  removeApiData: (key: string) => void;
-  setCache: (key: string, data: any, ttl?: number) => void;
-  getCache: (key: string) => any;
-  removeCache: (key: string) => void;
-  clearCache: () => void;
-  isValidCache: (key: string) => boolean;
-  setLoading: (operation: keyof LoadingState, loading: boolean) => void;
-  setError: (operation: keyof ErrorState, error: string | null) => void;
-  clearErrors: () => void;
-  clearAll: () => void;
+  setUsers: (users: any[]) => void
+  addUser: (user: any) => void
+  updateUser: (id: string, userData: any) => void
+  removeUser: (id: string) => void
+  setApiData: (key: string, data: any) => void
+  getApiData: (key: string) => any
+  removeApiData: (key: string) => void
+  setCache: (key: string, data: any, ttl?: number) => void
+  getCache: (key: string) => any
+  removeCache: (key: string) => void
+  clearCache: () => void
+  isValidCache: (key: string) => boolean
+  setLoading: (operation: keyof LoadingState, loading: boolean) => void
+  setError: (operation: keyof ErrorState, error: string | null) => void
+  clearErrors: () => void
+  clearAll: () => void
 }
 
 /**
@@ -116,7 +117,7 @@ interface DataState {
  * @const {number} DEFAULT_TTL
  * @description Default cache time-to-live in milliseconds
  */
-const DEFAULT_TTL = 5 * 60 * 1000;
+const DEFAULT_TTL = 5 * 60 * 1000
 
 /**
  * Data store using Zustand
@@ -180,7 +181,7 @@ export const useDataStore = create<DataState>((set, get) => ({
     set({
       users,
       lastFetch: Date.now(),
-    });
+    })
   },
 
   /**
@@ -195,9 +196,9 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   addUser: (user: any) => {
-    set((state) => ({
+    set(state => ({
       users: [...state.users, user],
-    }));
+    }))
   },
 
   /**
@@ -213,11 +214,11 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   updateUser: (id: string, userData: any) => {
-    set((state) => ({
-      users: state.users.map((user) =>
+    set(state => ({
+      users: state.users.map(user =>
         user.id === id ? { ...user, ...userData } : user
       ),
-    }));
+    }))
   },
 
   /**
@@ -232,9 +233,9 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   removeUser: (id: string) => {
-    set((state) => ({
-      users: state.users.filter((user) => user.id !== id),
-    }));
+    set(state => ({
+      users: state.users.filter(user => user.id !== id),
+    }))
   },
 
   /**
@@ -250,9 +251,9 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   setApiData: (key: string, data: any) => {
-    set((state) => ({
+    set(state => ({
       apiData: { ...state.apiData, [key]: data },
-    }));
+    }))
   },
 
   /**
@@ -269,7 +270,7 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   getApiData: (key: string) => {
-    return get().apiData[key];
+    return get().apiData[key]
   },
 
   /**
@@ -284,10 +285,10 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   removeApiData: (key: string) => {
-    set((state) => {
-      const { [key]: _, ...rest } = state.apiData;
-      return { apiData: rest };
-    });
+    set(state => {
+      const { [key]: _, ...rest } = state.apiData
+      return { apiData: rest }
+    })
   },
 
   /**
@@ -304,16 +305,16 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   setCache: (key: string, data: any, ttl: number = DEFAULT_TTL) => {
-    set((state) => {
-      const newCache = new Map(state.cache);
+    set(state => {
+      const newCache = new Map(state.cache)
       newCache.set(key, {
         data,
         timestamp: Date.now(),
         ttl,
         key,
-      });
-      return { cache: newCache };
-    });
+      })
+      return { cache: newCache }
+    })
   },
 
   /**
@@ -332,17 +333,17 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   getCache: (key: string) => {
-    const state = get();
-    const entry = state.cache.get(key);
+    const state = get()
+    const entry = state.cache.get(key)
 
-    if (!entry) return undefined;
+    if (!entry) return undefined
 
     if (state.isValidCache(key)) {
-      return entry.data;
+      return entry.data
     } else {
       // Remove expired cache entry
-      state.removeCache(key);
-      return undefined;
+      state.removeCache(key)
+      return undefined
     }
   },
 
@@ -358,11 +359,11 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   removeCache: (key: string) => {
-    set((state) => {
-      const newCache = new Map(state.cache);
-      newCache.delete(key);
-      return { cache: newCache };
-    });
+    set(state => {
+      const newCache = new Map(state.cache)
+      newCache.delete(key)
+      return { cache: newCache }
+    })
   },
 
   /**
@@ -376,7 +377,7 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   clearCache: () => {
-    set({ cache: new Map() });
+    set({ cache: new Map() })
   },
 
   /**
@@ -396,11 +397,11 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   isValidCache: (key: string) => {
-    const entry = get().cache.get(key);
-    if (!entry) return false;
+    const entry = get().cache.get(key)
+    if (!entry) return false
 
-    const now = Date.now();
-    return now - entry.timestamp < entry.ttl;
+    const now = Date.now()
+    return now - entry.timestamp < entry.ttl
   },
 
   /**
@@ -416,9 +417,9 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   setLoading: (operation: keyof LoadingState, loading: boolean) => {
-    set((state) => ({
+    set(state => ({
       loading: { ...state.loading, [operation]: loading },
-    }));
+    }))
   },
 
   /**
@@ -434,9 +435,9 @@ export const useDataStore = create<DataState>((set, get) => ({
    * ```
    */
   setError: (operation: keyof ErrorState, error: string | null) => {
-    set((state) => ({
+    set(state => ({
       errors: { ...state.errors, [operation]: error },
-    }));
+    }))
   },
 
   /**
@@ -456,7 +457,7 @@ export const useDataStore = create<DataState>((set, get) => ({
         api: null,
         cache: null,
       },
-    });
+    })
   },
 
   /**
@@ -485,9 +486,9 @@ export const useDataStore = create<DataState>((set, get) => ({
         cache: null,
       },
       lastFetch: 0,
-    });
+    })
   },
-}));
+}))
 
 /**
  * Selector hook for users data
@@ -515,7 +516,7 @@ export const useDataStore = create<DataState>((set, get) => ({
  * ```
  */
 export const useUsers = () =>
-  useDataStore((state) => ({
+  useDataStore(state => ({
     users: state.users,
     setUsers: state.setUsers,
     addUser: state.addUser,
@@ -523,7 +524,7 @@ export const useUsers = () =>
     removeUser: state.removeUser,
     loading: state.loading,
     errors: state.errors,
-  }));
+  }))
 
 /**
  * Selector hook for cache operations
@@ -550,17 +551,17 @@ export const useUsers = () =>
  * ```
  */
 export const useCache = () =>
-  useDataStore((state) => ({
+  useDataStore(state => ({
     getCache: state.getCache,
     setCache: state.setCache,
     removeCache: state.removeCache,
     clearCache: state.clearCache,
     isValidCache: state.isValidCache,
-  }));
+  }))
 
 /**
  * Export types for external use
  * @type {ApiResponse}
  * @description Export API response type for use in components
  */
-export type { ApiResponse, CacheEntry, LoadingState, ErrorState };
+export type { ApiResponse, CacheEntry, LoadingState, ErrorState }
