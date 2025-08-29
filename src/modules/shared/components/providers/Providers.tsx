@@ -5,16 +5,15 @@
  * @version 1.0.0
  */
 
-"use client";
+'use client'
 
-import React, { useState, useEffect, ReactNode } from "react";
-import { SessionProvider } from "next-auth/react";
-import { AlertCircle } from "lucide-react";
-import { useUIStore } from "@/modules/shared/stores/uiStore";
-import { useAuthStore } from "@/modules/shared/stores/authStore";
-import { Button } from "@/modules/shared/components/ui/button";
-import { Toaster } from "@/modules/shared/components/ui/sonner";
-
+import React, { useState, useEffect, ReactNode } from 'react'
+import { SessionProvider } from 'next-auth/react'
+import { AlertCircle } from 'lucide-react'
+import { useUIStore } from '@/modules/shared/stores/uiStore'
+import { useAuthStore } from '@/modules/shared/stores/authStore'
+import { Button } from '@/modules/shared/components/ui/button'
+import { Toaster } from '@/modules/shared/components/ui/sonner'
 
 /**
  * Theme provider component
@@ -33,75 +32,75 @@ import { Toaster } from "@/modules/shared/components/ui/sonner";
 function ThemeProvider({
   children,
 }: {
-  children: ReactNode;
+  children: ReactNode
 }): React.JSX.Element {
-  const { theme, setTheme } = useUIStore();
-  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useUIStore()
+  const [mounted, setMounted] = useState(false)
 
   /**
    * Apply theme to document on theme change
    * @description Updates document classes and handles system theme preference
    */
   useEffect(() => {
-    setMounted(true);
+    setMounted(true)
 
     const applyTheme = () => {
-      const root = document.documentElement;
+      const root = document.documentElement
 
       // Remove existing theme classes
-      root.classList.remove("light", "dark");
+      root.classList.remove('light', 'dark')
 
-      if (theme === "system") {
+      if (theme === 'system') {
         // Use system preference
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
           .matches
-          ? "dark"
-          : "light";
-        root.classList.add(systemTheme);
+          ? 'dark'
+          : 'light'
+        root.classList.add(systemTheme)
       } else {
         // Use explicit theme
-        root.classList.add(theme);
+        root.classList.add(theme)
       }
-    };
+    }
 
-    applyTheme();
+    applyTheme()
 
     // Listen for system theme changes
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = () => {
-      if (theme === "system") {
-        applyTheme();
+      if (theme === 'system') {
+        applyTheme()
       }
-    };
+    }
 
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [theme]);
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [theme])
 
   /**
    * Initialize theme from localStorage on mount
    * @description Restores saved theme preference from localStorage
    */
   useEffect(() => {
-    const savedTheme = localStorage.getItem("ui-store");
+    const savedTheme = localStorage.getItem('ui-store')
     if (savedTheme) {
       try {
-        const parsed = JSON.parse(savedTheme);
+        const parsed = JSON.parse(savedTheme)
         if (parsed.state?.theme) {
-          setTheme(parsed.state.theme);
+          setTheme(parsed.state.theme)
         }
       } catch (error) {
-        console.warn("Failed to parse saved theme:", error);
+        console.warn('Failed to parse saved theme:', error)
       }
     }
-  }, [setTheme]);
+  }, [setTheme])
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
-    return <>{children}</>;
+    return <>{children}</>
   }
 
-  return <>{children}</>;
+  return <>{children}</>
 }
 
 /**
@@ -121,19 +120,19 @@ function ThemeProvider({
 function AuthStateSynchronizer({
   children,
 }: {
-  children: ReactNode;
+  children: ReactNode
 }): React.JSX.Element {
-  const { checkSession } = useAuthStore();
+  const { checkSession } = useAuthStore()
 
   /**
    * Check session on component mount
    * @description Verifies current authentication session when app loads
    */
   useEffect(() => {
-    checkSession();
-  }, [checkSession]);
+    checkSession()
+  }, [checkSession])
 
-  return <>{children}</>;
+  return <>{children}</>
 }
 
 /**
@@ -153,9 +152,9 @@ function AuthStateSynchronizer({
 function UIStateInitializer({
   children,
 }: {
-  children: ReactNode;
+  children: ReactNode
 }): React.JSX.Element {
-  const { setIsMobile } = useUIStore();
+  const { setIsMobile } = useUIStore()
 
   /**
    * Initialize mobile state and setup resize listener
@@ -163,21 +162,21 @@ function UIStateInitializer({
    */
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+      setIsMobile(window.innerWidth < 768)
+    }
 
     // Initial check
-    checkMobile();
+    checkMobile()
 
     // Add resize listener
-    window.addEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile)
 
     return () => {
-      window.removeEventListener("resize", checkMobile);
-    };
-  }, [setIsMobile]);
+      window.removeEventListener('resize', checkMobile)
+    }
+  }, [setIsMobile])
 
-  return <>{children}</>;
+  return <>{children}</>
 }
 
 /**
@@ -197,10 +196,10 @@ function UIStateInitializer({
 function ErrorBoundary({
   children,
 }: {
-  children: ReactNode;
+  children: ReactNode
 }): React.JSX.Element {
-  const [hasError, setHasError] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [hasError, setHasError] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
 
   /**
    * Set up global error handlers
@@ -208,25 +207,25 @@ function ErrorBoundary({
    */
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
-      console.error("Global error caught:", event.error);
-      setError(event.error);
-      setHasError(true);
-    };
+      console.error('Global error caught:', event.error)
+      setError(event.error)
+      setHasError(true)
+    }
 
     const handleRejection = (event: PromiseRejectionEvent) => {
-      console.error("Unhandled promise rejection:", event.reason);
-      setError(new Error(event.reason));
-      setHasError(true);
-    };
+      console.error('Unhandled promise rejection:', event.reason)
+      setError(new Error(event.reason))
+      setHasError(true)
+    }
 
-    window.addEventListener("error", handleError);
-    window.addEventListener("unhandledrejection", handleRejection);
+    window.addEventListener('error', handleError)
+    window.addEventListener('unhandledrejection', handleRejection)
 
     return () => {
-      window.removeEventListener("error", handleError);
-      window.removeEventListener("unhandledrejection", handleRejection);
-    };
-  }, []);
+      window.removeEventListener('error', handleError)
+      window.removeEventListener('unhandledrejection', handleRejection)
+    }
+  }, [])
 
   /**
    * Reset error state
@@ -234,18 +233,18 @@ function ErrorBoundary({
    * @description Clears error state and reloads the page
    */
   const resetError = () => {
-    setHasError(false);
-    setError(null);
-    window.location.reload();
-  };
+    setHasError(false)
+    setError(null)
+    window.location.reload()
+  }
 
   if (hasError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="max-w-md w-full text-center space-y-4">
+      <div className="bg-background flex min-h-screen items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-4 text-center">
           <div className="space-y-2">
-            <AlertCircle className="h-12 w-12 text-red-500 mx-auto" />
-            <h1 className="text-2xl font-bold text-foreground">
+            <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
+            <h1 className="text-foreground text-2xl font-bold">
               ¡Ups! Algo salió mal
             </h1>
             <p className="text-muted-foreground">
@@ -253,11 +252,11 @@ function ErrorBoundary({
             </p>
           </div>
 
-          {process.env.NODE_ENV === "development" && error && (
-            <div className="bg-muted p-4 rounded-md text-left">
-              <p className="text-sm font-mono text-red-600">{error.message}</p>
+          {process.env.NODE_ENV === 'development' && error && (
+            <div className="bg-muted rounded-md p-4 text-left">
+              <p className="font-mono text-sm text-red-600">{error.message}</p>
               {error.stack && (
-                <pre className="text-xs text-muted-foreground mt-2 overflow-x-auto">
+                <pre className="text-muted-foreground mt-2 overflow-x-auto text-xs">
                   {error.stack}
                 </pre>
               )}
@@ -270,7 +269,7 @@ function ErrorBoundary({
             </Button>
             <Button
               variant="outline"
-              onClick={() => (window.location.href = "/")}
+              onClick={() => (window.location.href = '/')}
               className="w-full"
             >
               Ir al Inicio
@@ -278,10 +277,10 @@ function ErrorBoundary({
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  return <>{children}</>;
+  return <>{children}</>
 }
 
 /**
@@ -311,7 +310,7 @@ function ErrorBoundary({
 export function Providers({
   children,
 }: {
-  children: ReactNode;
+  children: ReactNode
 }): React.JSX.Element {
   return (
     <ErrorBoundary>
@@ -330,7 +329,7 @@ export function Providers({
         </ThemeProvider>
       </SessionProvider>
     </ErrorBoundary>
-  );
+  )
 }
 
 /**
@@ -342,4 +341,4 @@ export {
   ThemeProvider,
   AuthStateSynchronizer,
   UIStateInitializer,
-};
+}

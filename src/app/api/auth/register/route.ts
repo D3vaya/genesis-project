@@ -26,7 +26,7 @@ import { registerSchema } from '@/lib/validations'
  *   "password": "contraseña123",
  *   "confirmPassword": "contraseña123"
  * }
- * 
+ *
  * // Success response:
  * {
  *   "message": "Usuario creado exitosamente",
@@ -41,37 +41,37 @@ import { registerSchema } from '@/lib/validations'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+
     // Validate request body
     const result = registerSchema.safeParse(body)
-    
+
     if (!result.success) {
       return NextResponse.json(
-        { 
+        {
           message: 'Datos de registro inválidos',
-          errors: result.error.format()
+          errors: result.error.format(),
         },
         { status: 400 }
       )
     }
-    
+
     const { name, email, password } = result.data
-    
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     })
-    
+
     if (existingUser) {
       return NextResponse.json(
         { message: 'Un usuario con este email ya existe' },
         { status: 409 }
       )
     }
-    
+
     // Hash password
     const hashedPassword = await hash(password, 12)
-    
+
     // Create user
     const user = await prisma.user.create({
       data: {
@@ -84,17 +84,16 @@ export async function POST(request: NextRequest) {
         name: true,
         email: true,
         createdAt: true,
-      }
+      },
     })
-    
+
     return NextResponse.json(
       {
         message: 'Usuario creado exitosamente',
-        user
+        user,
       },
       { status: 201 }
     )
-    
   } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(

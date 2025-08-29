@@ -19,7 +19,7 @@ const PROTECTED_ROUTES = [
   '/dashboard/:path*',
   '/profile',
   '/settings',
-  '/api/protected/:path*'
+  '/api/protected/:path*',
 ]
 
 /**
@@ -34,7 +34,7 @@ const PUBLIC_ROUTES = [
   '/api/auth/:path*',
   '/api/health',
   '/_next/:path*',
-  '/favicon.ico'
+  '/favicon.ico',
 ]
 
 /**
@@ -42,11 +42,7 @@ const PUBLIC_ROUTES = [
  * @const {string[]} ADMIN_ROUTES
  * @description Array of route patterns that require admin privileges
  */
-const ADMIN_ROUTES = [
-  '/admin',
-  '/admin/:path*',
-  '/api/admin/:path*'
-]
+const ADMIN_ROUTES = ['/admin', '/admin/:path*', '/api/admin/:path*']
 
 /**
  * Route matching utility function
@@ -65,10 +61,10 @@ function matchRoute(pathname: string, routes: string[]): boolean {
   return routes.some(route => {
     // Convert route pattern to regex
     const pattern = route
-      .replace(/:[^/]+/g, '[^/]+')  // Replace :param with [^/]+
-      .replace(/\*/g, '.*')         // Replace * with .*
-      .replace(/\//g, '\\/')        // Escape forward slashes
-    
+      .replace(/:[^/]+/g, '[^/]+') // Replace :param with [^/]+
+      .replace(/\*/g, '.*') // Replace * with .*
+      .replace(/\//g, '\\/') // Escape forward slashes
+
     const regex = new RegExp(`^${pattern}$`)
     return regex.test(pathname)
   })
@@ -139,16 +135,16 @@ function isAdminRoute(pathname: string): boolean {
  */
 function customMiddleware(request: NextRequest): NextResponse | undefined {
   const { pathname, origin } = request.nextUrl
-  
+
   // Add security headers
   const response = NextResponse.next()
-  
+
   // Add security headers to all responses
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   response.headers.set('X-XSS-Protection', '1; mode=block')
-  
+
   // Add CSP header for better security
   const cspHeader = [
     "default-src 'self'",
@@ -157,39 +153,50 @@ function customMiddleware(request: NextRequest): NextResponse | undefined {
     "img-src 'self' data: https:",
     "font-src 'self'",
     "connect-src 'self'",
-    "frame-ancestors 'none'"
+    "frame-ancestors 'none'",
   ].join('; ')
-  
+
   response.headers.set('Content-Security-Policy', cspHeader)
-  
+
   // Log requests in development
   if (process.env.NODE_ENV === 'development') {
     console.log(`🔒 Middleware: ${request.method} ${pathname}`)
   }
-  
+
   // Handle CORS for API routes
   if (pathname.startsWith('/api/')) {
     response.headers.set('Access-Control-Allow-Origin', origin)
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    
+    response.headers.set(
+      'Access-Control-Allow-Methods',
+      'GET, POST, PUT, DELETE, OPTIONS'
+    )
+    response.headers.set(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization'
+    )
+
     // Handle preflight requests
     if (request.method === 'OPTIONS') {
       return new NextResponse(null, { status: 200, headers: response.headers })
     }
   }
-  
+
   // Rate limiting (simple implementation)
-  const ip = request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? 'unknown'
+  const ip =
+    request.headers.get('x-forwarded-for') ??
+    request.headers.get('x-real-ip') ??
+    'unknown'
   const now = Date.now()
-  
+
   // In a real application, you'd want to use Redis or a database for this
   // This is just a demonstration
   if (pathname.startsWith('/api/auth/register')) {
     // Add rate limiting logic here if needed
-    console.log(`Registration attempt from IP: ${ip} at ${new Date(now).toISOString()}`)
+    console.log(
+      `Registration attempt from IP: ${ip} at ${new Date(now).toISOString()}`
+    )
   }
-  
+
   return response
 }
 
@@ -203,44 +210,44 @@ export default withAuth(
   function middleware(request) {
     const { pathname, origin } = request.nextUrl
     const token = request.nextauth.token
-    
+
     // Run custom middleware first
     const customResponse = customMiddleware(request)
     if (customResponse) {
       return customResponse
     }
-    
+
     // Handle public routes - allow access
     if (isPublicRoute(pathname)) {
       // If user is authenticated and trying to access login/register, redirect to dashboard
       if (token && (pathname === '/login' || pathname === '/register')) {
         return NextResponse.redirect(new URL('/dashboard', origin))
       }
-      
+
       return NextResponse.next()
     }
-    
+
     // Handle admin routes
     if (isAdminRoute(pathname)) {
       // Check if user has admin role (this would come from your user data)
       // For now, we'll assume no admin role system is implemented
       // You can extend this by adding role information to the JWT token
-      
+
       if (!token) {
         // Redirect to login if not authenticated
         const loginUrl = new URL('/login', origin)
         loginUrl.searchParams.set('callbackUrl', pathname)
         return NextResponse.redirect(loginUrl)
       }
-      
+
       // In a real app, check for admin role here
       // if (!token.role === 'admin') {
       //   return NextResponse.redirect(new URL('/dashboard', origin))
       // }
-      
+
       return NextResponse.next()
     }
-    
+
     // Handle protected routes
     if (isProtectedRoute(pathname)) {
       if (!token) {
@@ -249,10 +256,10 @@ export default withAuth(
         loginUrl.searchParams.set('callbackUrl', pathname)
         return NextResponse.redirect(loginUrl)
       }
-      
+
       return NextResponse.next()
     }
-    
+
     // For any other route, allow access
     return NextResponse.next()
   },
@@ -274,17 +281,17 @@ export default withAuth(
        */
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl
-        
+
         // Always allow access to public routes
         if (isPublicRoute(pathname)) {
           return true
         }
-        
+
         // For protected routes, require authentication
         if (isProtectedRoute(pathname) || isAdminRoute(pathname)) {
           return !!token
         }
-        
+
         // For all other routes, allow access
         return true
       },
@@ -324,6 +331,6 @@ export const config = {
      */
     '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
     '/api/protected/:path*',
-    '/api/admin/:path*'
+    '/api/admin/:path*',
   ],
 }

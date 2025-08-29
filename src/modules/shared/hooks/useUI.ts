@@ -5,12 +5,12 @@
  * @version 1.0.0
  */
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback } from 'react'
 import {
   useUIStore,
   useSidebar,
   useTheme,
-} from "@/modules/shared/stores/uiStore";
+} from '@/modules/shared/stores/uiStore'
 
 /**
  * UI hook return type
@@ -27,15 +27,15 @@ import {
  * @property {Function} setIsMobile - Function to set mobile state
  */
 interface UseUIReturn {
-  sidebarCollapsed: boolean;
-  toggleSidebar: () => void;
-  setSidebarCollapsed: (collapsed: boolean) => void;
-  theme: "light" | "dark" | "system";
-  setTheme: (theme: "light" | "dark" | "system") => void;
-  isLoading: boolean;
-  setLoading: (loading: boolean) => void;
-  isMobile: boolean;
-  setIsMobile: (isMobile: boolean) => void;
+  sidebarCollapsed: boolean
+  toggleSidebar: () => void
+  setSidebarCollapsed: (collapsed: boolean) => void
+  theme: 'light' | 'dark' | 'system'
+  setTheme: (theme: 'light' | 'dark' | 'system') => void
+  isLoading: boolean
+  setLoading: (loading: boolean) => void
+  isMobile: boolean
+  setIsMobile: (isMobile: boolean) => void
 }
 
 /**
@@ -84,23 +84,23 @@ export const useUI = (): UseUIReturn => {
     setLoading,
     isMobile,
     setIsMobile,
-  } = useUIStore();
+  } = useUIStore()
 
   /**
    * Handle window resize for mobile detection
    * @description Updates mobile state based on window size
    */
   const handleResize = useCallback(() => {
-    const mobile = window.innerWidth < 768;
+    const mobile = window.innerWidth < 768
     if (mobile !== isMobile) {
-      setIsMobile(mobile);
+      setIsMobile(mobile)
 
       // Auto-collapse sidebar on mobile
       if (mobile && !sidebarCollapsed) {
-        setSidebarCollapsed(true);
+        setSidebarCollapsed(true)
       }
     }
-  }, [isMobile, setIsMobile, sidebarCollapsed, setSidebarCollapsed]);
+  }, [isMobile, setIsMobile, sidebarCollapsed, setSidebarCollapsed])
 
   /**
    * Setup window resize listener
@@ -108,17 +108,16 @@ export const useUI = (): UseUIReturn => {
    */
   useEffect(() => {
     // Initial check
-    handleResize();
+    handleResize()
 
     // Add event listener
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize)
 
     // Cleanup
     return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [handleResize]);
-
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [handleResize])
 
   /**
    * Toggle theme between light and dark
@@ -130,9 +129,9 @@ export const useUI = (): UseUIReturn => {
    * ```
    */
   const toggleTheme = useCallback(() => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-  }, [theme, setTheme]);
+    const newTheme = theme === 'light' ? 'dark' : 'light'
+    setTheme(newTheme)
+  }, [theme, setTheme])
 
   /**
    * Get responsive sidebar behavior
@@ -148,8 +147,8 @@ export const useUI = (): UseUIReturn => {
    * ```
    */
   const shouldCollapseSidebar = useCallback((): boolean => {
-    return isMobile;
-  }, [isMobile]);
+    return isMobile
+  }, [isMobile])
 
   /**
    * Set loading state with optional timeout
@@ -164,16 +163,16 @@ export const useUI = (): UseUIReturn => {
    */
   const setLoadingWithTimeout = useCallback(
     (loading: boolean, timeout?: number) => {
-      setLoading(loading);
+      setLoading(loading)
 
       if (loading && timeout) {
         setTimeout(() => {
-          setLoading(false);
-        }, timeout);
+          setLoading(false)
+        }, timeout)
       }
     },
     [setLoading]
-  );
+  )
 
   return {
     // Core UI state
@@ -192,11 +191,11 @@ export const useUI = (): UseUIReturn => {
     shouldCollapseSidebar,
     setLoadingWithTimeout,
   } as UseUIReturn & {
-    toggleTheme: () => void;
-    shouldCollapseSidebar: () => boolean;
-    setLoadingWithTimeout: (loading: boolean, timeout?: number) => void;
-  };
-};
+    toggleTheme: () => void
+    shouldCollapseSidebar: () => boolean
+    setLoadingWithTimeout: (loading: boolean, timeout?: number) => void
+  }
+}
 
 /**
  * Hook for sidebar state only
@@ -219,14 +218,14 @@ export const useUI = (): UseUIReturn => {
  * ```
  */
 export const useSidebarState = () => {
-  const { sidebarCollapsed, toggleSidebar, setSidebarCollapsed } = useSidebar();
+  const { sidebarCollapsed, toggleSidebar, setSidebarCollapsed } = useSidebar()
 
   return {
     sidebarCollapsed,
     toggleSidebar,
     setSidebarCollapsed,
-  };
-};
+  }
+}
 
 /**
  * Hook for theme state only
@@ -251,11 +250,10 @@ export const useSidebarState = () => {
  * ```
  */
 export const useThemeState = () => {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme()
 
   return {
     theme,
     setTheme,
-  };
-};
-
+  }
+}

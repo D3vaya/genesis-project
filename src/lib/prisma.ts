@@ -21,7 +21,7 @@ const globalForPrisma = globalThis as unknown as {
  * @example
  * ```typescript
  * import { prisma } from '@/lib/prisma'
- * 
+ *
  * const user = await prisma.user.findUnique({
  *   where: { email: 'user@example.com' }
  * })

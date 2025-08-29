@@ -39,7 +39,7 @@ interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
-  
+
   // Actions
   login: (email: string, password: string) => Promise<boolean>
   logout: () => Promise<void>
@@ -58,10 +58,10 @@ interface AuthState {
  * @example
  * ```typescript
  * import { useAuthStore } from '@/stores/authStore'
- * 
+ *
  * function LoginComponent() {
  *   const { login, isLoading, error } = useAuthStore()
- *   
+ *
  *   const handleLogin = async () => {
  *     const success = await login('user@example.com', 'password')
  *     if (success) {
@@ -107,9 +107,10 @@ export const useAuthStore = create<AuthState>()(
           })
 
           if (result?.error) {
-            set({ 
-              error: 'Credenciales inválidas. Por favor, verifica tu email y contraseña.',
-              isLoading: false 
+            set({
+              error:
+                'Credenciales inválidas. Por favor, verifica tu email y contraseña.',
+              isLoading: false,
             })
             return false
           }
@@ -126,17 +127,16 @@ export const useAuthStore = create<AuthState>()(
             return true
           }
 
-          set({ 
+          set({
             error: 'Error al obtener la sesión del usuario',
-            isLoading: false 
+            isLoading: false,
           })
           return false
-
         } catch (error) {
           console.error('Login error:', error)
-          set({ 
+          set({
             error: 'Error de conexión. Por favor, intenta de nuevo.',
-            isLoading: false 
+            isLoading: false,
           })
           return false
         }
@@ -156,7 +156,7 @@ export const useAuthStore = create<AuthState>()(
        */
       logout: async () => {
         set({ isLoading: true })
-        
+
         try {
           await signOut({ redirect: false })
           set({
@@ -186,7 +186,7 @@ export const useAuthStore = create<AuthState>()(
         const currentUser = get().user
         if (currentUser) {
           set({
-            user: { ...currentUser, ...userData }
+            user: { ...currentUser, ...userData },
           })
         }
       },
@@ -266,10 +266,10 @@ export const useAuthStore = create<AuthState>()(
        */
       checkSession: async () => {
         set({ isLoading: true })
-        
+
         try {
           const session = await getSession()
-          
+
           if (session?.user) {
             set({
               user: session.user as User,
@@ -298,7 +298,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-store',
-      partialize: (state) => ({
+      partialize: state => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
@@ -314,16 +314,16 @@ export const useAuthStore = create<AuthState>()(
  * @example
  * ```typescript
  * import { useUser } from '@/stores/authStore'
- * 
+ *
  * function UserProfile() {
  *   const user = useUser()
- *   
+ *
  *   if (!user) return <div>Not authenticated</div>
  *   return <div>Hello, {user.name}!</div>
  * }
  * ```
  */
-export const useUser = () => useAuthStore((state) => state.user)
+export const useUser = () => useAuthStore(state => state.user)
 
 /**
  * Selector hook for authentication status
@@ -333,16 +333,17 @@ export const useUser = () => useAuthStore((state) => state.user)
  * @example
  * ```typescript
  * import { useIsAuthenticated } from '@/stores/authStore'
- * 
+ *
  * function ProtectedComponent() {
  *   const isAuthenticated = useIsAuthenticated()
- *   
+ *
  *   if (!isAuthenticated) {
  *     return <div>Please log in</div>
  *   }
- *   
+ *
  *   return <div>Welcome to protected content!</div>
  * }
  * ```
  */
-export const useIsAuthenticated = () => useAuthStore((state) => state.isAuthenticated)
+export const useIsAuthenticated = () =>
+  useAuthStore(state => state.isAuthenticated)

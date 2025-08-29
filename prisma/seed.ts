@@ -21,10 +21,10 @@ async function main() {
     // Create test user with the credentials shown in the login form
     const testUserEmail = 'usuario@ejemplo.com'
     const testUserPassword = 'password123'
-    
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: testUserEmail }
+      where: { email: testUserEmail },
     })
 
     if (existingUser) {
@@ -32,14 +32,14 @@ async function main() {
     } else {
       // Hash the password
       const hashedPassword = await hash(testUserPassword, 12)
-      
+
       // Create the test user
       const testUser = await prisma.user.create({
         data: {
           email: testUserEmail,
           name: 'Usuario de Prueba',
           password: hashedPassword,
-        }
+        },
       })
 
       console.log(`✅ Created test user: ${testUser.email}`)
@@ -52,7 +52,6 @@ async function main() {
     // For example: sample products, categories, etc.
 
     console.log('🎉 Database seed completed successfully!')
-    
   } catch (error) {
     console.error('❌ Error during database seed:', error)
     throw error
@@ -63,7 +62,7 @@ async function main() {
  * Execute the seed function
  */
 main()
-  .catch((e) => {
+  .catch(e => {
     console.error('💥 Seed script failed:', e)
     process.exit(1)
   })

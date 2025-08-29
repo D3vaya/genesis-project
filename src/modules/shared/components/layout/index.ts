@@ -6,19 +6,19 @@
  */
 
 // Main layout components
-export { AppSidebar } from './AppSidebar';
-export type { AppSidebarProps } from './AppSidebar';
+export { AppSidebar } from './AppSidebar'
+export type { AppSidebarProps } from './AppSidebar'
 
-export { DashboardHeader } from './DashboardHeader';
-export type { DashboardHeaderProps, HeaderAction } from './DashboardHeader';
+export { DashboardHeader } from './DashboardHeader'
+export type { DashboardHeaderProps, HeaderAction } from './DashboardHeader'
 
-export { 
+export {
   DashboardLayout,
   AdminDashboardLayout,
   MinimalDashboardLayout,
-  FullPageDashboardLayout 
-} from './DashboardLayout';
-export type { DashboardLayoutProps } from './DashboardLayout';
+  FullPageDashboardLayout,
+} from './DashboardLayout'
+export type { DashboardLayoutProps } from './DashboardLayout'
 
 // Navigation configuration
 export {
@@ -30,10 +30,10 @@ export {
   DEFAULT_APP_BRANDING,
   setActiveNavigation,
   createNavigationGroups,
-} from '../../config/navigation';
+} from '../../config/navigation'
 
 export type {
   NavigationItem,
   NavigationGroup,
   AppBranding,
-} from '../../config/navigation';
+} from '../../config/navigation'

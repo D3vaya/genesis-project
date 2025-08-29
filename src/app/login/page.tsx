@@ -5,17 +5,17 @@
  * @version 1.0.0
  */
 
-"use client";
+'use client'
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
+import { Eye, EyeOff, Loader2, LogIn } from 'lucide-react'
 
-import { Button } from "@/modules/shared/components/ui/button";
-import { Input } from "@/modules/shared/components/ui/input";
+import { Button } from '@/modules/shared/components/ui/button'
+import { Input } from '@/modules/shared/components/ui/input'
 import {
   Card,
   CardContent,
@@ -23,8 +23,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/modules/shared/components/ui/card";
-import { Alert, AlertDescription } from "@/modules/shared/components/ui/alert";
+} from '@/modules/shared/components/ui/card'
+import { Alert, AlertDescription } from '@/modules/shared/components/ui/alert'
 import {
   Form,
   FormControl,
@@ -32,11 +32,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/modules/shared/components/ui/form";
+} from '@/modules/shared/components/ui/form'
 
-import { useAuthStore } from "@/modules/shared/stores/authStore";
-import { toast } from "sonner";
-import { loginSchema, type LoginFormData } from "@/lib/validations";
+import { useAuthStore } from '@/modules/shared/stores/authStore'
+import { toast } from 'sonner'
+import { loginSchema, type LoginFormData } from '@/lib/validations'
 
 /**
  * Login Page Component
@@ -51,11 +51,11 @@ import { loginSchema, type LoginFormData } from "@/lib/validations";
  * ```
  */
 export default function LoginPage(): React.JSX.Element {
-  const router = useRouter();
+  const router = useRouter()
   const { login, isAuthenticated, isLoading, error, clearError } =
-    useAuthStore();
+    useAuthStore()
 
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false)
 
   /**
    * React Hook Form setup with Zod validation
@@ -64,11 +64,11 @@ export default function LoginPage(): React.JSX.Element {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-    mode: "onChange", // Validate on change for better UX
-  });
+    mode: 'onChange', // Validate on change for better UX
+  })
 
   /**
    * Redirect authenticated users
@@ -76,9 +76,9 @@ export default function LoginPage(): React.JSX.Element {
    */
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/dashboard");
+      router.push('/dashboard')
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router])
 
   /**
    * Clear error when component unmounts or user starts typing
@@ -87,12 +87,12 @@ export default function LoginPage(): React.JSX.Element {
   useEffect(() => {
     const subscription = form.watch(() => {
       if (error) {
-        clearError();
+        clearError()
       }
-    });
+    })
 
-    return () => subscription.unsubscribe();
-  }, [form, error, clearError]);
+    return () => subscription.unsubscribe()
+  }, [form, error, clearError])
 
   /**
    * Form submission handler
@@ -113,25 +113,26 @@ export default function LoginPage(): React.JSX.Element {
    */
   const onSubmit = async (data: LoginFormData): Promise<void> => {
     try {
-      clearError();
+      clearError()
 
-      const success = await login(data.email, data.password);
+      const success = await login(data.email, data.password)
 
       if (success) {
-        toast.success("¡Bienvenido!", {
-          description: "Has iniciado sesión correctamente",
-        });
+        toast.success('¡Bienvenido!', {
+          description: 'Has iniciado sesión correctamente',
+        })
 
         // Router push will be handled by useEffect when isAuthenticated changes
       }
       // Error handling is managed by the auth store
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error("Error de Autenticación", {
-        description: "Ocurrió un error inesperado. Por favor, intenta de nuevo.",
-      });
+      console.error('Login error:', error)
+      toast.error('Error de Autenticación', {
+        description:
+          'Ocurrió un error inesperado. Por favor, intenta de nuevo.',
+      })
     }
-  };
+  }
 
   /**
    * Toggle password visibility
@@ -143,8 +144,8 @@ export default function LoginPage(): React.JSX.Element {
    * ```
    */
   const togglePasswordVisibility = (): void => {
-    setShowPassword(!showPassword);
-  };
+    setShowPassword(!showPassword)
+  }
 
   /**
    * Get form field error message
@@ -156,8 +157,8 @@ export default function LoginPage(): React.JSX.Element {
   const getFieldError = (
     fieldName: keyof LoginFormData
   ): string | undefined => {
-    return form.formState.errors[fieldName]?.message;
-  };
+    return form.formState.errors[fieldName]?.message
+  }
 
   /**
    * Check if form is valid and can be submitted
@@ -166,16 +167,16 @@ export default function LoginPage(): React.JSX.Element {
    * @returns {boolean} True if form can be submitted, false otherwise
    */
   const canSubmit = (): boolean => {
-    return form.formState.isValid && !isLoading;
-  };
+    return form.formState.isValid && !isLoading
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4 dark:from-slate-900 dark:to-slate-800">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="p-3 rounded-full bg-primary/10">
-              <LogIn className="h-8 w-8 text-primary" />
+          <div className="mb-4 flex justify-center">
+            <div className="bg-primary/10 rounded-full p-3">
+              <LogIn className="text-primary h-8 w-8" />
             </div>
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">
@@ -211,7 +212,7 @@ export default function LoginPage(): React.JSX.Element {
                         autoComplete="email"
                         disabled={isLoading}
                         className={
-                          getFieldError("email") ? "border-destructive" : ""
+                          getFieldError('email') ? 'border-destructive' : ''
                         }
                         {...field}
                       />
@@ -232,14 +233,14 @@ export default function LoginPage(): React.JSX.Element {
                       <div className="relative">
                         <Input
                           id="password"
-                          type={showPassword ? "text" : "password"}
+                          type={showPassword ? 'text' : 'password'}
                           placeholder="Tu contraseña"
                           autoComplete="current-password"
                           disabled={isLoading}
                           className={`pr-10 ${
-                            getFieldError("password")
-                              ? "border-destructive"
-                              : ""
+                            getFieldError('password')
+                              ? 'border-destructive'
+                              : ''
                           }`}
                           {...field}
                         />
@@ -247,11 +248,11 @@ export default function LoginPage(): React.JSX.Element {
                           type="button"
                           onClick={togglePasswordVisibility}
                           disabled={isLoading}
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none focus:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="text-muted-foreground hover:text-foreground focus:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transform focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                           aria-label={
                             showPassword
-                              ? "Ocultar contraseña"
-                              : "Mostrar contraseña"
+                              ? 'Ocultar contraseña'
+                              : 'Mostrar contraseña'
                           }
                         >
                           {showPassword ? (
@@ -290,20 +291,20 @@ export default function LoginPage(): React.JSX.Element {
 
             <CardFooter className="flex flex-col space-y-4">
               {/* Register Link */}
-              <div className="text-center text-sm text-muted-foreground">
-                ¿No tienes una cuenta?{" "}
+              <div className="text-muted-foreground text-center text-sm">
+                ¿No tienes una cuenta?{' '}
                 <Link
                   href="/register"
-                  className="font-medium text-primary hover:underline focus:outline-none focus:underline"
+                  className="text-primary font-medium hover:underline focus:underline focus:outline-none"
                 >
                   Regístrate aquí
                 </Link>
               </div>
 
               {/* Demo Credentials (Development Only) */}
-              {process.env.NODE_ENV === "development" && (
-                <div className="text-xs text-muted-foreground bg-muted p-3 rounded-md">
-                  <p className="font-medium mb-1">Credenciales de prueba:</p>
+              {process.env.NODE_ENV === 'development' && (
+                <div className="text-muted-foreground bg-muted rounded-md p-3 text-xs">
+                  <p className="mb-1 font-medium">Credenciales de prueba:</p>
                   <p>Email: usuario@ejemplo.com</p>
                   <p>Contraseña: password123</p>
                 </div>
@@ -313,5 +314,5 @@ export default function LoginPage(): React.JSX.Element {
         </Form>
       </Card>
     </div>
-  );
+  )
 }
