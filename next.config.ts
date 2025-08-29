@@ -1,13 +1,18 @@
 import type { NextConfig } from 'next'
+import path from 'path'
 
 const nextConfig: NextConfig = {
   // Turbopack is enabled by default in dev via package.json scripts
   experimental: {
     // Enable optimizations
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-    // Better bundling for dependencies
-    serverComponentsExternalPackages: ['prisma', '@prisma/client'],
   },
+
+  // Better bundling for dependencies (moved from experimental)
+  serverExternalPackages: ['prisma', '@prisma/client'],
+
+  // Fix workspace root warning
+  outputFileTracingRoot: path.join(__dirname),
 
   // Security headers
   async headers() {
