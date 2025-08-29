@@ -6,7 +6,7 @@
  */
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 /**
  * Theme options for the application
@@ -283,6 +283,13 @@ export const useUIStore = create<UIState>()(
     }),
     {
       name: "ui-store",
+      storage: createJSONStorage(() => 
+        typeof window !== 'undefined' ? localStorage : {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+        }
+      ),
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
         theme: state.theme,
@@ -383,13 +390,24 @@ export const useTheme = () =>
  * }
  * ```
  */
-export const useNotifications = () =>
-  useUIStore((state) => ({
-    notifications: state.notifications,
-    addNotification: state.addNotification,
-    removeNotification: state.removeNotification,
-    clearNotifications: state.clearNotifications,
-  }));
+const notificationsSelector = (state: UIState) => state.notifications
+const addNotificationSelector = (state: UIState) => state.addNotification
+const removeNotificationSelector = (state: UIState) => state.removeNotification
+const clearNotificationsSelector = (state: UIState) => state.clearNotifications
+
+export const useNotifications = () => {
+  const notifications = useUIStore(notificationsSelector)
+  const addNotification = useUIStore(addNotificationSelector)
+  const removeNotification = useUIStore(removeNotificationSelector)
+  const clearNotifications = useUIStore(clearNotificationsSelector)
+  
+  return {
+    notifications,
+    addNotification,
+    removeNotification,
+    clearNotifications,
+  }
+};
 
 /**
  * Export notification types for external use

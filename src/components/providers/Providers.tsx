@@ -25,7 +25,7 @@ import { X, CheckCircle, AlertTriangle, Info, AlertCircle } from 'lucide-react'
  * <NotificationDisplay />
  * ```
  */
-function NotificationDisplay(): React.JSX.Element {
+const NotificationDisplay = React.memo(function NotificationDisplay(): React.JSX.Element {
   const { notifications, removeNotification } = useNotifications()
 
   if (notifications.length === 0) return <></>
@@ -102,7 +102,7 @@ function NotificationDisplay(): React.JSX.Element {
       ))}
     </div>
   )
-}
+})
 
 /**
  * Theme provider component
