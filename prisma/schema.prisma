@@ -1,0 +1,140 @@
+/**
+ * @fileoverview Prisma schema configuration for the SaaS template
+ * @description Defines the database models and relationships for user management and authentication
+ * @author Generated SaaS Template
+ * @version 1.0.0
+ */
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/**
+ * User model for authentication and profile management
+ * @description Core user entity with authentication credentials and profile information
+ */
+model User {
+  /// @description Unique identifier for the user
+  id        String   @id @default(cuid())
+  
+  /// @description User's email address (unique, used for login)
+  email     String   @unique
+  
+  /// @description User's display name
+  name      String?
+  
+  /// @description Hashed password for credentials-based authentication
+  password  String
+  
+  /// @description Profile image URL (optional)
+  image     String?
+  
+  /// @description Timestamp when the user was created
+  createdAt DateTime @default(now())
+  
+  /// @description Timestamp when the user was last updated
+  updatedAt DateTime @updatedAt
+
+  /// @description NextAuth accounts associated with this user
+  accounts  Account[]
+  
+  /// @description NextAuth sessions associated with this user
+  sessions  Session[]
+
+  @@map("users")
+}
+
+/**
+ * NextAuth Account model
+ * @description Stores OAuth account information for third-party providers
+ */
+model Account {
+  /// @description Unique identifier for the account
+  id                String  @id @default(cuid())
+  
+  /// @description Foreign key to User model
+  userId            String
+  
+  /// @description OAuth provider type (google, github, etc.)
+  type              String
+  
+  /// @description OAuth provider identifier
+  provider          String
+  
+  /// @description Provider-specific account ID
+  providerAccountId String
+  
+  /// @description OAuth refresh token
+  refresh_token     String?
+  
+  /// @description OAuth access token
+  access_token      String?
+  
+  /// @description Token expiration timestamp
+  expires_at        Int?
+  
+  /// @description OAuth token type
+  token_type        String?
+  
+  /// @description OAuth scope permissions
+  scope             String?
+  
+  /// @description OAuth ID token
+  id_token          String?
+  
+  /// @description OAuth session state
+  session_state     String?
+
+  /// @description User relationship
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+/**
+ * NextAuth Session model
+ * @description Stores active user sessions
+ */
+model Session {
+  /// @description Unique identifier for the session
+  id           String   @id @default(cuid())
+  
+  /// @description Session token
+  sessionToken String   @unique
+  
+  /// @description Foreign key to User model
+  userId       String
+  
+  /// @description Session expiration date
+  expires      DateTime
+
+  /// @description User relationship
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+/**
+ * NextAuth Verification Token model
+ * @description Stores email verification and password reset tokens
+ */
+model VerificationToken {
+  /// @description Token identifier (email or other identifier)
+  identifier String
+  
+  /// @description Verification token
+  token      String   @unique
+  
+  /// @description Token expiration date
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
