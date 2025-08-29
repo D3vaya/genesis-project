@@ -5,9 +5,14 @@
  * @version 1.0.0
  */
 
-import { hash, compare } from 'bcryptjs'
-import { prisma } from '@/lib/prisma'
-import { userSchema, type User, type RegisterFormData, type UserProfileData } from '@/lib/validations'
+import { hash, compare } from "bcryptjs";
+import { prisma } from "@/lib/prisma";
+import {
+  userSchema,
+  type User,
+  type RegisterFormData,
+  type UserProfileData,
+} from "@/lib/validations";
 
 /**
  * User service error class
@@ -18,13 +23,9 @@ import { userSchema, type User, type RegisterFormData, type UserProfileData } fr
  * @property {string} field - Field related to the error (optional)
  */
 export class UserServiceError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public field?: string
-  ) {
-    super(message)
-    this.name = 'UserServiceError'
+  constructor(message: string, public code: string, public field?: string) {
+    super(message);
+    this.name = "UserServiceError";
   }
 }
 
@@ -37,9 +38,9 @@ export class UserServiceError extends Error {
  * @property {string} message - Success message
  */
 interface CreateUserResult {
-  user: User
-  success: boolean
-  message: string
+  user: User;
+  success: boolean;
+  message: string;
 }
 
 /**
@@ -52,10 +53,10 @@ interface CreateUserResult {
  * @property {string[]} updatedFields - List of fields that were updated
  */
 interface UpdateUserResult {
-  user: User
-  success: boolean
-  message: string
-  updatedFields: string[]
+  user: User;
+  success: boolean;
+  message: string;
+  updatedFields: string[];
 }
 
 /**
@@ -67,9 +68,9 @@ interface UpdateUserResult {
  * @property {string} deletedUserId - ID of the deleted user
  */
 interface DeleteUserResult {
-  success: boolean
-  message: string
-  deletedUserId: string
+  success: boolean;
+  message: string;
+  deletedUserId: string;
 }
 
 /**
@@ -83,11 +84,11 @@ interface DeleteUserResult {
  * @property {boolean} includeDeleted - Whether to include soft-deleted users
  */
 interface UserQueryOptions {
-  limit?: number
-  offset?: number
-  orderBy?: 'name' | 'email' | 'createdAt' | 'updatedAt'
-  orderDir?: 'asc' | 'desc'
-  includeDeleted?: boolean
+  limit?: number;
+  offset?: number;
+  orderBy?: "name" | "email" | "createdAt" | "updatedAt";
+  orderDir?: "asc" | "desc";
+  includeDeleted?: boolean;
 }
 
 /**
@@ -97,17 +98,17 @@ interface UserQueryOptions {
  * @example
  * ```typescript
  * import { userService } from '@/services/userService'
- * 
+ *
  * // Create a new user
  * const result = await userService.createUser({
  *   name: 'John Doe',
  *   email: 'john@example.com',
  *   password: 'password123'
  * })
- * 
+ *
  * // Get user by email
  * const user = await userService.getUserByEmail('john@example.com')
- * 
+ *
  * // Update user profile
  * const updateResult = await userService.updateUserProfile(user.id, {
  *   name: 'John Updated'
@@ -130,26 +131,28 @@ class UserService {
    *   password: 'securepassword123',
    *   confirmPassword: 'securepassword123'
    * })
-   * 
+   *
    * if (result.success) {
    *   console.log('User created:', result.user)
    * }
    * ```
    */
-  async createUser(userData: Omit<RegisterFormData, 'confirmPassword'>): Promise<CreateUserResult> {
+  async createUser(
+    userData: Omit<RegisterFormData, "confirmPassword">
+  ): Promise<CreateUserResult> {
     try {
       // Check if user already exists
-      const existingUser = await this.getUserByEmail(userData.email)
+      const existingUser = await this.getUserByEmail(userData.email);
       if (existingUser) {
         throw new UserServiceError(
-          'Un usuario con este email ya existe',
-          'USER_ALREADY_EXISTS',
-          'email'
-        )
+          "Un usuario con este email ya existe",
+          "USER_ALREADY_EXISTS",
+          "email"
+        );
       }
 
       // Hash password
-      const hashedPassword = await hash(userData.password, 12)
+      const hashedPassword = await hash(userData.password, 12);
 
       // Create user in database
       const createdUser = await prisma.user.create({
@@ -165,39 +168,38 @@ class UserService {
           image: true,
           createdAt: true,
           updatedAt: true,
-        }
-      })
+        },
+      });
 
       // Validate created user against schema
-      const validatedUser = userSchema.parse(createdUser)
+      const validatedUser = userSchema.parse(createdUser);
 
       return {
         user: validatedUser,
         success: true,
-        message: 'Usuario creado exitosamente'
-      }
-
+        message: "Usuario creado exitosamente",
+      };
     } catch (error) {
-      console.error('Error creating user:', error)
-      
+      console.error("Error creating user:", error);
+
       if (error instanceof UserServiceError) {
-        throw error
+        throw error;
       }
 
       if (error instanceof Error) {
-        if (error.message.includes('Unique constraint')) {
+        if (error.message.includes("Unique constraint")) {
           throw new UserServiceError(
-            'Un usuario con este email ya existe',
-            'USER_ALREADY_EXISTS',
-            'email'
-          )
+            "Un usuario con este email ya existe",
+            "USER_ALREADY_EXISTS",
+            "email"
+          );
         }
       }
 
       throw new UserServiceError(
-        'Error interno al crear el usuario',
-        'INTERNAL_ERROR'
-      )
+        "Error interno al crear el usuario",
+        "INTERNAL_ERROR"
+      );
     }
   }
 
@@ -217,7 +219,7 @@ class UserService {
    * } else {
    *   console.log('User not found')
    * }
-   * 
+   *
    * // Include password for authentication
    * const userWithPassword = await userService.getUserByEmail(
    *   'user@example.com',
@@ -225,11 +227,14 @@ class UserService {
    * )
    * ```
    */
-  async getUserByEmail(email: string, includePassword: boolean = false): Promise<(User & { password?: string }) | null> {
+  async getUserByEmail(
+    email: string,
+    includePassword: boolean = false
+  ): Promise<(User & { password?: string }) | null> {
     try {
       const user = await prisma.user.findUnique({
-        where: { 
-          email: email.toLowerCase() 
+        where: {
+          email: email.toLowerCase(),
         },
         select: {
           id: true,
@@ -239,16 +244,16 @@ class UserService {
           createdAt: true,
           updatedAt: true,
           password: includePassword,
-        }
-      })
+        },
+      });
 
-      return user
+      return user;
     } catch (error) {
-      console.error('Error getting user by email:', error)
+      console.error("Error getting user by email:", error);
       throw new UserServiceError(
-        'Error al buscar usuario por email',
-        'DATABASE_ERROR'
-      )
+        "Error al buscar usuario por email",
+        "DATABASE_ERROR"
+      );
     }
   }
 
@@ -278,16 +283,16 @@ class UserService {
           image: true,
           createdAt: true,
           updatedAt: true,
-        }
-      })
+        },
+      });
 
-      return user
+      return user;
     } catch (error) {
-      console.error('Error getting user by ID:', error)
+      console.error("Error getting user by ID:", error);
       throw new UserServiceError(
-        'Error al buscar usuario por ID',
-        'DATABASE_ERROR'
-      )
+        "Error al buscar usuario por ID",
+        "DATABASE_ERROR"
+      );
     }
   }
 
@@ -307,7 +312,7 @@ class UserService {
    *   orderBy: 'createdAt',
    *   orderDir: 'desc'
    * })
-   * 
+   *
    * console.log(`Found ${users.length} users`)
    * ```
    */
@@ -316,9 +321,9 @@ class UserService {
       const {
         limit = 50,
         offset = 0,
-        orderBy = 'createdAt',
-        orderDir = 'desc'
-      } = options
+        orderBy = "createdAt",
+        orderDir = "desc",
+      } = options;
 
       const users = await prisma.user.findMany({
         select: {
@@ -330,19 +335,16 @@ class UserService {
           updatedAt: true,
         },
         orderBy: {
-          [orderBy]: orderDir
+          [orderBy]: orderDir,
         },
         take: limit,
         skip: offset,
-      })
+      });
 
-      return users
+      return users;
     } catch (error) {
-      console.error('Error getting all users:', error)
-      throw new UserServiceError(
-        'Error al obtener usuarios',
-        'DATABASE_ERROR'
-      )
+      console.error("Error getting all users:", error);
+      throw new UserServiceError("Error al obtener usuarios", "DATABASE_ERROR");
     }
   }
 
@@ -360,53 +362,62 @@ class UserService {
    *   name: 'Updated Name',
    *   image: 'https://example.com/new-avatar.jpg'
    * })
-   * 
+   *
    * if (result.success) {
    *   console.log('Updated fields:', result.updatedFields)
    *   console.log('Updated user:', result.user)
    * }
    * ```
    */
-  async updateUserProfile(id: string, profileData: UserProfileData): Promise<UpdateUserResult> {
+  async updateUserProfile(
+    id: string,
+    profileData: UserProfileData
+  ): Promise<UpdateUserResult> {
     try {
       // Check if user exists
-      const existingUser = await this.getUserById(id)
+      const existingUser = await this.getUserById(id);
       if (!existingUser) {
-        throw new UserServiceError(
-          'Usuario no encontrado',
-          'USER_NOT_FOUND'
-        )
+        throw new UserServiceError("Usuario no encontrado", "USER_NOT_FOUND");
       }
 
       // Check if email is being updated and if it's unique
       if (profileData.email && profileData.email !== existingUser.email) {
-        const emailExists = await this.getUserByEmail(profileData.email)
+        const emailExists = await this.getUserByEmail(profileData.email);
         if (emailExists) {
           throw new UserServiceError(
-            'Este email ya está en uso',
-            'EMAIL_ALREADY_EXISTS',
-            'email'
-          )
+            "Este email ya está en uso",
+            "EMAIL_ALREADY_EXISTS",
+            "email"
+          );
         }
       }
 
       // Prepare update data
-      const updateData: any = {}
-      const updatedFields: string[] = []
+      const updateData: Record<string, string | undefined> = {};
+      const updatedFields: string[] = [];
 
-      if (profileData.name !== undefined && profileData.name !== existingUser.name) {
-        updateData.name = profileData.name
-        updatedFields.push('name')
+      if (
+        profileData.name !== undefined &&
+        profileData.name !== existingUser.name
+      ) {
+        updateData.name = profileData.name;
+        updatedFields.push("name");
       }
 
-      if (profileData.email !== undefined && profileData.email !== existingUser.email) {
-        updateData.email = profileData.email.toLowerCase()
-        updatedFields.push('email')
+      if (
+        profileData.email !== undefined &&
+        profileData.email !== existingUser.email
+      ) {
+        updateData.email = profileData.email.toLowerCase();
+        updatedFields.push("email");
       }
 
-      if (profileData.image !== undefined && profileData.image !== existingUser.image) {
-        updateData.image = profileData.image
-        updatedFields.push('image')
+      if (
+        profileData.image !== undefined &&
+        profileData.image !== existingUser.image
+      ) {
+        updateData.image = profileData.image;
+        updatedFields.push("image");
       }
 
       // Only update if there are changes
@@ -414,9 +425,9 @@ class UserService {
         return {
           user: existingUser,
           success: true,
-          message: 'No hay cambios para actualizar',
-          updatedFields: []
-        }
+          message: "No hay cambios para actualizar",
+          updatedFields: [],
+        };
       }
 
       // Update user in database
@@ -430,40 +441,41 @@ class UserService {
           image: true,
           createdAt: true,
           updatedAt: true,
-        }
-      })
+        },
+      });
 
       // Validate updated user against schema
-      const validatedUser = userSchema.parse(updatedUser)
+      const validatedUser = userSchema.parse(updatedUser);
 
       return {
         user: validatedUser,
         success: true,
-        message: `Perfil actualizado exitosamente (${updatedFields.join(', ')})`,
-        updatedFields
-      }
-
+        message: `Perfil actualizado exitosamente (${updatedFields.join(
+          ", "
+        )})`,
+        updatedFields,
+      };
     } catch (error) {
-      console.error('Error updating user profile:', error)
-      
+      console.error("Error updating user profile:", error);
+
       if (error instanceof UserServiceError) {
-        throw error
+        throw error;
       }
 
       if (error instanceof Error) {
-        if (error.message.includes('Unique constraint')) {
+        if (error.message.includes("Unique constraint")) {
           throw new UserServiceError(
-            'Este email ya está en uso',
-            'EMAIL_ALREADY_EXISTS',
-            'email'
-          )
+            "Este email ya está en uso",
+            "EMAIL_ALREADY_EXISTS",
+            "email"
+          );
         }
       }
 
       throw new UserServiceError(
-        'Error interno al actualizar perfil',
-        'INTERNAL_ERROR'
-      )
+        "Error interno al actualizar perfil",
+        "INTERNAL_ERROR"
+      );
     }
   }
 
@@ -483,13 +495,17 @@ class UserService {
    *   'currentPassword123',
    *   'newSecurePassword456'
    * )
-   * 
+   *
    * if (success) {
    *   console.log('Password changed successfully')
    * }
    * ```
    */
-  async changePassword(id: string, currentPassword: string, newPassword: string): Promise<boolean> {
+  async changePassword(
+    id: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<boolean> {
     try {
       // Get user with password
       const user = await prisma.user.findUnique({
@@ -497,50 +513,49 @@ class UserService {
         select: {
           id: true,
           password: true,
-        }
-      })
+        },
+      });
 
       if (!user) {
-        throw new UserServiceError(
-          'Usuario no encontrado',
-          'USER_NOT_FOUND'
-        )
+        throw new UserServiceError("Usuario no encontrado", "USER_NOT_FOUND");
       }
 
       // Verify current password
-      const isCurrentPasswordValid = await compare(currentPassword, user.password)
+      const isCurrentPasswordValid = await compare(
+        currentPassword,
+        user.password
+      );
       if (!isCurrentPasswordValid) {
         throw new UserServiceError(
-          'La contraseña actual es incorrecta',
-          'INVALID_CURRENT_PASSWORD',
-          'currentPassword'
-        )
+          "La contraseña actual es incorrecta",
+          "INVALID_CURRENT_PASSWORD",
+          "currentPassword"
+        );
       }
 
       // Hash new password
-      const hashedNewPassword = await hash(newPassword, 12)
+      const hashedNewPassword = await hash(newPassword, 12);
 
       // Update password in database
       await prisma.user.update({
         where: { id },
         data: {
           password: hashedNewPassword,
-        }
-      })
+        },
+      });
 
-      return true
-
+      return true;
     } catch (error) {
-      console.error('Error changing password:', error)
-      
+      console.error("Error changing password:", error);
+
       if (error instanceof UserServiceError) {
-        throw error
+        throw error;
       }
 
       throw new UserServiceError(
-        'Error interno al cambiar contraseña',
-        'INTERNAL_ERROR'
-      )
+        "Error interno al cambiar contraseña",
+        "INTERNAL_ERROR"
+      );
     }
   }
 
@@ -562,36 +577,32 @@ class UserService {
   async deleteUser(id: string): Promise<DeleteUserResult> {
     try {
       // Check if user exists
-      const existingUser = await this.getUserById(id)
+      const existingUser = await this.getUserById(id);
       if (!existingUser) {
-        throw new UserServiceError(
-          'Usuario no encontrado',
-          'USER_NOT_FOUND'
-        )
+        throw new UserServiceError("Usuario no encontrado", "USER_NOT_FOUND");
       }
 
       // Delete user (this will cascade delete related records due to Prisma schema)
       await prisma.user.delete({
-        where: { id }
-      })
+        where: { id },
+      });
 
       return {
         success: true,
-        message: 'Usuario eliminado exitosamente',
-        deletedUserId: id
-      }
-
+        message: "Usuario eliminado exitosamente",
+        deletedUserId: id,
+      };
     } catch (error) {
-      console.error('Error deleting user:', error)
-      
+      console.error("Error deleting user:", error);
+
       if (error instanceof UserServiceError) {
-        throw error
+        throw error;
       }
 
       throw new UserServiceError(
-        'Error interno al eliminar usuario',
-        'INTERNAL_ERROR'
-      )
+        "Error interno al eliminar usuario",
+        "INTERNAL_ERROR"
+      );
     }
   }
 
@@ -609,7 +620,7 @@ class UserService {
    *   'user@example.com',
    *   'password123'
    * )
-   * 
+   *
    * if (user) {
    *   console.log('Authentication successful for:', user.email)
    * } else {
@@ -617,32 +628,34 @@ class UserService {
    * }
    * ```
    */
-  async verifyCredentials(email: string, password: string): Promise<User | null> {
+  async verifyCredentials(
+    email: string,
+    password: string
+  ): Promise<User | null> {
     try {
       // Get user with password
-      const user = await this.getUserByEmail(email, true)
-      
+      const user = await this.getUserByEmail(email, true);
+
       if (!user || !user.password) {
-        return null
+        return null;
       }
 
       // Verify password
-      const isPasswordValid = await compare(password, user.password)
-      
+      const isPasswordValid = await compare(password, user.password);
+
       if (!isPasswordValid) {
-        return null
+        return null;
       }
 
       // Return user without password
-      const { password: _, ...userWithoutPassword } = user
-      return userWithoutPassword as User
-
+      const { password: _, ...userWithoutPassword } = user;
+      return userWithoutPassword as User;
     } catch (error) {
-      console.error('Error verifying credentials:', error)
+      console.error("Error verifying credentials:", error);
       throw new UserServiceError(
-        'Error interno al verificar credenciales',
-        'INTERNAL_ERROR'
-      )
+        "Error interno al verificar credenciales",
+        "INTERNAL_ERROR"
+      );
     }
   }
 
@@ -660,55 +673,60 @@ class UserService {
    * ```
    */
   async getUserStats(): Promise<{
-    totalUsers: number
-    todayUsers: number
-    weekUsers: number
-    monthUsers: number
+    totalUsers: number;
+    todayUsers: number;
+    weekUsers: number;
+    monthUsers: number;
   }> {
     try {
-      const now = new Date()
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-      const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate())
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const monthAgo = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        now.getDate()
+      );
 
-      const [totalUsers, todayUsers, weekUsers, monthUsers] = await Promise.all([
-        prisma.user.count(),
-        prisma.user.count({
-          where: {
-            createdAt: {
-              gte: today
-            }
-          }
-        }),
-        prisma.user.count({
-          where: {
-            createdAt: {
-              gte: weekAgo
-            }
-          }
-        }),
-        prisma.user.count({
-          where: {
-            createdAt: {
-              gte: monthAgo
-            }
-          }
-        }),
-      ])
+      const [totalUsers, todayUsers, weekUsers, monthUsers] = await Promise.all(
+        [
+          prisma.user.count(),
+          prisma.user.count({
+            where: {
+              createdAt: {
+                gte: today,
+              },
+            },
+          }),
+          prisma.user.count({
+            where: {
+              createdAt: {
+                gte: weekAgo,
+              },
+            },
+          }),
+          prisma.user.count({
+            where: {
+              createdAt: {
+                gte: monthAgo,
+              },
+            },
+          }),
+        ]
+      );
 
       return {
         totalUsers,
         todayUsers,
         weekUsers,
-        monthUsers
-      }
-
+        monthUsers,
+      };
     } catch (error) {
-      console.error('Error getting user stats:', error)
+      console.error("Error getting user stats:", error);
       throw new UserServiceError(
-        'Error al obtener estadísticas de usuarios',
-        'DATABASE_ERROR'
-      )
+        "Error al obtener estadísticas de usuarios",
+        "DATABASE_ERROR"
+      );
     }
   }
 
@@ -731,14 +749,14 @@ class UserService {
    */
   async isEmailAvailable(email: string): Promise<boolean> {
     try {
-      const existingUser = await this.getUserByEmail(email)
-      return existingUser === null
+      const existingUser = await this.getUserByEmail(email);
+      return existingUser === null;
     } catch (error) {
-      console.error('Error checking email availability:', error)
+      console.error("Error checking email availability:", error);
       throw new UserServiceError(
-        'Error al verificar disponibilidad del email',
-        'DATABASE_ERROR'
-      )
+        "Error al verificar disponibilidad del email",
+        "DATABASE_ERROR"
+      );
     }
   }
 }
@@ -750,19 +768,19 @@ class UserService {
  * @example
  * ```typescript
  * import { userService } from '@/services/userService'
- * 
+ *
  * // Use the service instance
  * const user = await userService.getUserByEmail('user@example.com')
  * ```
  */
-export const userService = new UserService()
+export const userService = new UserService();
 
 /**
  * Export service class for testing or custom instantiation
  * @export UserService
  * @description Export the UserService class itself for testing purposes
  */
-export { UserService }
+export { UserService };
 
 /**
  * Export all interfaces and types
@@ -772,5 +790,5 @@ export type {
   CreateUserResult,
   UpdateUserResult,
   DeleteUserResult,
-  UserQueryOptions
-}
+  UserQueryOptions,
+};

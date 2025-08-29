@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @fileoverview Register page component with comprehensive form validation and user registration
  * @description Provides user registration functionality with react-hook-form, Zod validation, and shadcn/ui components
@@ -21,8 +22,8 @@ import {
   XCircle,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/modules/shared/components/ui/button";
+import { Input } from "@/modules/shared/components/ui/input";
 import {
   Card,
   CardContent,
@@ -30,8 +31,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "@/modules/shared/components/ui/card";
+import { Alert, AlertDescription } from "@/modules/shared/components/ui/alert";
 import {
   Form,
   FormControl,
@@ -39,10 +40,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/modules/shared/components/ui/form";
 
-import { useAuthStore } from "@/stores/authStore";
-import { useNotifications } from "@/stores/uiStore";
+import { useAuthStore } from "@/modules/shared/stores/authStore";
+import { toast } from "sonner";
 import { internalApi } from "@/lib/axios";
 import { registerSchema, type RegisterFormData } from "@/lib/validations";
 
@@ -77,7 +78,6 @@ interface PasswordStrength {
 export default function RegisterPage(): React.JSX.Element {
   const router = useRouter();
   const { isAuthenticated, login } = useAuthStore();
-  const { addNotification } = useNotifications();
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
@@ -256,32 +256,23 @@ export default function RegisterPage(): React.JSX.Element {
       }>("POST", "/api/auth/register", registrationData);
 
       // Show success notification
-      addNotification({
-        title: "¡Registro Exitoso!",
-        message: response.message,
-        severity: "success",
-        duration: 4000,
+      toast.success("¡Registro Exitoso!", {
+        description: response.message,
       });
 
       // Automatically log in the user
       const loginSuccess = await login(data.email, data.password);
 
       if (loginSuccess) {
-        addNotification({
-          title: "¡Bienvenido!",
-          message: `¡Hola ${response.user.name}! Tu cuenta ha sido creada exitosamente.`,
-          severity: "success",
-          duration: 5000,
+        toast.success("¡Bienvenido!", {
+          description: `¡Hola ${response.user.name}! Tu cuenta ha sido creada exitosamente.`,
         });
 
         // Redirect to dashboard will be handled by useEffect when isAuthenticated changes
       } else {
         // Registration succeeded but login failed, redirect to login page
-        addNotification({
-          title: "Registro Completado",
-          message: "Tu cuenta fue creada. Por favor, inicia sesión.",
-          severity: "info",
-          duration: 4000,
+        toast.info("Registro Completado", {
+          description: "Tu cuenta fue creada. Por favor, inicia sesión.",
         });
 
         router.push("/login");
@@ -303,11 +294,8 @@ export default function RegisterPage(): React.JSX.Element {
           "Ya existe un usuario con este email. ¿Quieres iniciar sesión?";
       }
 
-      addNotification({
-        title: "Error de Registro",
-        message: errorMessage,
-        severity: "error",
-        duration: 6000,
+      toast.error("Error de Registro", {
+        description: errorMessage,
       });
 
       // If email already exists, focus on email field

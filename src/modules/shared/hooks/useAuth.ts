@@ -5,9 +5,9 @@
  * @version 1.0.0
  */
 
-import { useSession } from 'next-auth/react'
-import { useEffect } from 'react'
-import { useAuthStore } from '@/stores/authStore'
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { useAuthStore } from "@/modules/shared/stores/authStore";
 
 /**
  * Authentication hook return type
@@ -25,19 +25,19 @@ import { useAuthStore } from '@/stores/authStore'
  */
 interface UseAuthReturn {
   user: {
-    id: string
-    email: string
-    name?: string | null
-    image?: string | null
-  } | null
-  isAuthenticated: boolean
-  isLoading: boolean
-  error: string | null
-  login: (email: string, password: string) => Promise<boolean>
-  logout: () => Promise<void>
-  updateUser: (userData: any) => void
-  clearError: () => void
-  checkSession: () => Promise<void>
+    id: string;
+    email: string;
+    name?: string | null;
+    image?: string | null;
+  } | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
+  updateUser: (userData: any) => void;
+  clearError: () => void;
+  checkSession: () => Promise<void>;
 }
 
 /**
@@ -48,19 +48,19 @@ interface UseAuthReturn {
  * @example
  * ```typescript
  * import { useAuth } from '@/hooks/useAuth'
- * 
+ *
  * function LoginComponent() {
  *   const { user, isAuthenticated, isLoading, error, login, logout } = useAuth()
- *   
+ *
  *   const handleLogin = async (email: string, password: string) => {
  *     const success = await login(email, password)
  *     if (success) {
  *       console.log('Login successful!')
  *     }
  *   }
- *   
+ *
  *   if (isLoading) return <div>Loading...</div>
- *   
+ *
  *   if (isAuthenticated) {
  *     return (
  *       <div>
@@ -69,7 +69,7 @@ interface UseAuthReturn {
  *       </div>
  *     )
  *   }
- *   
+ *
  *   return (
  *     <div>
  *       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -82,7 +82,7 @@ interface UseAuthReturn {
  * ```
  */
 export const useAuth = (): UseAuthReturn => {
-  const { data: session, status } = useSession()
+  const { data: session, status } = useSession();
   const {
     user,
     isAuthenticated,
@@ -94,8 +94,8 @@ export const useAuth = (): UseAuthReturn => {
     clearError,
     checkSession,
     setUser,
-    setLoading
-  } = useAuthStore()
+    setLoading,
+  } = useAuthStore();
 
   /**
    * Synchronize NextAuth session with Zustand store
@@ -110,26 +110,26 @@ export const useAuth = (): UseAuthReturn => {
    * ```
    */
   useEffect(() => {
-    if (status === 'loading') {
-      setLoading(true)
-      return
+    if (status === "loading") {
+      setLoading(true);
+      return;
     }
 
-    setLoading(false)
+    setLoading(false);
 
-    if (status === 'authenticated' && session?.user) {
+    if (status === "authenticated" && session?.user) {
       // Update store with session user data
       setUser({
         id: session.user.id,
         email: session.user.email,
         name: session.user.name,
         image: session.user.image,
-      })
-    } else if (status === 'unauthenticated') {
+      });
+    } else if (status === "unauthenticated") {
       // Clear user data when not authenticated
-      setUser(null)
+      setUser(null);
     }
-  }, [session, status, setUser, setLoading])
+  }, [session, status, setUser, setLoading]);
 
   /**
    * Enhanced login function with session management
@@ -146,17 +146,20 @@ export const useAuth = (): UseAuthReturn => {
    * }
    * ```
    */
-  const enhancedLogin = async (email: string, password: string): Promise<boolean> => {
-    const success = await login(email, password)
-    
+  const enhancedLogin = async (
+    email: string,
+    password: string
+  ): Promise<boolean> => {
+    const success = await login(email, password);
+
     // Additional login logic could be added here
     if (success) {
       // Could trigger additional actions like analytics tracking
-      console.log('Login successful for user:', email)
+      console.log("Login successful for user:", email);
     }
-    
-    return success
-  }
+
+    return success;
+  };
 
   /**
    * Enhanced logout function with cleanup
@@ -170,12 +173,12 @@ export const useAuth = (): UseAuthReturn => {
    * ```
    */
   const enhancedLogout = async (): Promise<void> => {
-    await logout()
-    
+    await logout();
+
     // Additional cleanup logic could be added here
     // For example: clear cached data, analytics tracking, etc.
-    console.log('Logout completed with cleanup')
-  }
+    console.log("Logout completed with cleanup");
+  };
 
   /**
    * Check if user has specific permission (placeholder for future implementation)
@@ -194,8 +197,8 @@ export const useAuth = (): UseAuthReturn => {
   const hasPermission = (permission: string): boolean => {
     // This is a placeholder - implement based on your permission system
     // For now, return true for authenticated users
-    return isAuthenticated
-  }
+    return isAuthenticated;
+  };
 
   /**
    * Check if user has specific role (placeholder for future implementation)
@@ -214,8 +217,8 @@ export const useAuth = (): UseAuthReturn => {
   const hasRole = (role: string): boolean => {
     // This is a placeholder - implement based on your role system
     // For now, return true for authenticated users
-    return isAuthenticated
-  }
+    return isAuthenticated;
+  };
 
   /**
    * Get user display name
@@ -229,9 +232,9 @@ export const useAuth = (): UseAuthReturn => {
    * ```
    */
   const getUserDisplayName = (): string => {
-    if (!user) return 'Usuario'
-    return user.name || user.email.split('@')[0] || 'Usuario'
-  }
+    if (!user) return "Usuario";
+    return user.name || user.email.split("@")[0] || "Usuario";
+  };
 
   /**
    * Check if current session is valid
@@ -246,32 +249,32 @@ export const useAuth = (): UseAuthReturn => {
    * ```
    */
   const isSessionValid = (): boolean => {
-    return status === 'authenticated' && !!session?.user
-  }
+    return status === "authenticated" && !!session?.user;
+  };
 
   return {
     user,
     isAuthenticated,
-    isLoading: isLoading || status === 'loading',
+    isLoading: isLoading || status === "loading",
     error,
     login: enhancedLogin,
     logout: enhancedLogout,
     updateUser,
     clearError,
     checkSession,
-    
+
     // Additional utility functions
     hasPermission,
     hasRole,
     getUserDisplayName,
     isSessionValid,
   } as UseAuthReturn & {
-    hasPermission: (permission: string) => boolean
-    hasRole: (role: string) => boolean
-    getUserDisplayName: () => string
-    isSessionValid: () => boolean
-  }
-}
+    hasPermission: (permission: string) => boolean;
+    hasRole: (role: string) => boolean;
+    getUserDisplayName: () => string;
+    isSessionValid: () => boolean;
+  };
+};
 
 /**
  * Hook for checking authentication status only
@@ -281,24 +284,24 @@ export const useAuth = (): UseAuthReturn => {
  * @example
  * ```typescript
  * import { useAuthStatus } from '@/hooks/useAuth'
- * 
+ *
  * function ProtectedComponent() {
  *   const isAuthenticated = useAuthStatus()
- *   
+ *
  *   if (!isAuthenticated) {
  *     return <div>Please login to view this content</div>
  *   }
- *   
+ *
  *   return <div>Protected content here</div>
  * }
  * ```
  */
 export const useAuthStatus = (): boolean => {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-  const { status } = useSession()
-  
-  return isAuthenticated && status === 'authenticated'
-}
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { status } = useSession();
+
+  return isAuthenticated && status === "authenticated";
+};
 
 /**
  * Hook for getting current user only
@@ -308,14 +311,14 @@ export const useAuthStatus = (): boolean => {
  * @example
  * ```typescript
  * import { useCurrentUser } from '@/hooks/useAuth'
- * 
+ *
  * function UserProfile() {
  *   const user = useCurrentUser()
- *   
+ *
  *   if (!user) {
  *     return <div>No user data available</div>
  *   }
- *   
+ *
  *   return (
  *     <div>
  *       <h2>{user.name}</h2>
@@ -326,11 +329,11 @@ export const useAuthStatus = (): boolean => {
  * ```
  */
 export const useCurrentUser = () => {
-  const user = useAuthStore((state) => state.user)
-  const { data: session } = useSession()
-  
-  return user || session?.user || null
-}
+  const user = useAuthStore((state) => state.user);
+  const { data: session } = useSession();
+
+  return user || session?.user || null;
+};
 
 /**
  * Hook for authentication loading state
@@ -340,21 +343,21 @@ export const useCurrentUser = () => {
  * @example
  * ```typescript
  * import { useAuthLoading } from '@/hooks/useAuth'
- * 
+ *
  * function App() {
  *   const isLoading = useAuthLoading()
- *   
+ *
  *   if (isLoading) {
  *     return <div>Loading authentication...</div>
  *   }
- *   
+ *
  *   return <MainApp />
  * }
  * ```
  */
 export const useAuthLoading = (): boolean => {
-  const isLoading = useAuthStore((state) => state.isLoading)
-  const { status } = useSession()
-  
-  return isLoading || status === 'loading'
-}
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const { status } = useSession();
+
+  return isLoading || status === "loading";
+};

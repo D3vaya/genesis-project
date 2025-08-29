@@ -5,16 +5,30 @@
  * @version 1.0.0
  */
 
-'use client'
+"use client";
 
-import React, { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { ArrowRight, Shield, Zap, Users, Code2, Database, Palette } from 'lucide-react'
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Shield,
+  Zap,
+  Users,
+  Code2,
+  Database,
+  Palette,
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuth } from '@/hooks/useAuth'
+import { Button } from "@/modules/shared/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/modules/shared/components/ui/card";
+import { useAuth } from "@/modules/shared/hooks/useAuth";
 
 /**
  * Features showcase data
@@ -24,35 +38,41 @@ import { useAuth } from '@/hooks/useAuth'
 const FEATURES = [
   {
     icon: Shield,
-    title: 'Autenticación Segura',
-    description: 'NextAuth.js con proveedores múltiples y autenticación de credenciales segura.'
+    title: "Autenticación Segura",
+    description:
+      "NextAuth.js con proveedores múltiples y autenticación de credenciales segura.",
   },
   {
     icon: Palette,
-    title: 'UI Moderna',
-    description: 'shadcn/ui con componentes reutilizables y diseño responsivo con Tailwind CSS.'
+    title: "UI Moderna",
+    description:
+      "shadcn/ui con componentes reutilizables y diseño responsivo con Tailwind CSS.",
   },
   {
     icon: Database,
-    title: 'Base de Datos',
-    description: 'Prisma ORM con SQLite para desarrollo y fácil migración a PostgreSQL.'
+    title: "Base de Datos",
+    description:
+      "Prisma ORM con SQLite para desarrollo y fácil migración a PostgreSQL.",
   },
   {
     icon: Zap,
-    title: 'Estado Global',
-    description: 'Zustand para gestión de estado global con persistencia y optimizaciones.'
+    title: "Estado Global",
+    description:
+      "Zustand para gestión de estado global con persistencia y optimizaciones.",
   },
   {
     icon: Code2,
-    title: 'TypeScript',
-    description: 'Completamente tipado con TypeScript para mejor experiencia de desarrollo.'
+    title: "TypeScript",
+    description:
+      "Completamente tipado con TypeScript para mejor experiencia de desarrollo.",
   },
   {
     icon: Users,
-    title: 'Listo para SaaS',
-    description: 'Plantilla completa con dashboard, autenticación y gestión de usuarios.'
-  }
-]
+    title: "Listo para SaaS",
+    description:
+      "Plantilla completa con dashboard, autenticación y gestión de usuarios.",
+  },
+];
 
 /**
  * Feature card component
@@ -64,10 +84,14 @@ const FEATURES = [
  * @param {string} props.description - Feature description
  * @returns {React.JSX.Element} Feature card component
  */
-function FeatureCard({ icon: Icon, title, description }: {
-  icon: React.ComponentType<any>
-  title: string
-  description: string
+function FeatureCard({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: React.ComponentType<any>;
+  title: string;
+  description: string;
 }): React.JSX.Element {
   return (
     <Card className="h-full hover:shadow-lg transition-shadow">
@@ -83,7 +107,7 @@ function FeatureCard({ icon: Icon, title, description }: {
         </CardDescription>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 /**
@@ -100,8 +124,8 @@ function FeatureCard({ icon: Icon, title, description }: {
  * ```
  */
 export default function HomePage(): React.JSX.Element {
-  const { isAuthenticated, isLoading } = useAuth()
-  const router = useRouter()
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
 
   /**
    * Redirect authenticated users to dashboard
@@ -109,9 +133,9 @@ export default function HomePage(): React.JSX.Element {
    */
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      router.push('/dashboard')
+      router.push("/dashboard");
     }
-  }, [isAuthenticated, isLoading, router])
+  }, [isAuthenticated, isLoading, router]);
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -119,7 +143,7 @@ export default function HomePage(): React.JSX.Element {
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   // Don't render landing page if user is authenticated (will redirect)
@@ -130,7 +154,7 @@ export default function HomePage(): React.JSX.Element {
           <p className="text-muted-foreground">Redirigiendo al dashboard...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -145,7 +169,7 @@ export default function HomePage(): React.JSX.Element {
               </div>
               <span className="text-xl font-bold">SaaS Template</span>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Link href="/login">
                 <Button variant="ghost" size="sm">
@@ -172,8 +196,9 @@ export default function HomePage(): React.JSX.Element {
               <span className="block text-primary">Moderno y Completo</span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              Plantilla completa para aplicaciones SaaS construida con Next.js, TypeScript, 
-              shadcn/ui, NextAuth, Prisma y Zustand. Lista para producción.
+              Plantilla completa para aplicaciones SaaS construida con Next.js,
+              TypeScript, shadcn/ui, NextAuth, Prisma y Zustand. Lista para
+              producción.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/register">
@@ -200,7 +225,8 @@ export default function HomePage(): React.JSX.Element {
               Todo lo que necesitas para tu SaaS
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Funcionalidades modernas y mejores prácticas integradas desde el primer día.
+              Funcionalidades modernas y mejores prácticas integradas desde el
+              primer día.
             </p>
           </div>
 
@@ -231,18 +257,23 @@ export default function HomePage(): React.JSX.Element {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center">
             {[
-              { name: 'Next.js 15', description: 'Framework React' },
-              { name: 'TypeScript', description: 'Tipado estático' },
-              { name: 'shadcn/ui', description: 'Componentes UI' },
-              { name: 'Tailwind CSS', description: 'Estilos utilitarios' },
-              { name: 'NextAuth.js', description: 'Autenticación' },
-              { name: 'Prisma', description: 'ORM de base de datos' },
-              { name: 'Zustand', description: 'Estado global' },
-              { name: 'React Hook Form', description: 'Formularios' },
+              { name: "Next.js 15", description: "Framework React" },
+              { name: "TypeScript", description: "Tipado estático" },
+              { name: "shadcn/ui", description: "Componentes UI" },
+              { name: "Tailwind CSS", description: "Estilos utilitarios" },
+              { name: "NextAuth.js", description: "Autenticación" },
+              { name: "Prisma", description: "ORM de base de datos" },
+              { name: "Zustand", description: "Estado global" },
+              { name: "React Hook Form", description: "Formularios" },
             ].map((tech, index) => (
-              <div key={index} className="text-center p-6 rounded-lg border bg-card hover:shadow-md transition-shadow">
+              <div
+                key={index}
+                className="text-center p-6 rounded-lg border bg-card hover:shadow-md transition-shadow"
+              >
                 <h3 className="font-semibold text-lg mb-2">{tech.name}</h3>
-                <p className="text-sm text-muted-foreground">{tech.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {tech.description}
+                </p>
               </div>
             ))}
           </div>
@@ -256,7 +287,8 @@ export default function HomePage(): React.JSX.Element {
             ¿Listo para comenzar tu proyecto SaaS?
           </h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Regístrate ahora y comienza a construir tu aplicación con todas las funcionalidades incluidas.
+            Regístrate ahora y comienza a construir tu aplicación con todas las
+            funcionalidades incluidas.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/register">
@@ -300,5 +332,5 @@ export default function HomePage(): React.JSX.Element {
         </div>
       </footer>
     </div>
-  )
+  );
 }

@@ -5,9 +5,9 @@
  * @version 1.0.0
  */
 
-import { apiClient, get, post, put, del } from '@/lib/axios'
-import { useDataStore } from '@/stores/dataStore'
-import { useUIStore } from '@/stores/uiStore'
+import { toast } from "sonner";
+import { apiClient, get, post, put, del } from "@/lib/axios";
+import { useDataStore } from "@/modules/shared/stores/dataStore";
 
 /**
  * API service error class
@@ -25,8 +25,8 @@ export class ApiServiceError extends Error {
     public status?: number,
     public response?: any
   ) {
-    super(message)
-    this.name = 'ApiServiceError'
+    super(message);
+    this.name = "ApiServiceError";
   }
 }
 
@@ -42,11 +42,11 @@ export class ApiServiceError extends Error {
  * @property {any} meta - Additional metadata (pagination, etc.)
  */
 interface ApiResponse<T = any> {
-  data: T
-  success: boolean
-  message: string
-  timestamp: number
-  meta?: any
+  data: T;
+  success: boolean;
+  message: string;
+  timestamp: number;
+  meta?: any;
 }
 
 /**
@@ -59,10 +59,10 @@ interface ApiResponse<T = any> {
  * @property {string} sortOrder - Sort order ('asc' or 'desc')
  */
 interface PaginationParams {
-  page?: number
-  limit?: number
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }
 
 /**
@@ -74,9 +74,9 @@ interface PaginationParams {
  * @property {number[]} retryStatusCodes - HTTP status codes to retry on
  */
 interface RetryOptions {
-  maxRetries: number
-  retryDelay: number
-  retryStatusCodes: number[]
+  maxRetries: number;
+  retryDelay: number;
+  retryStatusCodes: number[];
 }
 
 /**
@@ -89,10 +89,10 @@ interface RetryOptions {
  * @property {string} customKey - Custom cache key (optional)
  */
 interface CacheOptions {
-  ttl?: number
-  useCache?: boolean
-  updateCache?: boolean
-  customKey?: string
+  ttl?: number;
+  useCache?: boolean;
+  updateCache?: boolean;
+  customKey?: string;
 }
 
 /**
@@ -102,13 +102,13 @@ interface CacheOptions {
  * @example
  * ```typescript
  * import { apiService } from '@/services/apiService'
- * 
+ *
  * // Fetch users from external API
  * const users = await apiService.getUsers()
- * 
+ *
  * // Fetch posts with caching
  * const posts = await apiService.getPosts({ useCache: true, ttl: 300000 })
- * 
+ *
  * // Create new resource
  * const newPost = await apiService.createPost({
  *   title: 'New Post',
@@ -121,14 +121,14 @@ class ApiService {
   private readonly defaultRetryOptions: RetryOptions = {
     maxRetries: 3,
     retryDelay: 1000, // 1 second
-    retryStatusCodes: [408, 429, 500, 502, 503, 504]
-  }
+    retryStatusCodes: [408, 429, 500, 502, 503, 504],
+  };
 
   private readonly defaultCacheOptions: CacheOptions = {
     ttl: 5 * 60 * 1000, // 5 minutes
     useCache: true,
-    updateCache: true
-  }
+    updateCache: true,
+  };
 
   /**
    * Execute API request with retry logic and error handling
@@ -151,43 +151,48 @@ class ApiService {
     requestFn: () => Promise<T>,
     retryOptions: Partial<RetryOptions> = {}
   ): Promise<T> {
-    const options = { ...this.defaultRetryOptions, ...retryOptions }
-    let lastError: any
+    const options = { ...this.defaultRetryOptions, ...retryOptions };
+    let lastError: any;
 
     for (let attempt = 0; attempt <= options.maxRetries; attempt++) {
       try {
-        return await requestFn()
+        return await requestFn();
       } catch (error: any) {
-        lastError = error
-        
+        lastError = error;
+
         // Check if we should retry
-        const shouldRetry = 
+        const shouldRetry =
           attempt < options.maxRetries &&
           error.response?.status &&
-          options.retryStatusCodes.includes(error.response.status)
+          options.retryStatusCodes.includes(error.response.status);
 
         if (!shouldRetry) {
-          break
+          break;
         }
 
         // Wait before retry with exponential backoff
-        const delay = options.retryDelay * Math.pow(2, attempt)
-        await new Promise(resolve => setTimeout(resolve, delay))
-        
-        console.log(`Retrying API request (attempt ${attempt + 1}/${options.maxRetries})`)
+        const delay = options.retryDelay * Math.pow(2, attempt);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+
+        console.log(
+          `Retrying API request (attempt ${attempt + 1}/${options.maxRetries})`
+        );
       }
     }
 
     // All retries failed, throw error
-    const status = lastError?.response?.status || 0
-    const message = lastError?.response?.data?.message || lastError?.message || 'API request failed'
-    
+    const status = lastError?.response?.status || 0;
+    const message =
+      lastError?.response?.data?.message ||
+      lastError?.message ||
+      "API request failed";
+
     throw new ApiServiceError(
       message,
-      'REQUEST_FAILED',
+      "REQUEST_FAILED",
       status,
       lastError?.response?.data
-    )
+    );
   }
 
   /**
@@ -213,29 +218,29 @@ class ApiService {
     requestFn: () => Promise<T>,
     cacheOptions: Partial<CacheOptions> = {}
   ): Promise<T> {
-    const options = { ...this.defaultCacheOptions, ...cacheOptions }
-    const dataStore = useDataStore.getState()
-    
-    const finalCacheKey = options.customKey || cacheKey
+    const options = { ...this.defaultCacheOptions, ...cacheOptions };
+    const dataStore = useDataStore.getState();
+
+    const finalCacheKey = options.customKey || cacheKey;
 
     // Try to get from cache first
     if (options.useCache && dataStore.isValidCache(finalCacheKey)) {
-      const cachedData = dataStore.getCache(finalCacheKey)
+      const cachedData = dataStore.getCache(finalCacheKey);
       if (cachedData) {
-        console.log(`Using cached data for key: ${finalCacheKey}`)
-        return cachedData
+        console.log(`Using cached data for key: ${finalCacheKey}`);
+        return cachedData;
       }
     }
 
     // Execute request
-    const data = await this.executeRequest(requestFn)
+    const data = await this.executeRequest(requestFn);
 
     // Update cache if requested
     if (options.updateCache && options.ttl) {
-      dataStore.setCache(finalCacheKey, data, options.ttl)
+      dataStore.setCache(finalCacheKey, data, options.ttl);
     }
 
-    return data
+    return data;
   }
 
   /**
@@ -260,29 +265,30 @@ class ApiService {
     cacheOptions: Partial<CacheOptions> = {}
   ): Promise<any[]> {
     try {
-      const queryParams = new URLSearchParams()
-      
-      if (params.page) queryParams.append('_page', params.page.toString())
-      if (params.limit) queryParams.append('_limit', params.limit.toString())
-      if (params.sortBy) queryParams.append('_sort', params.sortBy)
-      if (params.sortOrder) queryParams.append('_order', params.sortOrder)
-      
-      const endpoint = `/users${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
-      const cacheKey = `users-${queryParams.toString() || 'all'}`
+      const queryParams = new URLSearchParams();
+
+      if (params.page) queryParams.append("_page", params.page.toString());
+      if (params.limit) queryParams.append("_limit", params.limit.toString());
+      if (params.sortBy) queryParams.append("_sort", params.sortBy);
+      if (params.sortOrder) queryParams.append("_order", params.sortOrder);
+
+      const endpoint = `/users${
+        queryParams.toString() ? `?${queryParams.toString()}` : ""
+      }`;
+      const cacheKey = `users-${queryParams.toString() || "all"}`;
 
       return await this.executeWithCache(
         cacheKey,
         () => get<any[]>(endpoint),
         cacheOptions
-      )
-
+      );
     } catch (error) {
-      console.error('Error fetching users:', error)
+      console.error("Error fetching users:", error);
       throw new ApiServiceError(
-        'Failed to fetch users from external API',
-        'GET_USERS_FAILED',
+        "Failed to fetch users from external API",
+        "GET_USERS_FAILED",
         error instanceof Error ? undefined : (error as any)?.status
-      )
+      );
     }
   }
 
@@ -309,14 +315,14 @@ class ApiService {
         `user-${id}`,
         () => get<any>(`/users/${id}`),
         cacheOptions
-      )
+      );
     } catch (error) {
-      console.error(`Error fetching user ${id}:`, error)
+      console.error(`Error fetching user ${id}:`, error);
       throw new ApiServiceError(
         `Failed to fetch user with ID ${id}`,
-        'GET_USER_FAILED',
+        "GET_USER_FAILED",
         error instanceof Error ? undefined : (error as any)?.status
-      )
+      );
     }
   }
 
@@ -339,30 +345,31 @@ class ApiService {
     cacheOptions: Partial<CacheOptions> = {}
   ): Promise<any[]> {
     try {
-      const queryParams = new URLSearchParams()
-      
-      if (params.userId) queryParams.append('userId', params.userId.toString())
-      if (params.page) queryParams.append('_page', params.page.toString())
-      if (params.limit) queryParams.append('_limit', params.limit.toString())
-      if (params.sortBy) queryParams.append('_sort', params.sortBy)
-      if (params.sortOrder) queryParams.append('_order', params.sortOrder)
-      
-      const endpoint = `/posts${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
-      const cacheKey = `posts-${queryParams.toString() || 'all'}`
+      const queryParams = new URLSearchParams();
+
+      if (params.userId) queryParams.append("userId", params.userId.toString());
+      if (params.page) queryParams.append("_page", params.page.toString());
+      if (params.limit) queryParams.append("_limit", params.limit.toString());
+      if (params.sortBy) queryParams.append("_sort", params.sortBy);
+      if (params.sortOrder) queryParams.append("_order", params.sortOrder);
+
+      const endpoint = `/posts${
+        queryParams.toString() ? `?${queryParams.toString()}` : ""
+      }`;
+      const cacheKey = `posts-${queryParams.toString() || "all"}`;
 
       return await this.executeWithCache(
         cacheKey,
         () => get<any[]>(endpoint),
         cacheOptions
-      )
-
+      );
     } catch (error) {
-      console.error('Error fetching posts:', error)
+      console.error("Error fetching posts:", error);
       throw new ApiServiceError(
-        'Failed to fetch posts from external API',
-        'GET_POSTS_FAILED',
+        "Failed to fetch posts from external API",
+        "GET_POSTS_FAILED",
         error instanceof Error ? undefined : (error as any)?.status
-      )
+      );
     }
   }
 
@@ -388,14 +395,14 @@ class ApiService {
         `post-${id}`,
         () => get<any>(`/posts/${id}`),
         cacheOptions
-      )
+      );
     } catch (error) {
-      console.error(`Error fetching post ${id}:`, error)
+      console.error(`Error fetching post ${id}:`, error);
       throw new ApiServiceError(
         `Failed to fetch post with ID ${id}`,
-        'GET_POST_FAILED',
+        "GET_POST_FAILED",
         error instanceof Error ? undefined : (error as any)?.status
-      )
+      );
     }
   }
 
@@ -419,48 +426,39 @@ class ApiService {
    * ```
    */
   async createPost(postData: {
-    title: string
-    body: string
-    userId: number
+    title: string;
+    body: string;
+    userId: number;
   }): Promise<any> {
     try {
-      const createdPost = await this.executeRequest(
-        () => post<any>('/posts', postData)
-      )
+      const createdPost = await this.executeRequest(() =>
+        post<any>("/posts", postData)
+      );
 
       // Invalidate posts cache
-      const dataStore = useDataStore.getState()
-      dataStore.removeCache('posts-all')
-      dataStore.removeCache(`posts-userId=${postData.userId}`)
+      const dataStore = useDataStore.getState();
+      dataStore.removeCache("posts-all");
+      dataStore.removeCache(`posts-userId=${postData.userId}`);
 
       // Show success notification
-      const uiStore = useUIStore.getState()
-      uiStore.addNotification({
-        title: 'Post Creado',
-        message: 'El post se ha creado exitosamente',
-        severity: 'success',
-        duration: 3000
-      })
+      toast.success("Post Creado", {
+        description: "El post se ha creado exitosamente",
+      });
 
-      return createdPost
-
+      return createdPost;
     } catch (error) {
-      console.error('Error creating post:', error)
-      
+      console.error("Error creating post:", error);
+
       // Show error notification
-      const uiStore = useUIStore.getState()
-      uiStore.addNotification({
-        title: 'Error al Crear Post',
-        message: 'No se pudo crear el post. Intenta de nuevo.',
-        severity: 'error',
-        duration: 5000
-      })
+      toast.error("Error al Crear Post", {
+        description: "No se pudo crear el post. Intenta de nuevo.",
+      });
 
       throw new ApiServiceError(
-        'Failed to create post',
-        'CREATE_POST_FAILED',
+        "Failed to create post",
+        "CREATE_POST_FAILED",
         error instanceof Error ? undefined : (error as any)?.status
-      )
+      );
     }
   }
 
@@ -479,33 +477,35 @@ class ApiService {
    * })
    * ```
    */
-  async updatePost(id: number, postData: {
-    title?: string
-    body?: string
-    userId?: number
-  }): Promise<any> {
+  async updatePost(
+    id: number,
+    postData: {
+      title?: string;
+      body?: string;
+      userId?: number;
+    }
+  ): Promise<any> {
     try {
-      const updatedPost = await this.executeRequest(
-        () => put<any>(`/posts/${id}`, postData)
-      )
+      const updatedPost = await this.executeRequest(() =>
+        put<any>(`/posts/${id}`, postData)
+      );
 
       // Invalidate related caches
-      const dataStore = useDataStore.getState()
-      dataStore.removeCache('posts-all')
-      dataStore.removeCache(`post-${id}`)
+      const dataStore = useDataStore.getState();
+      dataStore.removeCache("posts-all");
+      dataStore.removeCache(`post-${id}`);
       if (postData.userId) {
-        dataStore.removeCache(`posts-userId=${postData.userId}`)
+        dataStore.removeCache(`posts-userId=${postData.userId}`);
       }
 
-      return updatedPost
-
+      return updatedPost;
     } catch (error) {
-      console.error(`Error updating post ${id}:`, error)
+      console.error(`Error updating post ${id}:`, error);
       throw new ApiServiceError(
         `Failed to update post with ID ${id}`,
-        'UPDATE_POST_FAILED',
+        "UPDATE_POST_FAILED",
         error instanceof Error ? undefined : (error as any)?.status
-      )
+      );
     }
   }
 
@@ -524,41 +524,30 @@ class ApiService {
    */
   async deletePost(id: number): Promise<void> {
     try {
-      await this.executeRequest(
-        () => del(`/posts/${id}`)
-      )
+      await this.executeRequest(() => del(`/posts/${id}`));
 
       // Invalidate related caches
-      const dataStore = useDataStore.getState()
-      dataStore.removeCache('posts-all')
-      dataStore.removeCache(`post-${id}`)
+      const dataStore = useDataStore.getState();
+      dataStore.removeCache("posts-all");
+      dataStore.removeCache(`post-${id}`);
 
       // Show success notification
-      const uiStore = useUIStore.getState()
-      uiStore.addNotification({
-        title: 'Post Eliminado',
-        message: 'El post se ha eliminado exitosamente',
-        severity: 'success',
-        duration: 3000
-      })
-
+      toast.success("Post Eliminado", {
+        description: "El post se ha eliminado exitosamente",
+      });
     } catch (error) {
-      console.error(`Error deleting post ${id}:`, error)
-      
+      console.error(`Error deleting post ${id}:`, error);
+
       // Show error notification
-      const uiStore = useUIStore.getState()
-      uiStore.addNotification({
-        title: 'Error al Eliminar Post',
-        message: 'No se pudo eliminar el post. Intenta de nuevo.',
-        severity: 'error',
-        duration: 5000
-      })
+      toast.error("Error al Eliminar Post", {
+        description: "No se pudo eliminar el post. Intenta de nuevo.",
+      });
 
       throw new ApiServiceError(
         `Failed to delete post with ID ${id}`,
-        'DELETE_POST_FAILED',
+        "DELETE_POST_FAILED",
         error instanceof Error ? undefined : (error as any)?.status
-      )
+      );
     }
   }
 
@@ -584,14 +573,14 @@ class ApiService {
         `post-${postId}-comments`,
         () => get<any[]>(`/posts/${postId}/comments`),
         cacheOptions
-      )
+      );
     } catch (error) {
-      console.error(`Error fetching comments for post ${postId}:`, error)
+      console.error(`Error fetching comments for post ${postId}:`, error);
       throw new ApiServiceError(
         `Failed to fetch comments for post ${postId}`,
-        'GET_COMMENTS_FAILED',
+        "GET_COMMENTS_FAILED",
         error instanceof Error ? undefined : (error as any)?.status
-      )
+      );
     }
   }
 
@@ -613,43 +602,44 @@ class ApiService {
    */
   async search(
     query: string,
-    resources: ('users' | 'posts')[] = ['users', 'posts'],
+    resources: ("users" | "posts")[] = ["users", "posts"],
     cacheOptions: Partial<CacheOptions> = {}
-  ): Promise<{ users?: any[], posts?: any[] }> {
+  ): Promise<{ users?: any[]; posts?: any[] }> {
     try {
-      const results: { users?: any[], posts?: any[] } = {}
-      
+      const results: { users?: any[]; posts?: any[] } = {};
+
       const searchPromises = resources.map(async (resource) => {
         switch (resource) {
-          case 'users':
-            const users = await this.getUsers({}, cacheOptions)
-            results.users = users.filter(user => 
-              user.name?.toLowerCase().includes(query.toLowerCase()) ||
-              user.email?.toLowerCase().includes(query.toLowerCase()) ||
-              user.username?.toLowerCase().includes(query.toLowerCase())
-            )
-            break
-            
-          case 'posts':
-            const posts = await this.getPosts({}, cacheOptions)
-            results.posts = posts.filter(post =>
-              post.title?.toLowerCase().includes(query.toLowerCase()) ||
-              post.body?.toLowerCase().includes(query.toLowerCase())
-            )
-            break
+          case "users":
+            const users = await this.getUsers({}, cacheOptions);
+            results.users = users.filter(
+              (user) =>
+                user.name?.toLowerCase().includes(query.toLowerCase()) ||
+                user.email?.toLowerCase().includes(query.toLowerCase()) ||
+                user.username?.toLowerCase().includes(query.toLowerCase())
+            );
+            break;
+
+          case "posts":
+            const posts = await this.getPosts({}, cacheOptions);
+            results.posts = posts.filter(
+              (post) =>
+                post.title?.toLowerCase().includes(query.toLowerCase()) ||
+                post.body?.toLowerCase().includes(query.toLowerCase())
+            );
+            break;
         }
-      })
+      });
 
-      await Promise.all(searchPromises)
-      return results
-
+      await Promise.all(searchPromises);
+      return results;
     } catch (error) {
-      console.error('Error performing search:', error)
+      console.error("Error performing search:", error);
       throw new ApiServiceError(
-        'Failed to perform search',
-        'SEARCH_FAILED',
+        "Failed to perform search",
+        "SEARCH_FAILED",
         error instanceof Error ? undefined : (error as any)?.status
-      )
+      );
     }
   }
 
@@ -664,17 +654,13 @@ class ApiService {
    * ```
    */
   clearCache(): void {
-    const dataStore = useDataStore.getState()
-    dataStore.clearCache()
-    
+    const dataStore = useDataStore.getState();
+    dataStore.clearCache();
+
     // Show notification
-    const uiStore = useUIStore.getState()
-    uiStore.addNotification({
-      title: 'Cache Limpiado',
-      message: 'Se ha limpiado toda la cache de API',
-      severity: 'info',
-      duration: 2000
-    })
+    toast.info("Cache Limpiado", {
+      description: "Se ha limpiado toda la cache de API",
+    });
   }
 
   /**
@@ -691,30 +677,32 @@ class ApiService {
    * ```
    */
   async getHealthStatus(): Promise<{
-    status: 'healthy' | 'unhealthy'
-    responseTime: number
-    timestamp: number
+    status: "healthy" | "unhealthy";
+    responseTime: number;
+    timestamp: number;
   }> {
-    const startTime = Date.now()
-    
+    const startTime = Date.now();
+
     try {
-      await this.executeRequest(() => get('/users?_limit=1'), { maxRetries: 1 })
-      
-      const responseTime = Date.now() - startTime
-      
+      await this.executeRequest(() => get("/users?_limit=1"), {
+        maxRetries: 1,
+      });
+
+      const responseTime = Date.now() - startTime;
+
       return {
-        status: 'healthy',
+        status: "healthy",
         responseTime,
-        timestamp: Date.now()
-      }
+        timestamp: Date.now(),
+      };
     } catch (error) {
-      const responseTime = Date.now() - startTime
-      
+      const responseTime = Date.now() - startTime;
+
       return {
-        status: 'unhealthy',
+        status: "unhealthy",
         responseTime,
-        timestamp: Date.now()
-      }
+        timestamp: Date.now(),
+      };
     }
   }
 }
@@ -726,28 +714,23 @@ class ApiService {
  * @example
  * ```typescript
  * import { apiService } from '@/services/apiService'
- * 
+ *
  * // Use the service instance
  * const users = await apiService.getUsers()
  * const posts = await apiService.getPosts({ limit: 10 })
  * ```
  */
-export const apiService = new ApiService()
+export const apiService = new ApiService();
 
 /**
  * Export service class for testing or custom instantiation
  * @export ApiService
  * @description Export the ApiService class itself for testing purposes
  */
-export { ApiService }
+export { ApiService };
 
 /**
  * Export all interfaces and types
  * @description Export all type definitions for use in other modules
  */
-export type {
-  ApiResponse,
-  PaginationParams,
-  RetryOptions,
-  CacheOptions
-}
+export type { ApiResponse, PaginationParams, RetryOptions, CacheOptions };

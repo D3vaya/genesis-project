@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @fileoverview Dashboard page component with sidebar layout and data visualization
  * @description Main dashboard page showing user data, statistics, and navigation using shadcn/ui sidebar components
@@ -5,30 +6,39 @@
  * @version 1.0.0
  */
 
-'use client'
+"use client";
 
-import React, { useEffect, useState } from 'react'
-import { 
-  Users, 
-  BarChart3, 
-  TrendingUp, 
+import React, { useEffect, useState } from "react";
+import {
+  Users,
+  BarChart3,
+  TrendingUp,
   Activity,
   Calendar,
   Settings,
   LogOut,
-  Menu,
   Home,
   User,
   Bell,
   Search,
-  Plus
-} from 'lucide-react'
+  Plus,
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
+import { Button } from "@/modules/shared/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/modules/shared/components/ui/card";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/modules/shared/components/ui/avatar";
+import { Badge } from "@/modules/shared/components/ui/badge";
+import { Input } from "@/modules/shared/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,7 +46,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from "@/modules/shared/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -51,12 +61,13 @@ import {
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
-} from '@/components/ui/sidebar'
+} from "@/modules/shared/components/ui/sidebar";
 
-import { useAuthStore, useUser } from '@/stores/authStore'
-import { useUIStore, useNotifications } from '@/stores/uiStore'
-import { useDataStore } from '@/stores/dataStore'
-import { get } from '@/lib/axios'
+import { useAuthStore, useUser } from "@/modules/shared/stores/authStore";
+import { useUIStore } from "@/modules/shared/stores/uiStore";
+import { useDataStore } from "@/modules/shared/stores/dataStore";
+import { toast } from "sonner";
+import { get } from "@/lib/axios";
 
 /**
  * Navigation menu items configuration
@@ -65,32 +76,32 @@ import { get } from '@/lib/axios'
  */
 const navigationItems = [
   {
-    title: 'Inicio',
-    url: '/dashboard',
+    title: "Inicio",
+    url: "/dashboard",
     icon: Home,
     isActive: true,
   },
   {
-    title: 'Usuarios',
-    url: '/dashboard/users',
+    title: "Usuarios",
+    url: "/dashboard/users",
     icon: Users,
   },
   {
-    title: 'Estadísticas',
-    url: '/dashboard/stats',
+    title: "Estadísticas",
+    url: "/dashboard/stats",
     icon: BarChart3,
   },
   {
-    title: 'Actividad',
-    url: '/dashboard/activity',
+    title: "Actividad",
+    url: "/dashboard/activity",
     icon: Activity,
   },
   {
-    title: 'Calendario',
-    url: '/dashboard/calendar',
+    title: "Calendario",
+    url: "/dashboard/calendar",
     icon: Calendar,
   },
-]
+];
 
 /**
  * Settings menu items configuration
@@ -99,16 +110,16 @@ const navigationItems = [
  */
 const settingsItems = [
   {
-    title: 'Configuración',
-    url: '/dashboard/settings',
+    title: "Configuración",
+    url: "/dashboard/settings",
     icon: Settings,
   },
   {
-    title: 'Perfil',
-    url: '/dashboard/profile',
+    title: "Perfil",
+    url: "/dashboard/profile",
     icon: User,
   },
-]
+];
 
 /**
  * Dashboard statistics interface
@@ -120,10 +131,10 @@ const settingsItems = [
  * @property {number} engagement - Engagement rate percentage
  */
 interface DashboardStats {
-  totalUsers: number
-  activeUsers: number
-  totalPosts: number
-  engagement: number
+  totalUsers: number;
+  activeUsers: number;
+  totalPosts: number;
+  engagement: number;
 }
 
 /**
@@ -137,9 +148,8 @@ interface DashboardStats {
  * ```
  */
 function AppSidebar(): React.JSX.Element {
-  const user = useUser()
-  const { logout } = useAuthStore()
-  const { addNotification } = useNotifications()
+  const user = useUser();
+  const { logout } = useAuthStore();
 
   /**
    * Handle user logout
@@ -153,23 +163,17 @@ function AppSidebar(): React.JSX.Element {
    */
   const handleLogout = async (): Promise<void> => {
     try {
-      await logout()
-      addNotification({
-        title: 'Sesión Cerrada',
-        message: 'Has cerrado sesión exitosamente',
-        severity: 'info',
-        duration: 3000,
-      })
+      await logout();
+      toast.info("Sesión Cerrada", {
+        description: "Has cerrado sesión exitosamente",
+      });
     } catch (error) {
-      console.error('Logout error:', error)
-      addNotification({
-        title: 'Error',
-        message: 'Error al cerrar sesión',
-        severity: 'error',
-        duration: 3000,
-      })
+      console.error("Logout error:", error);
+      toast.error("Error", {
+        description: "Error al cerrar sesión",
+      });
     }
-  }
+  };
 
   /**
    * Get user initials for avatar fallback
@@ -184,11 +188,11 @@ function AppSidebar(): React.JSX.Element {
    */
   const getUserInitials = (name: string): string => {
     return name
-      .split(' ')
-      .map(part => part.charAt(0).toUpperCase())
+      .split(" ")
+      .map((part) => part.charAt(0).toUpperCase())
       .slice(0, 2)
-      .join('')
-  }
+      .join("");
+  };
 
   return (
     <Sidebar variant="inset">
@@ -209,7 +213,7 @@ function AppSidebar(): React.JSX.Element {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navegación</SidebarGroupLabel>
@@ -228,7 +232,7 @@ function AppSidebar(): React.JSX.Element {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        
+
         <SidebarGroup>
           <SidebarGroupLabel>Configuración</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -247,7 +251,7 @@ function AppSidebar(): React.JSX.Element {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      
+
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -258,13 +262,18 @@ function AppSidebar(): React.JSX.Element {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={user?.image || ''} alt={user?.name || ''} />
+                    <AvatarImage
+                      src={user?.image || ""}
+                      alt={user?.name || ""}
+                    />
                     <AvatarFallback className="rounded-lg">
-                      {user?.name ? getUserInitials(user.name) : 'U'}
+                      {user?.name ? getUserInitials(user.name) : "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user?.name || 'Usuario'}</span>
+                    <span className="truncate font-semibold">
+                      {user?.name || "Usuario"}
+                    </span>
                     <span className="truncate text-xs">{user?.email}</span>
                   </div>
                 </SidebarMenuButton>
@@ -278,13 +287,18 @@ function AppSidebar(): React.JSX.Element {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={user?.image || ''} alt={user?.name || ''} />
+                      <AvatarImage
+                        src={user?.image || ""}
+                        alt={user?.name || ""}
+                      />
                       <AvatarFallback className="rounded-lg">
-                        {user?.name ? getUserInitials(user.name) : 'U'}
+                        {user?.name ? getUserInitials(user.name) : "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{user?.name || 'Usuario'}</span>
+                      <span className="truncate font-semibold">
+                        {user?.name || "Usuario"}
+                      </span>
                       <span className="truncate text-xs">{user?.email}</span>
                     </div>
                   </div>
@@ -303,7 +317,10 @@ function AppSidebar(): React.JSX.Element {
                   Notificaciones
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-red-600"
+                >
                   <LogOut />
                   Cerrar Sesión
                 </DropdownMenuItem>
@@ -314,7 +331,7 @@ function AppSidebar(): React.JSX.Element {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
 
 /**
@@ -330,24 +347,23 @@ function AppSidebar(): React.JSX.Element {
  * ```
  */
 export default function DashboardPage(): React.JSX.Element {
-  const user = useUser()
-  const { apiData, setApiData, loading, setLoading, setError } = useDataStore()
-  const { addNotification } = useNotifications()
-  
+  const user = useUser();
+  const { apiData, setApiData, loading, setLoading, setError } = useDataStore();
+
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     activeUsers: 0,
     totalPosts: 0,
-    engagement: 0
-  })
+    engagement: 0,
+  });
 
   /**
    * Load dashboard data on component mount
    * @description Fetches dashboard statistics and user data from external API
    */
   useEffect(() => {
-    loadDashboardData()
-  }, [])
+    loadDashboardData();
+  }, []);
 
   /**
    * Load dashboard data from API
@@ -361,66 +377,57 @@ export default function DashboardPage(): React.JSX.Element {
    * ```
    */
   const loadDashboardData = async (): Promise<void> => {
-    setLoading('api', true)
-    setError('api', null)
-    
+    setLoading("api", true);
+    setError("api", null);
+
     try {
       // Fetch users from external API (JSONPlaceholder)
-      const users = await get<any[]>('/users')
-      
+      const users = await get<any[]>("/users");
+
       // Fetch posts for engagement calculation
-      const posts = await get<any[]>('/posts')
-      
+      const posts = await get<any[]>("/posts");
+
       // Calculate statistics
-      const totalUsers = users?.length || 0
-      const activeUsers = Math.floor(totalUsers * 0.8) // 80% active simulation
-      const totalPosts = posts?.length || 0
-      const engagement = totalPosts > 0 ? Math.floor((totalPosts / totalUsers) * 100) : 0
-      
+      const totalUsers = users?.length || 0;
+      const activeUsers = Math.floor(totalUsers * 0.8); // 80% active simulation
+      const totalPosts = posts?.length || 0;
+      const engagement =
+        totalPosts > 0 ? Math.floor((totalPosts / totalUsers) * 100) : 0;
+
       const calculatedStats: DashboardStats = {
         totalUsers,
         activeUsers,
         totalPosts,
-        engagement: Math.min(engagement, 100)
-      }
-      
-      setStats(calculatedStats)
-      setApiData('dashboard-stats', calculatedStats)
-      setApiData('users', users)
-      setApiData('posts', posts)
-      
-      addNotification({
-        title: 'Datos Actualizados',
-        message: 'Los datos del dashboard se han actualizado correctamente',
-        severity: 'success',
-        duration: 3000,
-      })
-      
+        engagement: Math.min(engagement, 100),
+      };
+
+      setStats(calculatedStats);
+      setApiData("dashboard-stats", calculatedStats);
+      setApiData("users", users);
+      setApiData("posts", posts);
+
+      toast.success("Datos Actualizados", {
+        description: "Los datos del dashboard se han actualizado correctamente",
+      });
     } catch (error) {
-      console.error('Error loading dashboard data:', error)
-      
+      console.error("Error loading dashboard data:", error);
+
       // Load cached data if available
-      const cachedStats = apiData['dashboard-stats']
+      const cachedStats = apiData["dashboard-stats"];
       if (cachedStats) {
-        setStats(cachedStats)
-        addNotification({
-          title: 'Datos desde Caché',
-          message: 'Se muestran los datos almacenados localmente',
-          severity: 'info',
-          duration: 3000,
-        })
+        setStats(cachedStats);
+        toast.info("Datos desde Caché", {
+          description: "Se muestran los datos almacenados localmente",
+        });
       } else {
-        addNotification({
-          title: 'Error de Conexión',
-          message: 'No se pudieron cargar los datos. Verifica tu conexión.',
-          severity: 'error',
-          duration: 5000,
-        })
+        toast.error("Error de Conexión", {
+          description: "No se pudieron cargar los datos. Verifica tu conexión.",
+        });
       }
     } finally {
-      setLoading('api', false)
+      setLoading("api", false);
     }
-  }
+  };
 
   /**
    * Format number with locale
@@ -434,8 +441,8 @@ export default function DashboardPage(): React.JSX.Element {
    * ```
    */
   const formatNumber = (num: number): string => {
-    return new Intl.NumberFormat('es-ES').format(num)
-  }
+    return new Intl.NumberFormat("es-ES").format(num);
+  };
 
   /**
    * Get greeting based on time of day
@@ -448,11 +455,11 @@ export default function DashboardPage(): React.JSX.Element {
    * ```
    */
   const getGreeting = (): string => {
-    const hour = new Date().getHours()
-    if (hour < 12) return 'Buenos días'
-    if (hour < 18) return 'Buenas tardes'
-    return 'Buenas noches'
-  }
+    const hour = new Date().getHours();
+    if (hour < 12) return "Buenos días";
+    if (hour < 18) return "Buenas tardes";
+    return "Buenas noches";
+  };
 
   return (
     <SidebarProvider>
@@ -484,7 +491,7 @@ export default function DashboardPage(): React.JSX.Element {
           {/* Welcome Section */}
           <div className="flex items-center justify-between space-y-2">
             <h1 className="text-3xl font-bold tracking-tight">
-              {getGreeting()}, {user?.name || 'Usuario'}!
+              {getGreeting()}, {user?.name || "Usuario"}!
             </h1>
             <div className="flex items-center space-x-2">
               <Button
@@ -569,9 +576,7 @@ export default function DashboardPage(): React.JSX.Element {
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {stats.engagement}%
-                </div>
+                <div className="text-2xl font-bold">{stats.engagement}%</div>
                 <p className="text-xs text-muted-foreground">
                   +1.2% desde ayer
                 </p>
@@ -596,7 +601,7 @@ export default function DashboardPage(): React.JSX.Element {
                   </div>
                   <Badge variant="secondary">Conectado</Badge>
                 </div>
-                
+
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
                     <div className="h-3 w-3 bg-green-500 rounded-full" />
@@ -604,7 +609,7 @@ export default function DashboardPage(): React.JSX.Element {
                   </div>
                   <Badge variant="secondary">Activa</Badge>
                 </div>
-                
+
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
                     <div className="h-3 w-3 bg-blue-500 rounded-full" />
@@ -612,10 +617,11 @@ export default function DashboardPage(): React.JSX.Element {
                   </div>
                   <Badge variant="secondary">Funcionando</Badge>
                 </div>
-                
+
                 <div className="pt-4">
                   <p className="text-sm text-muted-foreground">
-                    Tu aplicación SaaS está funcionando correctamente. Todos los servicios están operativos.
+                    Tu aplicación SaaS está funcionando correctamente. Todos los
+                    servicios están operativos.
                   </p>
                 </div>
               </CardContent>
@@ -624,32 +630,38 @@ export default function DashboardPage(): React.JSX.Element {
             <Card className="col-span-3">
               <CardHeader>
                 <CardTitle>Actividad Reciente</CardTitle>
-                <CardDescription>
-                  Últimas acciones en tu cuenta
-                </CardDescription>
+                <CardDescription>Últimas acciones en tu cuenta</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-primary rounded-full mt-2" />
                   <div className="space-y-1">
-                    <p className="text-sm font-medium">Inicio de sesión exitoso</p>
-                    <p className="text-xs text-muted-foreground">Hace 2 minutos</p>
+                    <p className="text-sm font-medium">
+                      Inicio de sesión exitoso
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Hace 2 minutos
+                    </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium">Datos actualizados</p>
-                    <p className="text-xs text-muted-foreground">Hace 5 minutos</p>
+                    <p className="text-xs text-muted-foreground">
+                      Hace 5 minutos
+                    </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium">Dashboard cargado</p>
-                    <p className="text-xs text-muted-foreground">Hace 10 minutos</p>
+                    <p className="text-xs text-muted-foreground">
+                      Hace 10 minutos
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -658,5 +670,5 @@ export default function DashboardPage(): React.JSX.Element {
         </div>
       </main>
     </SidebarProvider>
-  )
+  );
 }

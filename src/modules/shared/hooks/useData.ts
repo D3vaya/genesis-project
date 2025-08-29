@@ -7,7 +7,11 @@
  */
 
 import { useCallback, useEffect } from "react";
-import { useDataStore, useUsers, useCache } from "@/stores/dataStore";
+import {
+  useDataStore,
+  useUsers,
+  useCache,
+} from "@/modules/shared/stores/dataStore";
 import { get, post, put, del, internalApi } from "@/lib/axios";
 import { prisma } from "@/lib/prisma";
 import type { User } from "@/lib/validations";

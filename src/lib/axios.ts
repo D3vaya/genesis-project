@@ -5,10 +5,15 @@
  * @version 1.0.0
  */
 
-import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import { getSession } from 'next-auth/react'
-import { useUIStore } from '@/stores/uiStore'
-import { useDataStore } from '@/stores/dataStore'
+import axios, {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
+import { toast } from "sonner";
+import { getSession } from "next-auth/react";
+import { useUIStore } from "@/modules/shared/stores/uiStore";
+import { useDataStore } from "@/modules/shared/stores/dataStore";
 
 /**
  * Base API configuration
@@ -19,13 +24,16 @@ import { useDataStore } from '@/stores/dataStore'
  * @property {Object} headers - Default headers for all requests
  */
 const API_CONFIG = {
-  baseURL: process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jsonplaceholder.typicode.com',
+  baseURL:
+    process.env.API_BASE_URL ||
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    "https://jsonplaceholder.typicode.com",
   timeout: 30000, // 30 seconds
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    "Content-Type": "application/json",
+    Accept: "application/json",
   },
-}
+};
 
 /**
  * Main Axios instance for external API calls
@@ -34,12 +42,12 @@ const API_CONFIG = {
  * @example
  * ```typescript
  * import { apiClient } from '@/lib/axios'
- * 
+ *
  * const response = await apiClient.get('/users')
  * console.log('Users:', response.data)
  * ```
  */
-export const apiClient = axios.create(API_CONFIG)
+export const apiClient = axios.create(API_CONFIG);
 
 /**
  * Internal API client for Next.js API routes
@@ -48,16 +56,16 @@ export const apiClient = axios.create(API_CONFIG)
  * @example
  * ```typescript
  * import { internalApiClient } from '@/lib/axios'
- * 
+ *
  * const response = await internalApiClient.post('/api/auth/register', userData)
  * console.log('Registration:', response.data)
  * ```
  */
 export const internalApiClient = axios.create({
-  baseURL: typeof window !== 'undefined' ? window.location.origin : '',
+  baseURL: typeof window !== "undefined" ? window.location.origin : "",
   timeout: 15000, // 15 seconds for internal APIs
   headers: API_CONFIG.headers,
-})
+});
 
 /**
  * Request interceptor for external API client
@@ -73,38 +81,40 @@ export const internalApiClient = axios.create({
  * // 3. Logs request details in development
  * ```
  */
-const requestInterceptor = async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
+const requestInterceptor = async (
+  config: InternalAxiosRequestConfig
+): Promise<InternalAxiosRequestConfig> => {
   // Set loading state
-  useUIStore.getState().setLoading(true)
-  useDataStore.getState().setLoading('api', true)
-  
+  useUIStore.getState().setLoading(true);
+  useDataStore.getState().setLoading("api", true);
+
   try {
     // Add authentication token if available
-    const session = await getSession()
+    const session = await getSession();
     if (session?.user) {
-      config.headers.Authorization = `Bearer ${session.user.id}`
+      config.headers.Authorization = `Bearer ${session.user.id}`;
     }
   } catch (error) {
-    console.warn('Failed to get session for API request:', error)
+    console.warn("Failed to get session for API request:", error);
   }
-  
+
   // Add request timestamp for debugging
   config.metadata = {
     startTime: Date.now(),
-  }
-  
+  };
+
   // Log request in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🚀 API Request:', {
+  if (process.env.NODE_ENV === "development") {
+    console.log("🚀 API Request:", {
       method: config.method?.toUpperCase(),
       url: config.url,
       baseURL: config.baseURL,
       headers: config.headers,
-    })
+    });
   }
-  
-  return config
-}
+
+  return config;
+};
 
 /**
  * Request error interceptor
@@ -115,12 +125,12 @@ const requestInterceptor = async (config: InternalAxiosRequestConfig): Promise<I
  */
 const requestErrorInterceptor = async (error: any): Promise<never> => {
   // Clear loading states
-  useUIStore.getState().setLoading(false)
-  useDataStore.getState().setLoading('api', false)
-  
-  console.error('❌ Request Setup Error:', error)
-  return Promise.reject(error)
-}
+  useUIStore.getState().setLoading(false);
+  useDataStore.getState().setLoading("api", false);
+
+  console.error("❌ Request Setup Error:", error);
+  return Promise.reject(error);
+};
 
 /**
  * Response interceptor for successful responses
@@ -139,28 +149,28 @@ const requestErrorInterceptor = async (error: any): Promise<never> => {
  */
 const responseInterceptor = (response: AxiosResponse): AxiosResponse => {
   // Clear loading states
-  useUIStore.getState().setLoading(false)
-  useDataStore.getState().setLoading('api', false)
-  useDataStore.getState().setError('api', null)
-  
+  useUIStore.getState().setLoading(false);
+  useDataStore.getState().setLoading("api", false);
+  useDataStore.getState().setError("api", null);
+
   // Calculate request duration
-  const startTime = response.config.metadata?.startTime
-  const duration = startTime ? Date.now() - startTime : 0
-  
+  const startTime = response.config.metadata?.startTime;
+  const duration = startTime ? Date.now() - startTime : 0;
+
   // Log response in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('✅ API Response:', {
+  if (process.env.NODE_ENV === "development") {
+    console.log("✅ API Response:", {
       method: response.config.method?.toUpperCase(),
       url: response.config.url,
       status: response.status,
       statusText: response.statusText,
       duration: `${duration}ms`,
       data: response.data,
-    })
+    });
   }
-  
-  return response
-}
+
+  return response;
+};
 
 /**
  * Response error interceptor
@@ -181,104 +191,108 @@ const responseInterceptor = (response: AxiosResponse): AxiosResponse => {
  */
 const responseErrorInterceptor = async (error: AxiosError): Promise<never> => {
   // Clear loading states
-  useUIStore.getState().setLoading(false)
-  useDataStore.getState().setLoading('api', false)
-  
-  let errorMessage = 'Error desconocido'
-  let errorTitle = 'Error'
-  
+  useUIStore.getState().setLoading(false);
+  useDataStore.getState().setLoading("api", false);
+
+  let errorMessage = "Error desconocido";
+  let errorTitle = "Error";
+
   if (error.response) {
     // Server responded with error status
-    const status = error.response.status
-    const data = error.response.data as any
-    
+    const status = error.response.status;
+    const data = error.response.data as any;
+
     switch (status) {
       case 400:
-        errorTitle = 'Solicitud Inválida'
-        errorMessage = data?.message || 'Los datos enviados no son válidos'
-        break
+        errorTitle = "Solicitud Inválida";
+        errorMessage = data?.message || "Los datos enviados no son válidos";
+        break;
       case 401:
-        errorTitle = 'No Autorizado'
-        errorMessage = data?.message || 'Credenciales inválidas o sesión expirada'
-        break
+        errorTitle = "No Autorizado";
+        errorMessage =
+          data?.message || "Credenciales inválidas o sesión expirada";
+        break;
       case 403:
-        errorTitle = 'Prohibido'
-        errorMessage = data?.message || 'No tienes permisos para realizar esta acción'
-        break
+        errorTitle = "Prohibido";
+        errorMessage =
+          data?.message || "No tienes permisos para realizar esta acción";
+        break;
       case 404:
-        errorTitle = 'No Encontrado'
-        errorMessage = data?.message || 'El recurso solicitado no fue encontrado'
-        break
+        errorTitle = "No Encontrado";
+        errorMessage =
+          data?.message || "El recurso solicitado no fue encontrado";
+        break;
       case 409:
-        errorTitle = 'Conflicto'
-        errorMessage = data?.message || 'Ya existe un recurso con estos datos'
-        break
+        errorTitle = "Conflicto";
+        errorMessage = data?.message || "Ya existe un recurso con estos datos";
+        break;
       case 422:
-        errorTitle = 'Datos Inválidos'
-        errorMessage = data?.message || 'Los datos proporcionados no son válidos'
-        break
+        errorTitle = "Datos Inválidos";
+        errorMessage =
+          data?.message || "Los datos proporcionados no son válidos";
+        break;
       case 429:
-        errorTitle = 'Demasiadas Solicitudes'
-        errorMessage = data?.message || 'Has excedido el límite de solicitudes. Intenta más tarde'
-        break
+        errorTitle = "Demasiadas Solicitudes";
+        errorMessage =
+          data?.message ||
+          "Has excedido el límite de solicitudes. Intenta más tarde";
+        break;
       case 500:
-        errorTitle = 'Error del Servidor'
-        errorMessage = data?.message || 'Error interno del servidor. Intenta más tarde'
-        break
+        errorTitle = "Error del Servidor";
+        errorMessage =
+          data?.message || "Error interno del servidor. Intenta más tarde";
+        break;
       case 502:
-        errorTitle = 'Servicio No Disponible'
-        errorMessage = 'El servidor no está disponible. Intenta más tarde'
-        break
+        errorTitle = "Servicio No Disponible";
+        errorMessage = "El servidor no está disponible. Intenta más tarde";
+        break;
       case 503:
-        errorTitle = 'Servicio en Mantenimiento'
-        errorMessage = 'El servicio está temporalmente en mantenimiento'
-        break
+        errorTitle = "Servicio en Mantenimiento";
+        errorMessage = "El servicio está temporalmente en mantenimiento";
+        break;
       default:
-        errorTitle = `Error ${status}`
-        errorMessage = data?.message || `Error del servidor: ${status}`
+        errorTitle = `Error ${status}`;
+        errorMessage = data?.message || `Error del servidor: ${status}`;
     }
-    
+
     // Log error details in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('❌ API Error Response:', {
+    if (process.env.NODE_ENV === "development") {
+      console.error("❌ API Error Response:", {
         method: error.config?.method?.toUpperCase(),
         url: error.config?.url,
         status,
         statusText: error.response.statusText,
         data: error.response.data,
-      })
+      });
     }
   } else if (error.request) {
     // Network error or no response
-    errorTitle = 'Error de Conexión'
-    if (error.code === 'ECONNABORTED') {
-      errorMessage = 'La solicitud ha excedido el tiempo límite'
-    } else if (error.code === 'ERR_NETWORK') {
-      errorMessage = 'Error de red. Verifica tu conexión a internet'
+    errorTitle = "Error de Conexión";
+    if (error.code === "ECONNABORTED") {
+      errorMessage = "La solicitud ha excedido el tiempo límite";
+    } else if (error.code === "ERR_NETWORK") {
+      errorMessage = "Error de red. Verifica tu conexión a internet";
     } else {
-      errorMessage = 'No se pudo conectar con el servidor'
+      errorMessage = "No se pudo conectar con el servidor";
     }
-    
-    console.error('❌ Network Error:', error.message)
+
+    console.error("❌ Network Error:", error.message);
   } else {
     // Request setup error
-    errorTitle = 'Error de Configuración'
-    errorMessage = error.message || 'Error al configurar la solicitud'
-    
-    console.error('❌ Request Setup Error:', error.message)
+    errorTitle = "Error de Configuración";
+    errorMessage = error.message || "Error al configurar la solicitud";
+
+    console.error("❌ Request Setup Error:", error.message);
   }
-  
+
   // Update error state in store
-  useDataStore.getState().setError('api', errorMessage)
-  
+  useDataStore.getState().setError("api", errorMessage);
+
   // Show error notification
-  useUIStore.getState().addNotification({
-    title: errorTitle,
-    message: errorMessage,
-    severity: 'error',
-    duration: 5000, // 5 seconds
-  })
-  
+  toast.error(errorTitle, {
+    description: errorMessage,
+  });
+
   // Create enhanced error object
   const enhancedError = {
     ...error,
@@ -286,17 +300,20 @@ const responseErrorInterceptor = async (error: AxiosError): Promise<never> => {
     message: errorMessage,
     status: error.response?.status,
     data: error.response?.data,
-  }
-  
-  return Promise.reject(enhancedError)
-}
+  };
+
+  return Promise.reject(enhancedError);
+};
 
 /**
  * Apply interceptors to API client
  * @description Sets up request and response interceptors for external API client
  */
-apiClient.interceptors.request.use(requestInterceptor, requestErrorInterceptor)
-apiClient.interceptors.response.use(responseInterceptor, responseErrorInterceptor)
+apiClient.interceptors.request.use(requestInterceptor, requestErrorInterceptor);
+apiClient.interceptors.response.use(
+  responseInterceptor,
+  responseErrorInterceptor
+);
 
 /**
  * Apply interceptors to internal API client
@@ -305,48 +322,50 @@ apiClient.interceptors.response.use(responseInterceptor, responseErrorIntercepto
 internalApiClient.interceptors.request.use(
   async (config) => {
     // Add CSRF token for internal API calls if needed
-    if (typeof window !== 'undefined') {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+    if (typeof window !== "undefined") {
+      const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content");
       if (csrfToken) {
-        config.headers['X-CSRF-Token'] = csrfToken
+        config.headers["X-CSRF-Token"] = csrfToken;
       }
     }
-    
+
     // Log internal API requests in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🔗 Internal API Request:', {
+    if (process.env.NODE_ENV === "development") {
+      console.log("🔗 Internal API Request:", {
         method: config.method?.toUpperCase(),
         url: config.url,
-      })
+      });
     }
-    
-    return config
+
+    return config;
   },
   (error) => {
-    console.error('❌ Internal API Request Error:', error)
-    return Promise.reject(error)
+    console.error("❌ Internal API Request Error:", error);
+    return Promise.reject(error);
   }
-)
+);
 
 internalApiClient.interceptors.response.use(
   (response) => {
     // Log internal API responses in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('✅ Internal API Response:', {
+    if (process.env.NODE_ENV === "development") {
+      console.log("✅ Internal API Response:", {
         method: response.config.method?.toUpperCase(),
         url: response.config.url,
         status: response.status,
         data: response.data,
-      })
+      });
     }
-    
-    return response
+
+    return response;
   },
   (error) => {
-    console.error('❌ Internal API Error:', error)
-    return Promise.reject(error)
+    console.error("❌ Internal API Error:", error);
+    return Promise.reject(error);
   }
-)
+);
 
 /**
  * Utility functions for common API operations
@@ -365,19 +384,19 @@ internalApiClient.interceptors.response.use(
  * @example
  * ```typescript
  * import { get } from '@/lib/axios'
- * 
+ *
  * interface User {
  *   id: string
  *   name: string
  *   email: string
  * }
- * 
+ *
  * const users = await get<User[]>('/users')
  * ```
  */
 export const get = <T = any>(endpoint: string, config = {}): Promise<T> => {
-  return apiClient.get<T>(endpoint, config).then(response => response.data)
-}
+  return apiClient.get<T>(endpoint, config).then((response) => response.data);
+};
 
 /**
  * Generic POST request function
@@ -391,16 +410,22 @@ export const get = <T = any>(endpoint: string, config = {}): Promise<T> => {
  * @example
  * ```typescript
  * import { post } from '@/lib/axios'
- * 
+ *
  * const newUser = await post<User>('/users', {
  *   name: 'John Doe',
  *   email: 'john@example.com'
  * })
  * ```
  */
-export const post = <T = any>(endpoint: string, data: any, config = {}): Promise<T> => {
-  return apiClient.post<T>(endpoint, data, config).then(response => response.data)
-}
+export const post = <T = any>(
+  endpoint: string,
+  data: any,
+  config = {}
+): Promise<T> => {
+  return apiClient
+    .post<T>(endpoint, data, config)
+    .then((response) => response.data);
+};
 
 /**
  * Generic PUT request function
@@ -414,15 +439,21 @@ export const post = <T = any>(endpoint: string, data: any, config = {}): Promise
  * @example
  * ```typescript
  * import { put } from '@/lib/axios'
- * 
+ *
  * const updatedUser = await put<User>('/users/1', {
  *   name: 'John Updated'
  * })
  * ```
  */
-export const put = <T = any>(endpoint: string, data: any, config = {}): Promise<T> => {
-  return apiClient.put<T>(endpoint, data, config).then(response => response.data)
-}
+export const put = <T = any>(
+  endpoint: string,
+  data: any,
+  config = {}
+): Promise<T> => {
+  return apiClient
+    .put<T>(endpoint, data, config)
+    .then((response) => response.data);
+};
 
 /**
  * Generic DELETE request function
@@ -434,14 +465,14 @@ export const put = <T = any>(endpoint: string, data: any, config = {}): Promise<
  * @example
  * ```typescript
  * import { del } from '@/lib/axios'
- * 
+ *
  * await del('/users/1')
  * console.log('User deleted')
  * ```
  */
 export const del = (endpoint: string, config = {}): Promise<void> => {
-  return apiClient.delete(endpoint, config).then(() => undefined)
-}
+  return apiClient.delete(endpoint, config).then(() => undefined);
+};
 
 /**
  * Internal API request function
@@ -456,7 +487,7 @@ export const del = (endpoint: string, config = {}): Promise<void> => {
  * @example
  * ```typescript
  * import { internalApi } from '@/lib/axios'
- * 
+ *
  * // Register user
  * const result = await internalApi<{message: string, user: User}>(
  *   'POST',
@@ -466,17 +497,25 @@ export const del = (endpoint: string, config = {}): Promise<void> => {
  * ```
  */
 export const internalApi = <T = any>(
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+  method: "GET" | "POST" | "PUT" | "DELETE",
   endpoint: string,
   data?: any,
   config = {}
 ): Promise<T> => {
-  const request = method.toLowerCase() === 'get' || method.toLowerCase() === 'delete'
-    ? internalApiClient[method.toLowerCase() as 'get' | 'delete'](endpoint, config)
-    : internalApiClient[method.toLowerCase() as 'post' | 'put'](endpoint, data, config)
-    
-  return request.then(response => response.data)
-}
+  const request =
+    method.toLowerCase() === "get" || method.toLowerCase() === "delete"
+      ? internalApiClient[method.toLowerCase() as "get" | "delete"](
+          endpoint,
+          config
+        )
+      : internalApiClient[method.toLowerCase() as "post" | "put"](
+          endpoint,
+          data,
+          config
+        );
+
+  return request.then((response) => response.data);
+};
 
 /**
  * Export configured Axios instances and utility functions
@@ -490,16 +529,16 @@ export default {
   put,
   del,
   internalApi,
-}
+};
 
 /**
  * Type definitions for TypeScript support
  * @description Extended type definitions for Axios with metadata
  */
-declare module 'axios' {
+declare module "axios" {
   export interface InternalAxiosRequestConfig {
     metadata?: {
-      startTime: number
-    }
+      startTime: number;
+    };
   }
 }

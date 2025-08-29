@@ -14,8 +14,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/modules/shared/components/ui/button";
+import { Input } from "@/modules/shared/components/ui/input";
 import {
   Card,
   CardContent,
@@ -23,8 +23,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "@/modules/shared/components/ui/card";
+import { Alert, AlertDescription } from "@/modules/shared/components/ui/alert";
 import {
   Form,
   FormControl,
@@ -32,10 +32,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/modules/shared/components/ui/form";
 
-import { useAuthStore } from "@/stores/authStore";
-import { useNotifications } from "@/stores/uiStore";
+import { useAuthStore } from "@/modules/shared/stores/authStore";
+import { toast } from "sonner";
 import { loginSchema, type LoginFormData } from "@/lib/validations";
 
 /**
@@ -54,7 +54,6 @@ export default function LoginPage(): React.JSX.Element {
   const router = useRouter();
   const { login, isAuthenticated, isLoading, error, clearError } =
     useAuthStore();
-  const { addNotification } = useNotifications();
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -119,11 +118,8 @@ export default function LoginPage(): React.JSX.Element {
       const success = await login(data.email, data.password);
 
       if (success) {
-        addNotification({
-          title: "¡Bienvenido!",
-          message: "Has iniciado sesión correctamente",
-          severity: "success",
-          duration: 3000,
+        toast.success("¡Bienvenido!", {
+          description: "Has iniciado sesión correctamente",
         });
 
         // Router push will be handled by useEffect when isAuthenticated changes
@@ -131,11 +127,8 @@ export default function LoginPage(): React.JSX.Element {
       // Error handling is managed by the auth store
     } catch (error) {
       console.error("Login error:", error);
-      addNotification({
-        title: "Error de Autenticación",
-        message: "Ocurrió un error inesperado. Por favor, intenta de nuevo.",
-        severity: "error",
-        duration: 5000,
+      toast.error("Error de Autenticación", {
+        description: "Ocurrió un error inesperado. Por favor, intenta de nuevo.",
       });
     }
   };

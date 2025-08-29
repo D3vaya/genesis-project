@@ -1,6 +1,6 @@
 /**
  * @fileoverview UI state management with Zustand
- * @description Manages global UI state including sidebar, theme, loading states, and notifications
+ * @description Manages global UI state including sidebar, theme, and loading states
  * @author Generated SaaS Template
  * @version 1.0.0
  */
@@ -15,32 +15,6 @@ import { persist, createJSONStorage } from "zustand/middleware";
  */
 type Theme = "light" | "dark" | "system";
 
-/**
- * Notification severity levels
- * @typedef {'success' | 'error' | 'warning' | 'info'} NotificationSeverity
- * @description Available severity levels for notifications
- */
-type NotificationSeverity = "success" | "error" | "warning" | "info";
-
-/**
- * Notification interface
- * @interface Notification
- * @description Structure for system notifications
- * @property {string} id - Unique notification identifier
- * @property {string} title - Notification title
- * @property {string} message - Notification message content
- * @property {NotificationSeverity} severity - Notification severity level
- * @property {number} duration - Auto-dismiss duration in milliseconds (0 = no auto-dismiss)
- * @property {Date} timestamp - When the notification was created
- */
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  severity: NotificationSeverity;
-  duration: number;
-  timestamp: Date;
-}
 
 /**
  * UI store state interface
@@ -49,7 +23,6 @@ interface Notification {
  * @property {boolean} sidebarCollapsed - Whether the sidebar is collapsed
  * @property {Theme} theme - Current theme mode
  * @property {boolean} isLoading - Global loading state
- * @property {Notification[]} notifications - Array of active notifications
  * @property {boolean} isMobile - Whether the current viewport is mobile
  */
 interface UIState {
@@ -62,8 +35,6 @@ interface UIState {
   // Loading states
   isLoading: boolean;
 
-  // Notifications
-  notifications: Notification[];
 
   // Responsive state
   isMobile: boolean;
@@ -73,11 +44,6 @@ interface UIState {
   setSidebarCollapsed: (collapsed: boolean) => void;
   setTheme: (theme: Theme) => void;
   setLoading: (loading: boolean) => void;
-  addNotification: (
-    notification: Omit<Notification, "id" | "timestamp">
-  ) => string;
-  removeNotification: (id: string) => void;
-  clearNotifications: () => void;
   setIsMobile: (isMobile: boolean) => void;
 }
 
@@ -106,7 +72,6 @@ export const useUIStore = create<UIState>()(
       sidebarCollapsed: false,
       theme: "system",
       isLoading: false,
-      notifications: [],
       isMobile: false,
 
       /**
@@ -192,79 +157,6 @@ export const useUIStore = create<UIState>()(
         set({ isLoading: loading });
       },
 
-      /**
-       * Adds a new notification
-       * @function addNotification
-       * @description Adds a notification to the notifications array
-       * @param {Omit<Notification, 'id' | 'timestamp'>} notification - Notification data without id and timestamp
-       * @returns {string} The generated notification ID
-       * @example
-       * ```typescript
-       * const { addNotification } = useUIStore()
-       * addNotification({
-       *   title: 'Success',
-       *   message: 'Operation completed successfully',
-       *   severity: 'success',
-       *   duration: 3000
-       * })
-       * ```
-       */
-      addNotification: (
-        notification: Omit<Notification, "id" | "timestamp">
-      ) => {
-        const id = crypto.randomUUID();
-        const newNotification: Notification = {
-          ...notification,
-          id,
-          timestamp: new Date(),
-        };
-
-        set((state) => ({
-          notifications: [...state.notifications, newNotification],
-        }));
-
-        // Auto-remove notification after duration
-        if (notification.duration > 0) {
-          setTimeout(() => {
-            get().removeNotification(id);
-          }, notification.duration);
-        }
-
-        return id;
-      },
-
-      /**
-       * Removes a notification by ID
-       * @function removeNotification
-       * @description Removes a specific notification from the notifications array
-       * @param {string} id - Notification ID to remove
-       * @example
-       * ```typescript
-       * const { removeNotification } = useUIStore()
-       * removeNotification('notification-id-123')
-       * ```
-       */
-      removeNotification: (id: string) => {
-        set((state) => ({
-          notifications: state.notifications.filter(
-            (notification) => notification.id !== id
-          ),
-        }));
-      },
-
-      /**
-       * Clears all notifications
-       * @function clearNotifications
-       * @description Removes all notifications from the notifications array
-       * @example
-       * ```typescript
-       * const { clearNotifications } = useUIStore()
-       * clearNotifications() // Removes all notifications
-       * ```
-       */
-      clearNotifications: () => {
-        set({ notifications: [] });
-      },
 
       /**
        * Sets mobile viewport state
@@ -353,65 +245,3 @@ export const useTheme = () =>
     setTheme: state.setTheme,
   }));
 
-/**
- * Selector hook for notifications
- * @function useNotifications
- * @description Custom hook to get notifications and notification actions
- * @returns {Object} Notifications array and management functions
- * @example
- * ```typescript
- * import { useNotifications } from '@/stores/uiStore'
- *
- * function NotificationCenter() {
- *   const { notifications, addNotification, removeNotification } = useNotifications()
- *
- *   const showSuccess = () => {
- *     addNotification({
- *       title: 'Success!',
- *       message: 'Task completed',
- *       severity: 'success',
- *       duration: 3000
- *     })
- *   }
- *
- *   return (
- *     <div>
- *       {notifications.map(notification => (
- *         <div key={notification.id}>
- *           <h3>{notification.title}</h3>
- *           <p>{notification.message}</p>
- *           <button onClick={() => removeNotification(notification.id)}>
- *             Close
- *           </button>
- *         </div>
- *       ))}
- *     </div>
- *   )
- * }
- * ```
- */
-const notificationsSelector = (state: UIState) => state.notifications
-const addNotificationSelector = (state: UIState) => state.addNotification
-const removeNotificationSelector = (state: UIState) => state.removeNotification
-const clearNotificationsSelector = (state: UIState) => state.clearNotifications
-
-export const useNotifications = () => {
-  const notifications = useUIStore(notificationsSelector)
-  const addNotification = useUIStore(addNotificationSelector)
-  const removeNotification = useUIStore(removeNotificationSelector)
-  const clearNotifications = useUIStore(clearNotificationsSelector)
-  
-  return {
-    notifications,
-    addNotification,
-    removeNotification,
-    clearNotifications,
-  }
-};
-
-/**
- * Export notification types for external use
- * @type {NotificationSeverity}
- * @description Export notification severity type for use in components
- */
-export type { NotificationSeverity, Notification };

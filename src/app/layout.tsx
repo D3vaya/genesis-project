@@ -9,7 +9,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Providers } from "@/components/providers/Providers";
+import { Providers } from "@/modules/shared/components/providers/Providers";
 
 /**
  * Geist Sans font configuration
@@ -19,7 +19,7 @@ import { Providers } from "@/components/providers/Providers";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: 'swap',
+  display: "swap",
 });
 
 /**
@@ -30,7 +30,7 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-  display: 'swap',
+  display: "swap",
 });
 
 /**
@@ -41,9 +41,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: {
     default: "SaaS Template | Next.js + shadcn/ui",
-    template: "%s | SaaS Template"
+    template: "%s | SaaS Template",
   },
-  description: "Modern SaaS application template built with Next.js, TypeScript, shadcn/ui, NextAuth, Prisma, and Zustand",
+  description:
+    "Modern SaaS application template built with Next.js, TypeScript, shadcn/ui, NextAuth, Prisma, and Zustand",
   keywords: [
     "SaaS",
     "Next.js",
@@ -53,19 +54,19 @@ export const metadata: Metadata = {
     "Prisma",
     "Zustand",
     "Template",
-    "Starter"
+    "Starter",
   ],
   authors: [
     {
       name: "SaaS Template",
-    }
+    },
   ],
   creator: "SaaS Template",
   publisher: "SaaS Template",
   metadataBase: new URL(
-    process.env.NEXTAUTH_URL || 
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 
-    "http://localhost:3000"
+    process.env.NEXTAUTH_URL || process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000"
   ),
   openGraph: {
     type: "website",
@@ -73,23 +74,25 @@ export const metadata: Metadata = {
     alternateLocale: ["en_US"],
     url: "./",
     title: "SaaS Template | Next.js + shadcn/ui",
-    description: "Modern SaaS application template built with the latest web technologies",
+    description:
+      "Modern SaaS application template built with the latest web technologies",
     siteName: "SaaS Template",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "SaaS Template - Modern SaaS Application"
-      }
-    ]
+        alt: "SaaS Template - Modern SaaS Application",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "SaaS Template | Next.js + shadcn/ui",
-    description: "Modern SaaS application template built with the latest web technologies",
+    description:
+      "Modern SaaS application template built with the latest web technologies",
     images: ["/og-image.jpg"],
-    creator: "@saastemplate"
+    creator: "@saastemplate",
   },
   robots: {
     index: true,
@@ -97,9 +100,9 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   verification: {
@@ -169,47 +172,53 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html 
-      lang="es" 
-      className="h-full"
-      suppressHydrationWarning
-    >
+    <html lang="es" className="h-full" suppressHydrationWarning>
       <head>
         {/* Preconnect to external domains for better performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link rel="preconnect" href="https://jsonplaceholder.typicode.com" />
-        
+
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://jsonplaceholder.typicode.com" />
-        
+
         {/* Viewport meta tag for responsive design */}
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+
         {/* Theme color for mobile browsers */}
         <meta name="theme-color" content="#000000" />
         <meta name="msapplication-navbutton-color" content="#000000" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+
         {/* Prevent automatic phone number detection */}
         <meta name="format-detection" content="telephone=no" />
-        
+
         {/* Favicon and app icons */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        
+
         {/* Web app manifest */}
         <link rel="manifest" href="/manifest.json" />
-        
+
         {/* CSRF token meta tag (if needed by your backend) */}
         <meta name="csrf-token" content="" />
       </head>
       <body
         className={`
-          ${geistSans.variable} 
-          ${geistMono.variable} 
+          ${geistSans.variable}
+          ${geistMono.variable}
           min-h-full
           antialiased
           bg-background
@@ -221,22 +230,22 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {/* Skip to main content link for accessibility */}
-        <a 
-          href="#main-content" 
+        <a
+          href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 px-4 py-2 bg-primary text-primary-foreground rounded-md"
         >
           Saltar al contenido principal
         </a>
-        
+
         {/* Main application wrapped in providers */}
         <Providers>
           <div id="main-content" className="min-h-full">
             {children}
           </div>
         </Providers>
-        
+
         {/* Performance monitoring script (placeholder) */}
-        {process.env.NODE_ENV === 'production' && (
+        {process.env.NODE_ENV === "production" && (
           <script
             dangerouslySetInnerHTML={{
               __html: `
@@ -254,7 +263,7 @@ export default function RootLayout({
             }}
           />
         )}
-        
+
         {/* Google Analytics or other analytics scripts would go here */}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
