@@ -39,7 +39,7 @@ Un template completo y listo para producción que incluye autenticación, gesti�
 ### 1. Clona el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/genesis-project.git
+git clone https://github.com/D3vaya/genesis-project.git
 cd genesis-project
 ```
 
@@ -2628,7 +2628,7 @@ Contribuciones son bienvenidas! Sigue estos pasos para contribuir:
 ```bash
 # Fork el repositorio en GitHub
 # Luego clona tu fork
-git clone https://github.com/tu-usuario/genesis-project.git
+git clone https://github.com/D3vaya/genesis-project.git
 cd genesis-project
 ```
 
@@ -2733,9 +2733,9 @@ Este proyecto está bajo la licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 ¿Necesitas ayuda? Aquí tienes varias opciones:
 
 - 📖 **Documentación**: Revisa esta documentación completa
-- 🐛 **Issues**: [Reporta bugs o solicita features](https://github.com/tu-usuario/genesis-project/issues)
-- 💬 **Discusiones**: [Únete a las discusiones](https://github.com/tu-usuario/genesis-project/discussions)
-- 📧 **Email**: contacto@ejemplo.com
+- 🐛 **Issues**: [Reporta bugs o solicita features](https://github.com/D3vaya/genesis-project/issues)
+- 💬 **Discusiones**: [Únete a las discusiones](https://github.com/D3vaya/genesis-project/discussions)
+- 📧 **Email**: j.ayala.higuera@gmail.com
 
 ## 🚀 ¿Qué sigue?
 
