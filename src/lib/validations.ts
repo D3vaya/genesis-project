@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @fileoverview Zod validation schemas for form validation and data validation
  * @description Provides comprehensive validation schemas for user authentication, profile management, and API data
@@ -5,7 +6,7 @@
  * @version 1.0.0
  */
 
-import { z } from 'zod'
+import { z } from "zod";
 
 /**
  * Login form validation schema
@@ -14,12 +15,12 @@ import { z } from 'zod'
  * @example
  * ```typescript
  * import { loginSchema } from '@/lib/validations'
- * 
+ *
  * const result = loginSchema.safeParse({
  *   email: 'user@example.com',
  *   password: 'password123'
  * })
- * 
+ *
  * if (result.success) {
  *   console.log('Valid login data:', result.data)
  * } else {
@@ -35,11 +36,11 @@ export const loginSchema = z.object({
    */
   email: z
     .string({
-      message: 'El email es requerido',
+      message: "El email es requerido",
     })
-    .min(1, 'El email es requerido')
-    .email('Por favor, ingresa un email válido')
-    .max(255, 'El email no puede exceder 255 caracteres')
+    .min(1, "El email es requerido")
+    .email("Por favor, ingresa un email válido")
+    .max(255, "El email no puede exceder 255 caracteres")
     .toLowerCase()
     .trim(),
 
@@ -50,11 +51,11 @@ export const loginSchema = z.object({
    */
   password: z
     .string({
-      message: 'La contraseña es requerida',
+      message: "La contraseña es requerida",
     })
-    .min(6, 'La contraseña debe tener al menos 6 caracteres')
-    .max(100, 'La contraseña no puede exceder 100 caracteres'),
-})
+    .min(6, "La contraseña debe tener al menos 6 caracteres")
+    .max(100, "La contraseña no puede exceder 100 caracteres"),
+});
 
 /**
  * Registration form validation schema
@@ -63,14 +64,14 @@ export const loginSchema = z.object({
  * @example
  * ```typescript
  * import { registerSchema } from '@/lib/validations'
- * 
+ *
  * const result = registerSchema.safeParse({
  *   name: 'Juan Pérez',
  *   email: 'juan@example.com',
  *   password: 'password123',
  *   confirmPassword: 'password123'
  * })
- * 
+ *
  * if (result.success) {
  *   const { confirmPassword, ...userData } = result.data
  *   // Use userData for registration
@@ -86,13 +87,13 @@ export const registerSchema = z
      */
     name: z
       .string({
-        message: 'El nombre es requerido',
+        message: "El nombre es requerido",
       })
-      .min(2, 'El nombre debe tener al menos 2 caracteres')
-      .max(50, 'El nombre no puede exceder 50 caracteres')
+      .min(2, "El nombre debe tener al menos 2 caracteres")
+      .max(50, "El nombre no puede exceder 50 caracteres")
       .regex(
         /^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$/,
-        'El nombre solo puede contener letras y espacios'
+        "El nombre solo puede contener letras y espacios"
       )
       .trim(),
 
@@ -103,11 +104,11 @@ export const registerSchema = z
      */
     email: z
       .string({
-        message: 'El email es requerido',
+        message: "El email es requerido",
       })
-      .min(1, 'El email es requerido')
-      .email('Por favor, ingresa un email válido')
-      .max(255, 'El email no puede exceder 255 caracteres')
+      .min(1, "El email es requerido")
+      .email("Por favor, ingresa un email válido")
+      .max(255, "El email no puede exceder 255 caracteres")
       .toLowerCase()
       .trim(),
 
@@ -118,13 +119,13 @@ export const registerSchema = z
      */
     password: z
       .string({
-        message: 'La contraseña es requerida',
+        message: "La contraseña es requerida",
       })
-      .min(8, 'La contraseña debe tener al menos 8 caracteres')
-      .max(100, 'La contraseña no puede exceder 100 caracteres')
+      .min(8, "La contraseña debe tener al menos 8 caracteres")
+      .max(100, "La contraseña no puede exceder 100 caracteres")
       .regex(
         /^(?=.*[A-Za-z])(?=.*\d)/,
-        'La contraseña debe contener al menos una letra y un número'
+        "La contraseña debe contener al menos una letra y un número"
       ),
 
     /**
@@ -134,14 +135,14 @@ export const registerSchema = z
      */
     confirmPassword: z
       .string({
-        message: 'La confirmación de contraseña es requerida',
+        message: "La confirmación de contraseña es requerida",
       })
-      .min(1, 'La confirmación de contraseña es requerida'),
+      .min(1, "La confirmación de contraseña es requerida"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'Las contraseñas no coinciden',
-    path: ['confirmPassword'],
-  })
+    message: "Las contraseñas no coinciden",
+    path: ["confirmPassword"],
+  });
 
 /**
  * User profile update validation schema
@@ -150,13 +151,13 @@ export const registerSchema = z
  * @example
  * ```typescript
  * import { userProfileSchema } from '@/lib/validations'
- * 
+ *
  * const result = userProfileSchema.safeParse({
  *   name: 'Juan Pérez Updated',
  *   email: 'juan.updated@example.com',
  *   image: 'https://example.com/profile.jpg'
  * })
- * 
+ *
  * if (result.success) {
  *   // Update user profile with validated data
  * }
@@ -170,11 +171,11 @@ export const userProfileSchema = z.object({
    */
   name: z
     .string()
-    .min(2, 'El nombre debe tener al menos 2 caracteres')
-    .max(50, 'El nombre no puede exceder 50 caracteres')
+    .min(2, "El nombre debe tener al menos 2 caracteres")
+    .max(50, "El nombre no puede exceder 50 caracteres")
     .regex(
       /^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$/,
-      'El nombre solo puede contener letras y espacios'
+      "El nombre solo puede contener letras y espacios"
     )
     .trim()
     .optional(),
@@ -186,8 +187,8 @@ export const userProfileSchema = z.object({
    */
   email: z
     .string()
-    .email('Por favor, ingresa un email válido')
-    .max(255, 'El email no puede exceder 255 caracteres')
+    .email("Por favor, ingresa un email válido")
+    .max(255, "El email no puede exceder 255 caracteres")
     .toLowerCase()
     .trim()
     .optional(),
@@ -199,10 +200,10 @@ export const userProfileSchema = z.object({
    */
   image: z
     .string()
-    .url('Por favor, ingresa una URL válida para la imagen')
-    .max(500, 'La URL de la imagen no puede exceder 500 caracteres')
+    .url("Por favor, ingresa una URL válida para la imagen")
+    .max(500, "La URL de la imagen no puede exceder 500 caracteres")
     .optional(),
-})
+});
 
 /**
  * Password change validation schema
@@ -211,7 +212,7 @@ export const userProfileSchema = z.object({
  * @example
  * ```typescript
  * import { passwordChangeSchema } from '@/lib/validations'
- * 
+ *
  * const result = passwordChangeSchema.safeParse({
  *   currentPassword: 'oldpassword123',
  *   newPassword: 'newpassword456',
@@ -228,9 +229,9 @@ export const passwordChangeSchema = z
      */
     currentPassword: z
       .string({
-        message: 'La contraseña actual es requerida',
+        message: "La contraseña actual es requerida",
       })
-      .min(1, 'La contraseña actual es requerida'),
+      .min(1, "La contraseña actual es requerida"),
 
     /**
      * @description User's new password
@@ -239,13 +240,13 @@ export const passwordChangeSchema = z
      */
     newPassword: z
       .string({
-        message: 'La nueva contraseña es requerida',
+        message: "La nueva contraseña es requerida",
       })
-      .min(8, 'La nueva contraseña debe tener al menos 8 caracteres')
-      .max(100, 'La nueva contraseña no puede exceder 100 caracteres')
+      .min(8, "La nueva contraseña debe tener al menos 8 caracteres")
+      .max(100, "La nueva contraseña no puede exceder 100 caracteres")
       .regex(
         /^(?=.*[A-Za-z])(?=.*\d)/,
-        'La nueva contraseña debe contener al menos una letra y un número'
+        "La nueva contraseña debe contener al menos una letra y un número"
       ),
 
     /**
@@ -255,18 +256,18 @@ export const passwordChangeSchema = z
      */
     confirmNewPassword: z
       .string({
-        message: 'La confirmación de la nueva contraseña es requerida',
+        message: "La confirmación de la nueva contraseña es requerida",
       })
-      .min(1, 'La confirmación de la nueva contraseña es requerida'),
+      .min(1, "La confirmación de la nueva contraseña es requerida"),
   })
   .refine((data) => data.newPassword === data.confirmNewPassword, {
-    message: 'Las nuevas contraseñas no coinciden',
-    path: ['confirmNewPassword'],
+    message: "Las nuevas contraseñas no coinciden",
+    path: ["confirmNewPassword"],
   })
   .refine((data) => data.currentPassword !== data.newPassword, {
-    message: 'La nueva contraseña debe ser diferente a la actual',
-    path: ['newPassword'],
-  })
+    message: "La nueva contraseña debe ser diferente a la actual",
+    path: ["newPassword"],
+  });
 
 /**
  * API response validation schema
@@ -278,13 +279,13 @@ export const passwordChangeSchema = z
  * @example
  * ```typescript
  * import { apiResponseSchema } from '@/lib/validations'
- * 
+ *
  * const userApiResponse = apiResponseSchema(z.object({
  *   id: z.string(),
  *   name: z.string(),
  *   email: z.string().email()
  * }))
- * 
+ *
  * const result = userApiResponse.safeParse(apiResponse)
  * ```
  */
@@ -303,7 +304,7 @@ export const apiResponseSchema = <T>(dataSchema: z.ZodType<T>) =>
      * @validation Required string message
      */
     message: z.string({
-      message: 'El mensaje de respuesta es requerido',
+      message: "El mensaje de respuesta es requerido",
     }),
 
     /**
@@ -312,7 +313,7 @@ export const apiResponseSchema = <T>(dataSchema: z.ZodType<T>) =>
      * @validation Boolean indicating request success
      */
     success: z.boolean({
-      message: 'El estado de éxito es requerido',
+      message: "El estado de éxito es requerido",
     }),
 
     /**
@@ -321,7 +322,7 @@ export const apiResponseSchema = <T>(dataSchema: z.ZodType<T>) =>
      * @validation Unix timestamp if provided
      */
     timestamp: z.number().optional(),
-  })
+  });
 
 /**
  * User entity validation schema
@@ -330,7 +331,7 @@ export const apiResponseSchema = <T>(dataSchema: z.ZodType<T>) =>
  * @example
  * ```typescript
  * import { userSchema } from '@/lib/validations'
- * 
+ *
  * const result = userSchema.safeParse(userData)
  * if (result.success) {
  *   // userData is a valid User object
@@ -344,7 +345,7 @@ export const userSchema = z.object({
    * @validation Required string ID
    */
   id: z.string({
-    message: 'El ID del usuario es requerido',
+    message: "El ID del usuario es requerido",
   }),
 
   /**
@@ -354,9 +355,9 @@ export const userSchema = z.object({
    */
   email: z
     .string({
-      message: 'El email es requerido',
+      message: "El email es requerido",
     })
-    .email('Email inválido'),
+    .email("Email inválido"),
 
   /**
    * @description User's display name (optional)
@@ -365,8 +366,8 @@ export const userSchema = z.object({
    */
   name: z
     .string()
-    .min(2, 'El nombre debe tener al menos 2 caracteres')
-    .max(50, 'El nombre no puede exceder 50 caracteres')
+    .min(2, "El nombre debe tener al menos 2 caracteres")
+    .max(50, "El nombre no puede exceder 50 caracteres")
     .nullable()
     .optional(),
 
@@ -375,11 +376,7 @@ export const userSchema = z.object({
    * @type {string | null}
    * @validation Must be a valid URL if provided
    */
-  image: z
-    .string()
-    .url('URL de imagen inválida')
-    .nullable()
-    .optional(),
+  image: z.string().url("URL de imagen inválida").nullable().optional(),
 
   /**
    * @description User creation timestamp (optional)
@@ -394,7 +391,7 @@ export const userSchema = z.object({
    * @validation Valid date if provided
    */
   updatedAt: z.date().optional(),
-})
+});
 
 /**
  * Environment variables validation schema
@@ -403,7 +400,7 @@ export const userSchema = z.object({
  * @example
  * ```typescript
  * import { envSchema } from '@/lib/validations'
- * 
+ *
  * const env = envSchema.parse(process.env)
  * // env is now type-safe and validated
  * ```
@@ -415,7 +412,7 @@ export const envSchema = z.object({
    * @validation Required database URL
    */
   DATABASE_URL: z.string({
-    message: 'DATABASE_URL es requerida',
+    message: "DATABASE_URL es requerida",
   }),
 
   /**
@@ -424,7 +421,7 @@ export const envSchema = z.object({
    * @validation Required secret for JWT signing
    */
   NEXTAUTH_SECRET: z.string({
-    message: 'NEXTAUTH_SECRET es requerida',
+    message: "NEXTAUTH_SECRET es requerida",
   }),
 
   /**
@@ -434,7 +431,7 @@ export const envSchema = z.object({
    */
   NEXTAUTH_URL: z
     .string()
-    .url('NEXTAUTH_URL debe ser una URL válida')
+    .url("NEXTAUTH_URL debe ser una URL válida")
     .optional(),
 
   /**
@@ -444,9 +441,9 @@ export const envSchema = z.object({
    */
   API_BASE_URL: z
     .string()
-    .url('API_BASE_URL debe ser una URL válida')
+    .url("API_BASE_URL debe ser una URL válida")
     .optional(),
-})
+});
 
 /**
  * Type inference helpers for TypeScript
@@ -460,13 +457,13 @@ export const envSchema = z.object({
  * @example
  * ```typescript
  * import type { LoginFormData } from '@/lib/validations'
- * 
+ *
  * const handleLogin = (data: LoginFormData) => {
  *   // data.email and data.password are type-safe
  * }
  * ```
  */
-export type LoginFormData = z.infer<typeof loginSchema>
+export type LoginFormData = z.infer<typeof loginSchema>;
 
 /**
  * Inferred type for registration form data
@@ -475,13 +472,13 @@ export type LoginFormData = z.infer<typeof loginSchema>
  * @example
  * ```typescript
  * import type { RegisterFormData } from '@/lib/validations'
- * 
+ *
  * const handleRegister = (data: RegisterFormData) => {
  *   // data includes name, email, password, confirmPassword
  * }
  * ```
  */
-export type RegisterFormData = z.infer<typeof registerSchema>
+export type RegisterFormData = z.infer<typeof registerSchema>;
 
 /**
  * Inferred type for user profile updates
@@ -490,20 +487,20 @@ export type RegisterFormData = z.infer<typeof registerSchema>
  * @example
  * ```typescript
  * import type { UserProfileData } from '@/lib/validations'
- * 
+ *
  * const updateProfile = (data: UserProfileData) => {
  *   // data includes optional name, email, image
  * }
  * ```
  */
-export type UserProfileData = z.infer<typeof userProfileSchema>
+export type UserProfileData = z.infer<typeof userProfileSchema>;
 
 /**
  * Inferred type for password change data
  * @type {z.infer<typeof passwordChangeSchema>}
  * @description TypeScript type inferred from passwordChangeSchema
  */
-export type PasswordChangeData = z.infer<typeof passwordChangeSchema>
+export type PasswordChangeData = z.infer<typeof passwordChangeSchema>;
 
 /**
  * Inferred type for user entity
@@ -512,20 +509,20 @@ export type PasswordChangeData = z.infer<typeof passwordChangeSchema>
  * @example
  * ```typescript
  * import type { User } from '@/lib/validations'
- * 
+ *
  * const displayUser = (user: User) => {
  *   console.log(`User: ${user.name} (${user.email})`)
  * }
  * ```
  */
-export type User = z.infer<typeof userSchema>
+export type User = z.infer<typeof userSchema>;
 
 /**
  * Inferred type for environment variables
  * @type {z.infer<typeof envSchema>}
  * @description TypeScript type inferred from envSchema
  */
-export type Env = z.infer<typeof envSchema>
+export type Env = z.infer<typeof envSchema>;
 
 /**
  * Validation helper functions
@@ -541,14 +538,14 @@ export type Env = z.infer<typeof envSchema>
  * @example
  * ```typescript
  * import { validateEmail } from '@/lib/validations'
- * 
+ *
  * const isValid = validateEmail('user@example.com') // true
  * const isInvalid = validateEmail('invalid-email') // false
  * ```
  */
 export const validateEmail = (email: string): boolean => {
-  return z.string().email().safeParse(email).success
-}
+  return z.string().email().safeParse(email).success;
+};
 
 /**
  * Validates password strength
@@ -559,14 +556,14 @@ export const validateEmail = (email: string): boolean => {
  * @example
  * ```typescript
  * import { validatePassword } from '@/lib/validations'
- * 
+ *
  * const isStrong = validatePassword('password123') // true
  * const isWeak = validatePassword('weak') // false
  * ```
  */
 export const validatePassword = (password: string): boolean => {
-  return registerSchema.shape.password.safeParse(password).success
-}
+  return registerSchema.shape.password.safeParse(password).success;
+};
 
 /**
  * Formats validation errors for display
@@ -577,7 +574,7 @@ export const validatePassword = (password: string): boolean => {
  * @example
  * ```typescript
  * import { formatValidationErrors } from '@/lib/validations'
- * 
+ *
  * try {
  *   loginSchema.parse(invalidData)
  * } catch (error) {
@@ -586,15 +583,17 @@ export const validatePassword = (password: string): boolean => {
  * }
  * ```
  */
-export const formatValidationErrors = (error: z.ZodError): Record<string, string> => {
-  const formattedErrors: Record<string, string> = {}
-  
+export const formatValidationErrors = (
+  error: z.ZodError
+): Record<string, string> => {
+  const formattedErrors: Record<string, string> = {};
+
   error.issues.forEach((err: any) => {
     if (err.path.length > 0) {
-      const fieldName = err.path[0].toString()
-      formattedErrors[fieldName] = err.message
+      const fieldName = err.path[0].toString();
+      formattedErrors[fieldName] = err.message;
     }
-  })
-  
-  return formattedErrors
-}
+  });
+
+  return formattedErrors;
+};

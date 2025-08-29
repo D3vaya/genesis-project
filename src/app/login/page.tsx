@@ -5,25 +5,38 @@
  * @version 1.0.0
  */
 
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import Link from 'next/link'
-import { Eye, EyeOff, Loader2, LogIn } from 'lucide-react'
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
-import { useAuthStore } from '@/stores/authStore'
-import { useNotifications } from '@/stores/uiStore'
-import { loginSchema, type LoginFormData } from '@/lib/validations'
+import { useAuthStore } from "@/stores/authStore";
+import { useNotifications } from "@/stores/uiStore";
+import { loginSchema, type LoginFormData } from "@/lib/validations";
 
 /**
  * Login Page Component
@@ -38,11 +51,12 @@ import { loginSchema, type LoginFormData } from '@/lib/validations'
  * ```
  */
 export default function LoginPage(): React.JSX.Element {
-  const router = useRouter()
-  const { login, isAuthenticated, isLoading, error, clearError } = useAuthStore()
-  const { addNotification } = useNotifications()
-  
-  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const router = useRouter();
+  const { login, isAuthenticated, isLoading, error, clearError } =
+    useAuthStore();
+  const { addNotification } = useNotifications();
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   /**
    * React Hook Form setup with Zod validation
@@ -51,11 +65,11 @@ export default function LoginPage(): React.JSX.Element {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
-    mode: 'onChange', // Validate on change for better UX
-  })
+    mode: "onChange", // Validate on change for better UX
+  });
 
   /**
    * Redirect authenticated users
@@ -63,9 +77,9 @@ export default function LoginPage(): React.JSX.Element {
    */
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard')
+      router.push("/dashboard");
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, router]);
 
   /**
    * Clear error when component unmounts or user starts typing
@@ -74,12 +88,12 @@ export default function LoginPage(): React.JSX.Element {
   useEffect(() => {
     const subscription = form.watch(() => {
       if (error) {
-        clearError()
+        clearError();
       }
-    })
-    
-    return () => subscription.unsubscribe()
-  }, [form, error, clearError])
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, error, clearError]);
 
   /**
    * Form submission handler
@@ -100,31 +114,31 @@ export default function LoginPage(): React.JSX.Element {
    */
   const onSubmit = async (data: LoginFormData): Promise<void> => {
     try {
-      clearError()
-      
-      const success = await login(data.email, data.password)
-      
+      clearError();
+
+      const success = await login(data.email, data.password);
+
       if (success) {
         addNotification({
-          title: '¡Bienvenido!',
-          message: 'Has iniciado sesión correctamente',
-          severity: 'success',
+          title: "¡Bienvenido!",
+          message: "Has iniciado sesión correctamente",
+          severity: "success",
           duration: 3000,
-        })
-        
+        });
+
         // Router push will be handled by useEffect when isAuthenticated changes
       }
       // Error handling is managed by the auth store
     } catch (error) {
-      console.error('Login error:', error)
+      console.error("Login error:", error);
       addNotification({
-        title: 'Error de Autenticación',
-        message: 'Ocurrió un error inesperado. Por favor, intenta de nuevo.',
-        severity: 'error',
+        title: "Error de Autenticación",
+        message: "Ocurrió un error inesperado. Por favor, intenta de nuevo.",
+        severity: "error",
         duration: 5000,
-      })
+      });
     }
-  }
+  };
 
   /**
    * Toggle password visibility
@@ -136,8 +150,8 @@ export default function LoginPage(): React.JSX.Element {
    * ```
    */
   const togglePasswordVisibility = (): void => {
-    setShowPassword(!showPassword)
-  }
+    setShowPassword(!showPassword);
+  };
 
   /**
    * Get form field error message
@@ -146,9 +160,11 @@ export default function LoginPage(): React.JSX.Element {
    * @param {keyof LoginFormData} fieldName - Name of the form field
    * @returns {string | undefined} Error message if field has error, undefined otherwise
    */
-  const getFieldError = (fieldName: keyof LoginFormData): string | undefined => {
-    return form.formState.errors[fieldName]?.message
-  }
+  const getFieldError = (
+    fieldName: keyof LoginFormData
+  ): string | undefined => {
+    return form.formState.errors[fieldName]?.message;
+  };
 
   /**
    * Check if form is valid and can be submitted
@@ -157,8 +173,8 @@ export default function LoginPage(): React.JSX.Element {
    * @returns {boolean} True if form can be submitted, false otherwise
    */
   const canSubmit = (): boolean => {
-    return form.formState.isValid && !isLoading
-  }
+    return form.formState.isValid && !isLoading;
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4">
@@ -193,9 +209,7 @@ export default function LoginPage(): React.JSX.Element {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="email">
-                      Correo Electrónico
-                    </FormLabel>
+                    <FormLabel htmlFor="email">Correo Electrónico</FormLabel>
                     <FormControl>
                       <Input
                         id="email"
@@ -203,7 +217,9 @@ export default function LoginPage(): React.JSX.Element {
                         placeholder="tu@ejemplo.com"
                         autoComplete="email"
                         disabled={isLoading}
-                        className={getFieldError('email') ? 'border-destructive' : ''}
+                        className={
+                          getFieldError("email") ? "border-destructive" : ""
+                        }
                         {...field}
                       />
                     </FormControl>
@@ -218,18 +234,20 @@ export default function LoginPage(): React.JSX.Element {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="password">
-                      Contraseña
-                    </FormLabel>
+                    <FormLabel htmlFor="password">Contraseña</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           id="password"
-                          type={showPassword ? 'text' : 'password'}
+                          type={showPassword ? "text" : "password"}
                           placeholder="Tu contraseña"
                           autoComplete="current-password"
                           disabled={isLoading}
-                          className={`pr-10 ${getFieldError('password') ? 'border-destructive' : ''}`}
+                          className={`pr-10 ${
+                            getFieldError("password")
+                              ? "border-destructive"
+                              : ""
+                          }`}
                           {...field}
                         />
                         <button
@@ -237,7 +255,11 @@ export default function LoginPage(): React.JSX.Element {
                           onClick={togglePasswordVisibility}
                           disabled={isLoading}
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none focus:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-                          aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                          aria-label={
+                            showPassword
+                              ? "Ocultar contraseña"
+                              : "Mostrar contraseña"
+                          }
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4" />
@@ -276,9 +298,9 @@ export default function LoginPage(): React.JSX.Element {
             <CardFooter className="flex flex-col space-y-4">
               {/* Register Link */}
               <div className="text-center text-sm text-muted-foreground">
-                ¿No tienes una cuenta?{' '}
-                <Link 
-                  href="/register" 
+                ¿No tienes una cuenta?{" "}
+                <Link
+                  href="/register"
                   className="font-medium text-primary hover:underline focus:outline-none focus:underline"
                 >
                   Regístrate aquí
@@ -286,10 +308,10 @@ export default function LoginPage(): React.JSX.Element {
               </div>
 
               {/* Demo Credentials (Development Only) */}
-              {process.env.NODE_ENV === 'development' && (
+              {process.env.NODE_ENV === "development" && (
                 <div className="text-xs text-muted-foreground bg-muted p-3 rounded-md">
                   <p className="font-medium mb-1">Credenciales de prueba:</p>
-                  <p>Email: demo@ejemplo.com</p>
+                  <p>Email: usuario@ejemplo.com</p>
                   <p>Contraseña: password123</p>
                 </div>
               )}
@@ -298,5 +320,5 @@ export default function LoginPage(): React.JSX.Element {
         </Form>
       </Card>
     </div>
-  )
+  );
 }
